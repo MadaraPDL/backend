@@ -1,9 +1,10 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints.auth import(
+from app.api.v1.endpoints.auth import (
     email_verification,
     invitations,
     login,
+    me,
     mfa,
     password_reset,
 )
@@ -15,3 +16,4 @@ router.include_router(mfa.router)
 router.include_router(invitations.router)
 router.include_router(password_reset.router)
 router.include_router(email_verification.router)
+router.include_router(me.router)
