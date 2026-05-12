@@ -1,19 +1,14 @@
-from app.schemas.auth import (
-    AccountType,
-    AcceptInvitationRequest,
-    AcceptInvitationResponse,
-    AuthTokenResponse,
-    CurrentUserResponse,
+from app.schemas.auth.common import AccountType, MFAMethod
+from app.schemas.auth.current_user import CurrentUserResponse
+from app.schemas.auth.email_verification import VerifyEmailRequest, VerifyEmailResponse
+from app.schemas.auth.invitation import AcceptInvitationRequest, AcceptInvitationResponse
+from app.schemas.auth.login import AuthTokenResponse, LoginRequest
+from app.schemas.auth.mfa import MFARequiredResponse, MFAVerifyRequest
+from app.schemas.auth.password_reset import (
     ForgotPasswordRequest,
     ForgotPasswordResponse,
-    LoginRequest,
-    MFARequiredResponse,
-    MFAMethod,
-    MFAVerifyRequest,
     ResetPasswordRequest,
     ResetPasswordResponse,
-    VerifyEmailRequest,
-    VerifyEmailResponse,
 )
 
 __all__ = [
