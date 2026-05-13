@@ -63,26 +63,3 @@ async def create_isp_admin_invitation(
     return invitation, raw_token
 
 
-async def list_isp_admins(
-    db: AsyncSession,
-    isp_id: UUID,
-    status: str | None = None,
-    limit: int = 50,
-    offset: int = 0,
-) -> list[Admin]:
-    stmt = (
-        select(Admin)
-        .where(
-            Admin.isp_id == isp_id,
-            Admin.role == "isp_admin",
-        )
-        .order_by(Admin.created_at.desc())
-    )
-
-    if status is not None:
-        stmt = stmt.where(Admin.status == status)
-
-    stmt = stmt.limit(limit).offset(offset)
-
-    result = await db.execute(stmt)
-    return list(result.scalars().all())

@@ -27,22 +27,3 @@ class ISPAdminInvitationResponse(BaseModel):
     revoked_at: datetime | None
     created_at: datetime
     dev_invitation_token: str | None = None
-
-
-class ISPAdminResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    isp_id: UUID | None
-    full_name: str
-    email: EmailStr
-    username: str | None
-    role: str
-    status: str
-    created_by_admin_id: UUID | None
-    email_verified_at: datetime | None
-    mfa_enabled: bool
-    mfa_required: bool
-    preferred_mfa_method: str | None
-    created_at: datetime
-    updated_at: datetime
