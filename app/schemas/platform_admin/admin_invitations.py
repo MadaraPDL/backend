@@ -1,9 +1,18 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+
+ISPAdminInvitationStatus = Literal[
+    "pending",
+    "accepted",
+    "revoked",
+    "expired",
+]
 
 
 class ISPAdminInvitationCreateRequest(BaseModel):
@@ -27,3 +36,8 @@ class ISPAdminInvitationResponse(BaseModel):
     revoked_at: datetime | None
     created_at: datetime
     dev_invitation_token: str | None = None
+
+
+class RevokeISPAdminInvitationResponse(BaseModel):
+    message: str
+    invitation: ISPAdminInvitationResponse

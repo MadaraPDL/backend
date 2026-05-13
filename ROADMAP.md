@@ -1,3 +1,70 @@
+# Latest Roadmap Status — Step 15 Complete
+
+Read this section first. It overrides older "current phase" sections below if they conflict.
+
+## Current Position
+
+Step 15 Platform Admin endpoints are complete and tested.
+
+Next step:
+- Step 16: ISP Admin management endpoints.
+
+## Step 15 Completed
+
+### Step 15A Completed
+Platform Admin ISP management:
+- Create ISP.
+- List ISPs.
+- Get one ISP.
+- Update ISP information/status.
+
+### Step 15B Completed
+Platform Admin ISP Admin invitations:
+- Create ISP Admin invitation.
+- Return development invitation token only while `DEBUG=True`.
+- Invited ISP Admin accepts invitation through existing auth invitation endpoint.
+- ISP Admin account is created and linked to the correct ISP.
+
+### Step 15C Completed
+Platform Admin ISP Admin account management:
+- View one ISP Admin.
+- Update ISP Admin full name, phone number, and status.
+- Deactivate/reactivate ISP Admin.
+- Protected by `platform_admin` role only.
+
+### Step 15D Completed
+Platform Admin dashboard summary:
+- Endpoint: `GET /api/v1/platform-admin/summary`
+- Returns counts for ISPs, ISP Admins, and App Users by status.
+- Read-only endpoint.
+
+### Step 15E Completed
+Platform Admin pending invitation management:
+- List ISP Admin invitations for an ISP.
+- Filter invitations by pending, accepted, revoked, or expired.
+- Revoke pending ISP Admin invitations.
+- Revoked invitations cannot be accepted.
+- Revocation keeps audit history by setting `revoked_at`.
+
+## Step 16 Next
+
+ISP Admin management endpoints.
+
+Main Step 16 rule:
+- ISP Admin manages only their own ISP's data.
+- ISP Admin cannot create ISPs.
+- ISP Admin cannot invite or manage ISP Admins.
+- ISP Admin cannot access other ISPs' data.
+
+Expected Step 16 areas:
+- App user invitations.
+- App user management.
+- Subscription plan management.
+- User subscription assignment.
+- Router management.
+- ISP-scoped dashboard/list endpoints.
+
+---
 # Latest Roadmap Status
 
 Read this section first. It overrides older "current phase" sections below if they conflict.
@@ -787,3 +854,4 @@ Avoid:
 - Building huge messy files.
 - Adding features that cannot be demonstrated.
 - Changing database schema without reason.
+

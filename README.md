@@ -1,3 +1,39 @@
+# Latest Backend Progress — Step 15 Complete
+
+The Platform Admin backend MVP is complete and tested.
+
+Completed Platform Admin features:
+- Create/list/view/update ISPs.
+- Invite ISP Admins.
+- List ISP Admins under an ISP.
+- View/update/deactivate/reactivate ISP Admin accounts.
+- View platform dashboard summary metrics.
+- List ISP Admin invitations.
+- Filter ISP Admin invitations by pending, accepted, revoked, or expired.
+- Revoke pending ISP Admin invitations.
+
+Latest Platform Admin endpoints:
+- `POST /api/v1/platform-admin/isps`
+- `GET /api/v1/platform-admin/isps`
+- `GET /api/v1/platform-admin/isps/{isp_id}`
+- `PATCH /api/v1/platform-admin/isps/{isp_id}`
+- `POST /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
+- `GET /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
+- `PATCH /api/v1/platform-admin/isps/{isp_id}/admin-invitations/{invitation_id}/revoke`
+- `GET /api/v1/platform-admin/isps/{isp_id}/admins`
+- `GET /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
+- `PATCH /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
+- `GET /api/v1/platform-admin/summary`
+
+Current next backend step:
+- Step 16: ISP Admin management endpoints.
+
+Important access rule:
+- Only Platform Admin can manage ISPs and ISP Admin accounts.
+- ISP Admins cannot invite other ISP Admins and cannot manage other ISPs.
+- ISP Admins will manage only their own ISP's users, plans, subscriptions, routers, reports, and analytics.
+
+---
 # Latest Backend Progress
 
 The backend has moved beyond the older auth-testing phase.
@@ -637,3 +673,4 @@ PulseFi should be:
 - Expandable.
 - Realistic for an FYP.
 - Strong enough to become a real product later.
+

@@ -289,3 +289,66 @@ Current next step:
 - Planned endpoints:
   - `GET /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
   - `PATCH /api/v1/platform-admin/isps/{isp_id}/admin-invitations/{invitation_id}/revoke`
+
+## Latest Progress Update
+
+Step 15E is complete and tested:
+- Platform Admin can list ISP Admin invitations for an ISP.
+- Platform Admin can filter invitations by pending, accepted, revoked, or expired.
+- Platform Admin can revoke a pending ISP Admin invitation.
+- Revoked invitations cannot be accepted.
+- Revoke keeps the invitation row for audit history by setting `revoked_at`.
+
+Step 15 is now complete for Platform Admin MVP:
+- 15A: Manage ISPs.
+- 15B: Invite ISP Admins.
+- 15C: Manage ISP Admin accounts.
+- 15D: View Platform Admin summary metrics.
+- 15E: Manage pending ISP Admin invitations.
+
+Current next step:
+- Step 16: ISP Admin management endpoints.
+- ISP Admin must only manage data under their own ISP.
+- ISP Admin cannot create ISPs or invite/manage ISP Admins.
+
+## Latest Progress Update
+
+Step 15E is complete and tested:
+- Platform Admin can list ISP Admin invitations for an ISP.
+- Platform Admin can filter invitations by pending, accepted, revoked, or expired.
+- Platform Admin can revoke a pending ISP Admin invitation.
+- Revoked invitations cannot be accepted.
+- Revoke keeps the invitation row for audit history by setting `revoked_at`.
+
+Step 15 is now complete for Platform Admin MVP:
+- 15A: Manage ISPs.
+- 15B: Invite ISP Admins.
+- 15C: Manage ISP Admin accounts.
+- 15D: View Platform Admin summary metrics.
+- 15E: Manage pending ISP Admin invitations.
+
+Current next step:
+- Step 16: ISP Admin management endpoints.
+- ISP Admin must only manage data under their own ISP.
+- ISP Admin cannot create ISPs or invite/manage ISP Admins.
+
+## Latest Progress Update
+
+Step 15E is complete and tested:
+- Platform Admin can list ISP Admin invitations for an ISP.
+- Platform Admin can filter invitations by pending, accepted, revoked, or expired.
+- Platform Admin can revoke a pending ISP Admin invitation.
+- Revoked invitations cannot be accepted.
+- Revocation keeps audit history by setting `revoked_at`.
+
+Step 15 Platform Admin MVP is now complete:
+- 15A: Manage ISPs.
+- 15B: Invite ISP Admins.
+- 15C: Manage ISP Admin accounts.
+- 15D: View Platform Admin summary metrics.
+- 15E: Manage pending ISP Admin invitations.
+
+Current next step:
+- Step 16: ISP Admin management endpoints.
+- ISP Admin must only manage data under their own ISP.
+- ISP Admin cannot create ISPs or invite/manage ISP Admins.
