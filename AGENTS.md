@@ -4,7 +4,7 @@ Read this section first. It overrides older "current phase" sections below if th
 
 ## Current Backend Position
 
-Current phase: Step 15E is next.
+Current phase: Step 16 is next.
 
 Recently completed and tested:
 - Step 14: Protected current-account route system.
@@ -12,6 +12,7 @@ Recently completed and tested:
 - Step 15B: Platform Admin ISP Admin invitation endpoints.
 - Step 15C: Platform Admin ISP Admin account management endpoints.
 - Step 15D: Platform Admin dashboard summary endpoint.
+- Step 15E: Platform Admin pending ISP Admin invitation management.
 
 ## Completed Platform Admin Endpoints
 
@@ -23,6 +24,8 @@ Protected by `platform_admin` role only:
 - `PATCH /api/v1/platform-admin/isps/{isp_id}`
 
 - `POST /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
+- `GET /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
+- `PATCH /api/v1/platform-admin/isps/{isp_id}/admin-invitations/{invitation_id}/revoke`
 - `GET /api/v1/platform-admin/isps/{isp_id}/admins`
 - `GET /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
 - `PATCH /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
@@ -31,11 +34,13 @@ Protected by `platform_admin` role only:
 
 ## Current Next Step
 
-Step 15E: Platform Admin pending ISP Admin invitation management.
+Step 16: ISP Admin management endpoints.
 
-Planned endpoints:
-- `GET /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
-- `PATCH /api/v1/platform-admin/isps/{isp_id}/admin-invitations/{invitation_id}/revoke`
+Core rule:
+- ISP Admins manage only data under their own `isp_id`.
+- ISP Admins cannot create ISPs.
+- ISP Admins cannot invite or manage ISP Admin accounts.
+- ISP Admins cannot access another ISP's users, plans, subscriptions, routers, reports, or analytics.
 
 ## Important Role Rule
 

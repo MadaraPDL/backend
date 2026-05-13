@@ -33,6 +33,18 @@ async def get_current_app_user(
     return current.account
 
 
+async def get_current_isp_admin(
+    admin: Admin = Depends(get_current_admin),
+) -> Admin:
+    if admin.role != "isp_admin" or admin.isp_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="ISP Admin account required",
+        )
+
+    return admin
+
+
 def require_admin_role(*allowed_roles: str) -> Callable:
     async def dependency(
         admin: Admin = Depends(get_current_admin),

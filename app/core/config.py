@@ -1,3 +1,4 @@
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -15,9 +16,29 @@ class Settings(BaseSettings):
 
     BACKEND_CORS_ORIGINS: list[str]
 
+    @model_validator(mode="after")
+    def validate_production_settings(self) -> "Settings":
+        if self.DEBUG:
+            return self
+
+        if (
+            len(self.SECRET_KEY) < 32
+            or self.SECRET_KEY in {"your_secret_key_here", "replace_with_a_long_random_secret_key"}
+        ):
+            raise ValueError(
+                "SECRET_KEY must be a strong non-placeholder value when DEBUG=False."
+            )
+
+        if "*" in self.BACKEND_CORS_ORIGINS:
+            raise ValueError(
+                "Wildcard CORS origins are not allowed when DEBUG=False."
+            )
+
+        return self
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8"
-        )
+    )
     
 settings = Settings()

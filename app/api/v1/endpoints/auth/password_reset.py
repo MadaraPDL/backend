@@ -67,7 +67,7 @@ async def reset_password(
     if account is None:
         await db.rollback()
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_Request,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired password reset token.",
         )
     

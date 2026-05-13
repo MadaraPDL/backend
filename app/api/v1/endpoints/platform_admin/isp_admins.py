@@ -35,7 +35,7 @@ async def get_isp_admin_endpoint(
 
     if isp is None:
         raise HTTPException(
-            status_cade=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="ISP not found",
         )
     
