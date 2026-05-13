@@ -1,12 +1,25 @@
-# Latest PulseFi Backend Status
+# AGENTS.md — PulseFi Backend Instructions
 
-Read this section first. It overrides older "current phase" sections below if they conflict.
+## Project Name
+
+PulseFi
+
+## Main Rule for Codex / AI Coding Assistants
+
+Before editing anything, read this file, `README.md`, and `ROADMAP.md`.
+
+Do not make random architecture decisions without checking the existing project structure.
+
+This backend is being built step by step by the student/developer, so changes should stay understandable, modular, and easy to explain.
+
+---
 
 ## Current Backend Position
 
-Current phase: Step 16 is next.
+Current phase: **Step 16 — ISP Admin management endpoints**.
 
 Recently completed and tested:
+
 - Step 14: Protected current-account route system.
 - Step 15A: Platform Admin ISP management endpoints.
 - Step 15B: Platform Admin ISP Admin invitation endpoints.
@@ -14,7 +27,11 @@ Recently completed and tested:
 - Step 15D: Platform Admin dashboard summary endpoint.
 - Step 15E: Platform Admin pending ISP Admin invitation management.
 
-## Completed Platform Admin Endpoints
+Step 15 is complete. Step 16 is next.
+
+---
+
+## Current Completed Platform Admin Endpoints
 
 Protected by `platform_admin` role only:
 
@@ -22,54 +39,37 @@ Protected by `platform_admin` role only:
 - `GET /api/v1/platform-admin/isps`
 - `GET /api/v1/platform-admin/isps/{isp_id}`
 - `PATCH /api/v1/platform-admin/isps/{isp_id}`
-
 - `POST /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
 - `GET /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
 - `PATCH /api/v1/platform-admin/isps/{isp_id}/admin-invitations/{invitation_id}/revoke`
 - `GET /api/v1/platform-admin/isps/{isp_id}/admins`
 - `GET /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
 - `PATCH /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
-
 - `GET /api/v1/platform-admin/summary`
+
+---
 
 ## Current Next Step
 
 Step 16: ISP Admin management endpoints.
 
 Core rule:
+
 - ISP Admins manage only data under their own `isp_id`.
 - ISP Admins cannot create ISPs.
 - ISP Admins cannot invite or manage ISP Admin accounts.
 - ISP Admins cannot access another ISP's users, plans, subscriptions, routers, reports, or analytics.
 
-## Important Role Rule
+Expected Step 16 areas:
 
-ISP Admins must not be allowed to create ISPs, invite other ISP Admins, or manage other ISPs.
-
-Platform Admin:
-- manages ISPs
-- invites/manages ISP Admins
-- views platform summary metrics
-
-ISP Admin:
-- manages only their own ISP's users, plans, subscriptions, routers, reports, and analytics
-- can invite app users under their own ISP later
-- cannot invite ISP Admins
+- App user invitations.
+- App user management.
+- Subscription plan management.
+- User subscription assignment.
+- Router management.
+- ISP-scoped dashboard/list endpoints.
 
 ---
-# AGENTS.md — PulseFi Backend Instructions
-
-## Project Name
-
-PulseFi
-
-## Main Rule for Codex
-
-Before editing anything, read this file, `README.md`, and `ROADMAP.md`.
-
-Do not make random architecture decisions without checking the existing project structure.
-
-This backend is being built step by step by the student/developer, so explain changes clearly and keep the project understandable.
 
 ## Project Summary
 
@@ -96,6 +96,8 @@ PulseFi is not just a basic usage tracker. The goal is to make it a smart deploy
 - Allow users to limit bandwidth or prioritize selected devices.
 - Allow ISP admins to manage users, plans, subscriptions, routers, reports, alerts, and analytics.
 
+---
+
 ## Current Backend Stack
 
 Use this stack unless the developer explicitly changes it:
@@ -108,22 +110,31 @@ Use this stack unless the developer explicitly changes it:
 - Validation: Pydantic
 - Password hashing: Argon2 using `pwdlib[argon2]`
 - Authentication: JWT access tokens
+- MFA/TOTP: pyotp
 - Frontend later:
   - React Native mobile app for users
   - Web dashboard for ISP Admins
   - Web dashboard for Platform Admins
 
+---
+
 ## Local Project Path
 
 The backend usually lives here:
 
+```text
 C:\PulseFi\backend
+```
+
+---
 
 ## GitHub Repository
 
-The backend repository is:
-
+```text
 https://github.com/MadaraPDL/backend
+```
+
+---
 
 ## Architecture Style
 
@@ -135,6 +146,7 @@ Do not create huge files that mix unrelated responsibilities.
 
 Important structure:
 
+- `app/api/dependencies/` for auth/current-account dependencies and role guards
 - `app/api/v1/endpoints/` for API endpoints
 - `app/core/` for config and security helpers
 - `app/db/` for database session/base setup
@@ -150,6 +162,8 @@ Shared security helpers should go in `app/core/security.py`.
 
 Database session dependency should stay in `app/db/session.py`.
 
+---
+
 ## Important Coding Rule
 
 Avoid creating one huge file with many unrelated features.
@@ -162,6 +176,10 @@ Prefer focused modules like:
 - `invitation_service.py`
 - `password_reset_service.py`
 - `email_verification_service.py`
+- `platform_admin_service.py` or focused platform-admin services
+- `isp_admin_user_service.py`
+- `subscription_plan_service.py`
+- `user_subscription_service.py`
 - `router_service.py`
 - `usage_service.py`
 - `alert_service.py`
@@ -171,50 +189,34 @@ Prefer focused modules like:
 
 Do not put login, invitations, password reset, email verification, MFA, users, plans, routers, reports, and analytics all in one service file.
 
-## Current Project Phase
+---
 
-The project is currently around:
+## Important Role Rules
 
-Step 13F — Testing authentication endpoints through Swagger/Postman.
+Platform Admin:
 
-Step 13E is structurally complete.
+- Manages ISPs.
+- Invites and manages ISP Admins.
+- Views platform summary metrics.
+- Does not represent a normal ISP customer.
 
-Auth endpoints currently exist under:
+ISP Admin:
 
-`app/api/v1/endpoints/auth/`
+- Manages only their own ISP's users, plans, subscriptions, routers, reports, and analytics.
+- Can invite app users under their own ISP later.
+- Cannot create ISPs.
+- Cannot invite ISP Admins.
+- Cannot manage ISP Admin accounts.
+- Cannot access another ISP's data.
 
-Current auth endpoints include:
+App User:
 
-- `POST /api/v1/auth/login`
-- `POST /api/v1/auth/mfa/verify`
-- `POST /api/v1/auth/invitations/accept`
-- `POST /api/v1/auth/password/forgot`
-- `POST /api/v1/auth/password/reset`
-- `POST /api/v1/auth/email/verify`
+- Uses the mobile app.
+- Views their own subscriptions, usage, devices, alerts, predictions, and recommendations.
+- Can request subscription upgrades/downgrades.
+- Can apply device optimization actions when router capability allows.
 
-The next backend work should continue from auth testing, then move to protected routes and current-user dependencies.
-
-## Current Auth Testing Plan
-
-Continue with Step 13F.
-
-Test these in order:
-
-1. Test wrong login returns 401.
-2. Create one temporary test invitation row if `account_invitations` is empty.
-3. Accept invitation through Swagger.
-4. Confirm the test account is created.
-5. Confirm the invitation is marked accepted.
-6. Login with the created account.
-7. Test MFA verification if required.
-8. Test forgot password.
-9. Confirm generic forgot-password response.
-10. Confirm dev reset token only while `DEBUG=True`.
-11. Reset password with reset token.
-12. Login with the new password.
-13. Confirm old password fails.
-14. Test email verification if a token exists.
-15. Add or adjust helper/service flow if email verification token is not auto-created.
+---
 
 ## Authentication Design Decisions
 
@@ -235,8 +237,8 @@ Account onboarding flow:
 Login design:
 
 - Admins and app users are stored in separate tables.
-- Login request should include `account_type`.
-- Login should accept either email or username as the identifier.
+- Login request includes `account_type`.
+- Login accepts either email or username as the identifier.
 - Email is still required for invitations, verification, password reset, notifications, and recovery.
 - Username is optional but useful for easier login.
 - Username should be unique case-insensitively.
@@ -246,14 +248,11 @@ Security design:
 
 - Passwords must be hashed with Argon2.
 - Never store plain passwords.
-- JWT tokens must include:
-  - account ID as subject
-  - `account_type`
-  - issued-at time
-  - expiry time
+- JWT tokens must include account ID as subject, `account_type`, issued-at time, and expiry time.
 - Forgot-password responses must be generic to avoid account enumeration.
 - Password reset tokens must be expiring and single-use.
-- Old sessions should be considered invalid after password reset using `password_changed_at`.
+- Old sessions should be invalid after password reset using `password_changed_at`.
+- Current-account dependency should reject tokens issued before the latest `password_changed_at`.
 
 MFA design:
 
@@ -287,6 +286,8 @@ SMS:
 - SMS verification is deferred for now because it adds recurring production cost.
 - Do not add SMS unless explicitly requested later.
 
+---
+
 ## Database Notes
 
 The database already exists in PostgreSQL.
@@ -295,7 +296,7 @@ Do not guess schema details when exact columns are needed.
 
 Inspect existing models or the database before changing models.
 
-Core tables include:
+Core tables:
 
 - `isps`
 - `admins`
@@ -314,7 +315,7 @@ Core tables include:
 - `subscription_change_requests`
 - `reports`
 
-Auth tables include:
+Auth tables:
 
 - `account_invitations`
 - `email_verification_tokens`
@@ -349,6 +350,8 @@ Important database decisions:
 - `reports.report_data` is JSONB.
 - `reports.created_at` stores when the report was created.
 
+---
+
 ## Router Integration Design
 
 Do not design PulseFi as supporting only one router type forever.
@@ -376,12 +379,12 @@ Feature tiers:
 
 Full mode:
 
-- Total usage
-- Connected devices
-- Per-device usage
-- New-device alerts
-- Bandwidth limiting
-- Device prioritization
+- Total usage.
+- Connected devices.
+- Per-device usage.
+- New-device alerts.
+- Bandwidth limiting.
+- Device prioritization.
 
 Partial mode:
 
@@ -395,6 +398,8 @@ Basic mode:
 
 Device-level features depend on router capability.
 
+---
+
 ## Subscription Change Design
 
 Regular users can request plan upgrades or downgrades for their own subscriptions.
@@ -403,27 +408,49 @@ The actual subscription change is handled by the ISP Admin.
 
 Users can directly apply device optimization actions such as bandwidth limit or device priority without ISP Admin approval.
 
+---
+
 ## Commands
 
-Run from the backend root:
+Run from the backend root.
 
-`.\venv\Scripts\python.exe -c "from app.main import app; print('App imported successfully')"`
+App import test:
 
-`.\venv\Scripts\python.exe -c "from app.api.v1.router import api_router; print('API router imported successfully')"`
+```powershell
+.\venv\Scripts\python.exe -c "from app.main import app; print('App imported successfully')"
+```
 
-`.\venv\Scripts\python.exe -c "from app.schemas.auth import *; print('Auth schemas imported successfully')"`
+API router import test:
+
+```powershell
+.\venv\Scripts\python.exe -c "from app.api.v1.router import api_router; print('API router imported successfully')"
+```
+
+Step 16 foundation import test:
+
+```powershell
+.\venv\Scripts\python.exe -c "from app.api.dependencies import get_current_isp_admin; from app.core.config import settings; print('Step 16 foundation imported successfully.')"
+```
 
 Run the server:
 
-`.\venv\Scripts\python.exe -m uvicorn app.main:app --reload`
+```powershell
+.\venv\Scripts\python.exe -m uvicorn app.main:app --reload
+```
 
 Swagger URL:
 
-`http://127.0.0.1:8000/docs`
+```text
+http://127.0.0.1:8000/docs
+```
 
 Health endpoint:
 
-`/api/v1/health`
+```text
+/api/v1/health
+```
+
+---
 
 ## Software Engineering Diagram Update Rules
 
@@ -431,29 +458,38 @@ The developer wants reminders when backend/design changes require SE diagram upd
 
 Recommend SE updates when changes affect:
 
-- Actors or roles
-- Use cases
-- Major user/admin flows
-- DFD processes or data flows
-- ERD entities, relationships, or attributes
-- Sequence diagrams
-- Activity diagrams
-- Security/onboarding architecture
-- Router/deployment structure
-- Major system behavior
+- Actors or roles.
+- Use cases.
+- Major user/admin flows.
+- DFD processes or data flows.
+- ERD entities, relationships, or attributes.
+- Sequence diagrams.
+- Activity diagrams.
+- Security/onboarding architecture.
+- Router/deployment structure.
+- Major system behavior.
 
 Do not interrupt for tiny implementation details.
 
 Pending SE updates to batch later:
 
-- Invitation-based onboarding
-- Email verification
-- Forgot password
-- Username/email login
-- MFA/2FA
-- Backup recovery codes
-- Router adapter/capability model
-- Subscription change request flow
+- Invitation-based onboarding.
+- Email verification.
+- Forgot password.
+- Username/email login.
+- MFA/2FA.
+- Backup recovery codes.
+- Router adapter/capability model.
+- Subscription change request flow.
+- Multiple active subscriptions per user.
+- Router linked to subscription.
+- One subscription may have multiple routers.
+- Router simulator for MVP/demo.
+- Capability-based feature availability.
+- Platform Admin dashboard and ISP Admin management separation.
+- ISP Admin scoped access rule.
+
+---
 
 ## Explanation Style
 
@@ -471,6 +507,8 @@ When giving code or implementation steps:
   - SE diagrams
 
 Do not just dump code without explanation.
+
+---
 
 ## Before Editing
 
