@@ -1,3 +1,38 @@
+# Latest Backend Progress
+
+The backend has moved beyond the older auth-testing phase.
+
+Current completed backend progress:
+- FastAPI backend foundation complete.
+- PostgreSQL async SQLAlchemy setup complete.
+- Core SQLAlchemy models complete.
+- Auth models, schemas, services, and endpoints complete.
+- Protected current-user route system complete.
+- Platform Admin ISP management complete.
+- Platform Admin ISP Admin invitation flow complete.
+- Platform Admin ISP Admin account management complete.
+- Platform Admin dashboard summary metrics complete.
+
+Current next backend step:
+- Step 15E: Platform Admin pending ISP Admin invitation management.
+
+Latest Platform Admin endpoints:
+- `POST /api/v1/platform-admin/isps`
+- `GET /api/v1/platform-admin/isps`
+- `GET /api/v1/platform-admin/isps/{isp_id}`
+- `PATCH /api/v1/platform-admin/isps/{isp_id}`
+- `POST /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
+- `GET /api/v1/platform-admin/isps/{isp_id}/admins`
+- `GET /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
+- `PATCH /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
+- `GET /api/v1/platform-admin/summary`
+
+Important access rule:
+- Only Platform Admin can manage ISPs and ISP Admins.
+- ISP Admins cannot invite other ISP Admins and cannot manage other ISPs.
+- ISP Admins will later manage only their own ISP's users, plans, subscriptions, routers, reports, and analytics.
+
+---
 # PulseFi Backend
 
 PulseFi is a Smart Network Monitoring and Optimization System built for internet users and ISP administrators.

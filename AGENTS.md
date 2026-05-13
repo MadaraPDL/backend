@@ -1,3 +1,57 @@
+# Latest PulseFi Backend Status
+
+Read this section first. It overrides older "current phase" sections below if they conflict.
+
+## Current Backend Position
+
+Current phase: Step 15E is next.
+
+Recently completed and tested:
+- Step 14: Protected current-account route system.
+- Step 15A: Platform Admin ISP management endpoints.
+- Step 15B: Platform Admin ISP Admin invitation endpoints.
+- Step 15C: Platform Admin ISP Admin account management endpoints.
+- Step 15D: Platform Admin dashboard summary endpoint.
+
+## Completed Platform Admin Endpoints
+
+Protected by `platform_admin` role only:
+
+- `POST /api/v1/platform-admin/isps`
+- `GET /api/v1/platform-admin/isps`
+- `GET /api/v1/platform-admin/isps/{isp_id}`
+- `PATCH /api/v1/platform-admin/isps/{isp_id}`
+
+- `POST /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
+- `GET /api/v1/platform-admin/isps/{isp_id}/admins`
+- `GET /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
+- `PATCH /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
+
+- `GET /api/v1/platform-admin/summary`
+
+## Current Next Step
+
+Step 15E: Platform Admin pending ISP Admin invitation management.
+
+Planned endpoints:
+- `GET /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
+- `PATCH /api/v1/platform-admin/isps/{isp_id}/admin-invitations/{invitation_id}/revoke`
+
+## Important Role Rule
+
+ISP Admins must not be allowed to create ISPs, invite other ISP Admins, or manage other ISPs.
+
+Platform Admin:
+- manages ISPs
+- invites/manages ISP Admins
+- views platform summary metrics
+
+ISP Admin:
+- manages only their own ISP's users, plans, subscriptions, routers, reports, and analytics
+- can invite app users under their own ISP later
+- cannot invite ISP Admins
+
+---
 # AGENTS.md — PulseFi Backend Instructions
 
 ## Project Name

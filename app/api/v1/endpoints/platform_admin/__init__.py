@@ -4,6 +4,7 @@ from app.api.v1.endpoints.platform_admin import (
     admin_invitations,
     isp_admins,
     isps,
+    summary,
 )
 
 router = APIRouter(
@@ -14,3 +15,4 @@ router = APIRouter(
 router.include_router(isps.router)
 router.include_router(admin_invitations.router)
 router.include_router(isp_admins.router)
+router.include_router(summary.router)

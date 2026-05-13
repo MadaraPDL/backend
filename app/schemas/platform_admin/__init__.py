@@ -13,6 +13,7 @@ from app.schemas.platform_admin.isps import (
     ISPStatus,
     ISPUpdateRequest,
 )
+from app.schemas.platform_admin.summary import PlatformAdminSummaryResponse
 
 __all__ = [
     "ISPAdminInvitationCreateRequest",
@@ -24,4 +25,5 @@ __all__ = [
     "ISPResponse",
     "ISPStatus",
     "ISPUpdateRequest",
+    "PlatformAdminSummaryResponse",
 ]

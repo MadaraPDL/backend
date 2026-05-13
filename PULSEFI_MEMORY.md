@@ -269,3 +269,23 @@ Batch-update SE artifacts later for:
 - Subscription change request flow.
 
 Do not interrupt coding for tiny implementation details, but mention SE updates when changes affect actors, roles, use cases, DFD processes/data flows, ERD entities/attributes/relationships, sequence/activity diagrams, onboarding/security architecture, or router/deployment structure.
+
+## Latest Progress Update
+
+Step 15C is complete and tested:
+- Platform Admin can view one ISP Admin.
+- Platform Admin can update ISP Admin full name, phone number, and status.
+- Platform Admin can deactivate/reactivate ISP Admins.
+- ISP Admin management remains protected by `platform_admin` role only.
+
+Step 15D is complete and tested:
+- Added Platform Admin dashboard summary endpoint.
+- Endpoint: `GET /api/v1/platform-admin/summary`
+- Summary returns counts for ISPs, ISP Admins, and App Users by status.
+- This is read-only and does not modify database rows.
+
+Current next step:
+- Step 15E: Platform Admin pending ISP Admin invitation management.
+- Planned endpoints:
+  - `GET /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
+  - `PATCH /api/v1/platform-admin/isps/{isp_id}/admin-invitations/{invitation_id}/revoke`

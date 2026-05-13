@@ -14,6 +14,7 @@ from app.services.platform_admin.isp_service import (
     list_isps,
     update_isp,
 )
+from app.services.platform_admin.summary_service import get_platform_admin_summary
 
 __all__ = [
     "create_isp",
@@ -22,6 +23,7 @@ __all__ = [
     "get_isp_by_id",
     "get_isp_by_name",
     "get_pending_isp_admin_invitation",
+    "get_platform_admin_summary",
     "list_isp_admins",
     "list_isps",
     "update_isp",

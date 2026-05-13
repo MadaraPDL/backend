@@ -1,3 +1,73 @@
+# Latest Roadmap Status
+
+Read this section first. It overrides older "current phase" sections below if they conflict.
+
+## Current Position
+
+Current phase:
+- Step 15D has been implemented and tested.
+- Step 15E is next.
+
+## Step 14 Completed
+
+Protected current-account route system:
+- Bearer token extraction.
+- JWT decoding.
+- Current account loading.
+- Admin/app-user dependency guards.
+- Role guard helper.
+- `GET /api/v1/auth/me`.
+
+## Step 15A Completed
+
+Platform Admin ISP management:
+- Create ISP.
+- List ISPs.
+- Get one ISP.
+- Update ISP information/status.
+
+## Step 15B Completed
+
+Platform Admin ISP Admin invitations:
+- Create ISP Admin invitation.
+- Development invitation token returned only while `DEBUG=True`.
+- Invited ISP Admin accepts invitation through existing auth invitation endpoint.
+- ISP Admin account is created and linked to the correct ISP.
+
+## Step 15C Completed
+
+Platform Admin ISP Admin account management:
+- View one ISP Admin.
+- Update ISP Admin full name, phone number, and status.
+- Deactivate/reactivate ISP Admin.
+- Protected by `platform_admin` role only.
+
+## Step 15D Completed
+
+Platform Admin dashboard summary:
+- Endpoint: `GET /api/v1/platform-admin/summary`
+- Returns counts for ISPs, ISP Admins, and App Users by status.
+- Read-only endpoint.
+- No database schema changes.
+
+## Step 15E Next
+
+Platform Admin pending invitation management:
+- List ISP Admin invitations for an ISP.
+- Revoke a pending ISP Admin invitation.
+
+Planned endpoints:
+- `GET /api/v1/platform-admin/isps/{isp_id}/admin-invitations`
+- `PATCH /api/v1/platform-admin/isps/{isp_id}/admin-invitations/{invitation_id}/revoke`
+
+## After Step 15E
+
+Move to Step 16:
+- ISP Admin management endpoints.
+- ISP Admin manages only their own ISP's users, plans, subscriptions, routers, and related data.
+- ISP Admin cannot create ISPs or invite/manage ISP Admins.
+
+---
 # PulseFi Roadmap
 
 ## Current Position
