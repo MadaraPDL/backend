@@ -331,3 +331,25 @@ Future permission hardening:
   - an application role for normal backend runtime access
   - a migration/admin role for Alembic schema changes
 - After migrations are properly managed, avoid giving the normal runtime app role unnecessary schema-creation power.
+
+---
+
+## Testing Progress — 2026-05-14
+
+Completed:
+
+- Installed testing dependencies: pytest, pytest-asyncio, and httpx.
+- Created initial tests folder structure.
+- Added first API test for the health endpoint.
+- Confirmed the test suite runs successfully with pytest.
+- First test result: 1 passed.
+
+Current testing status:
+
+- Testing foundation exists.
+- Health endpoint is covered.
+- Future tests should cover authentication, Platform Admin endpoints, invitation behavior, password reset, and Step 16 ISP Admin isolation.
+
+Recommended test command:
+
+.\venv\Scripts\python.exe -m pytest

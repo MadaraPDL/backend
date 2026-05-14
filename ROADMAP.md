@@ -654,3 +654,25 @@ Notes:
 
 - Some earlier dates are “completed by this date” based on the project work log, not exact minute-by-minute timestamps.
 - Future completed steps should be added here immediately after testing and before commit.
+
+---
+
+## Testing Progress — 2026-05-14
+
+Completed:
+
+- Installed testing dependencies: pytest, pytest-asyncio, and httpx.
+- Created initial tests folder structure.
+- Added first API test for the health endpoint.
+- Confirmed the test suite runs successfully with pytest.
+- First test result: 1 passed.
+
+Current testing status:
+
+- Testing foundation exists.
+- Health endpoint is covered.
+- Future tests should cover authentication, Platform Admin endpoints, invitation behavior, password reset, and Step 16 ISP Admin isolation.
+
+Recommended test command:
+
+.\venv\Scripts\python.exe -m pytest
