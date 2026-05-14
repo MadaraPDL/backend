@@ -731,3 +731,39 @@ Next Step 16 work:
 - Replace/expand the temporary summary endpoint with real ISP-scoped counts later.
 - Continue with ISP Admin App User invitation and management endpoints.
 - Every Step 16 query must filter by `current_admin.isp_id`.
+
+---
+
+## Step 16 Progress — 2026-05-14
+
+### Step 16B — ISP Admin App User Invitation Endpoints
+
+Completed:
+
+- Added ISP Admin schemas under `app/schemas/isp_admin/`.
+- Added App User invitation request/response schemas.
+- Added ISP Admin services under `app/services/isp_admin/`.
+- Added service logic for creating, listing, finding, and revoking App User invitations.
+- Added endpoint module: `app/api/v1/endpoints/isp_admin/user_invitations.py`.
+- Added endpoints:
+  - `POST /api/v1/isp-admin/user-invitations`
+  - `GET /api/v1/isp-admin/user-invitations`
+  - `PATCH /api/v1/isp-admin/user-invitations/{invitation_id}/revoke`
+- Connected user invitation endpoints to the ISP Admin router.
+- All endpoints use `get_current_isp_admin`.
+- All invitation queries are scoped by `current_admin.isp_id`.
+- Development invitation token is returned only while `DEBUG=True`.
+- Import checks passed.
+- Pytest passed.
+- Compile check passed.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change unless the new endpoints are called.
+- SE diagrams: later update ISP Admin use cases/activity flow to include App User invitation flow.
+
+Next Step 16 work:
+
+- Test App User invitation endpoints through Swagger/Postman.
+- Then add ISP Admin App User listing/detail/update endpoints.
