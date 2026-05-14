@@ -513,3 +513,30 @@ Testing reminder:
 - Future automated tests should include App User route protection.
 - Add tests confirming admin tokens are rejected from `/api/v1/me/*`.
 - Add tests confirming App User tokens only access their own records.
+
+---
+
+## Step 17B Quality Notes — 2026-05-14
+
+Completed:
+
+- Added App User subscription list/detail endpoints.
+- Confirmed endpoints use `get_current_app_user`.
+- Confirmed endpoint logic uses the authenticated App User from the token.
+- Confirmed admin tokens are rejected from App User subscription endpoints.
+- Confirmed fake/non-owned subscription IDs return 404.
+
+Important security rule:
+
+- App User mobile endpoints must not accept `user_id`.
+- App User mobile endpoints should always use `current_user.id`.
+- Subscription queries must always filter by `UserSubscription.user_id = current_user.id`.
+- Future App User endpoints must follow the same `/me` ownership pattern.
+
+Testing reminder:
+
+- Future automated tests should verify:
+  - App User can list only their own subscriptions.
+  - App User can view only their own subscription details.
+  - Admin tokens are rejected from `/api/v1/me/*`.
+  - Fake/non-owned IDs return 404.

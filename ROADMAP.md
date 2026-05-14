@@ -1128,3 +1128,56 @@ Next Step 17 work:
   - `GET /api/v1/me/subscriptions/{subscription_id}`
 - Continue using `get_current_app_user`.
 - Continue using `current_user.id`; do not accept user IDs for App User self-service routes.
+
+---
+
+## Step 17 Progress — 2026-05-14
+
+### Step 17B — App User Subscription Endpoints
+
+Completed and tested:
+
+- Added App User subscription schemas.
+- Added App User subscription service logic.
+- Added endpoint module: `app/api/v1/endpoints/app_user/subscriptions.py`.
+- Added endpoints:
+  - `GET /api/v1/me/subscriptions`
+  - `GET /api/v1/me/subscriptions/{subscription_id}`
+- Connected subscription endpoints to the App User router.
+- Endpoints use `get_current_app_user`.
+- Endpoints use the logged-in App User from the access token.
+- Endpoints do not accept `user_id` from the request.
+- Subscription list/detail queries are scoped by `UserSubscription.user_id = current_user.id`.
+- List endpoint supports optional status filter:
+  - `?status=pending`
+  - `?status=active`
+  - `?status=suspended`
+  - `?status=expired`
+  - `?status=cancelled`
+- Response includes nested subscription plan summary data.
+- Tested listing the logged-in App User's subscriptions.
+- Tested viewing one subscription by ID.
+- Tested filtering subscriptions by `status=active`.
+- Tested that an ISP Admin token cannot access `/api/v1/me/subscriptions`.
+- Tested that a fake/non-owned subscription ID returns `Subscription not found`.
+
+Security rules:
+
+- App User `/me` endpoints must use `get_current_app_user`.
+- App User `/me` endpoints must never accept a target `user_id`.
+- App User `/me` endpoints must only use `current_user.id` from the token.
+- Do not expose another user's subscriptions.
+- Do not expose sensitive auth fields.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: read-only endpoints.
+- SE diagrams: later update App User/mobile activity and sequence diagrams to include subscription list/detail flow.
+- Security: Step 17B confirms subscription access is scoped to the authenticated App User.
+
+Next Step 17 work:
+
+- Add App User router/device view endpoints, or App User usage endpoints.
+- Continue using `get_current_app_user`.
+- Continue using `current_user.id`; do not accept user IDs for App User self-service routes.
