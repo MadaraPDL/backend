@@ -478,3 +478,59 @@ Next Step 16 work:
 - Add ISP Admin App User listing/detail/update endpoints.
 - Continue using `get_current_isp_admin`.
 - Continue filtering all ISP Admin queries by `current_admin.isp_id`.
+
+---
+
+## Step 16 Progress — 2026-05-14
+
+### Step 16C — ISP Admin App User Management Endpoints
+
+Completed and tested:
+
+- Added ISP Admin App User management schemas.
+- Added ISP Admin App User management service logic.
+- Added endpoint module: `app/api/v1/endpoints/isp_admin/users.py`.
+- Added endpoints:
+  - `GET /api/v1/isp-admin/users`
+  - `GET /api/v1/isp-admin/users/{user_id}`
+  - `PATCH /api/v1/isp-admin/users/{user_id}`
+- Connected App User management endpoints to the ISP Admin router.
+- All endpoints use `get_current_isp_admin`.
+- All App User queries are scoped by `current_admin.isp_id`.
+- Tested creating a fresh App User through the invitation acceptance flow.
+- Tested listing App Users under the ISP Admin's ISP.
+- Tested viewing one App User by ID.
+- Tested updating allowed App User fields.
+- Tested reactivating the test user.
+
+Allowed update fields in initial Step 16C:
+
+- `full_name`
+- `phone_number`
+- `status`
+
+Deferred update fields:
+
+- `email`
+- `username`
+
+Reason email and username updates are deferred:
+
+- Email and username are login identifiers.
+- Updating them requires extra case-insensitive uniqueness checks.
+- Email changes may require a new email-verification flow.
+- Username changes require strict format validation and duplicate prevention.
+- These changes affect login, password reset, email verification, notifications, and account recovery.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: only local test invitation/App User data changed during testing.
+- SE diagrams: later update ISP Admin use cases/activity flow to include App User management.
+- Security: Step 16C confirms App User management actions are scoped by `current_admin.isp_id`.
+
+Next Step 16 work:
+
+- Add ISP Admin subscription plan management endpoints.
+- Continue using `get_current_isp_admin`.
+- Continue filtering all ISP Admin queries by `current_admin.isp_id`.
