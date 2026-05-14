@@ -701,3 +701,33 @@ Important note:
 
 - The first CI version does not run real database migrations or database-backed API tests.
 - Future database tests should use a separate test database/service, not the local development database.
+
+---
+
+## Step 16 Progress — 2026-05-14
+
+### Step 16A — ISP Admin Router Foundation
+
+Completed:
+
+- Created ISP Admin endpoint package under `app/api/v1/endpoints/isp_admin/`.
+- Added ISP Admin router prefix: `/api/v1/isp-admin`.
+- Added Swagger tag: `ISP Admin`.
+- Added protected starter endpoint: `GET /api/v1/isp-admin/summary`.
+- Connected ISP Admin router to the main API v1 router.
+- Confirmed `get_current_isp_admin` is used by the starter summary endpoint.
+- Import checks passed.
+- Pytest passed.
+- Compile check passed.
+
+Current behavior:
+
+- The starter summary endpoint is protected by the ISP Admin guard.
+- It returns the authenticated ISP Admin ID and ISP ID.
+- It does not change database data.
+
+Next Step 16 work:
+
+- Replace/expand the temporary summary endpoint with real ISP-scoped counts later.
+- Continue with ISP Admin App User invitation and management endpoints.
+- Every Step 16 query must filter by `current_admin.isp_id`.
