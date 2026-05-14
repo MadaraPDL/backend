@@ -299,3 +299,35 @@ The MVP should prioritize:
 - Frontend integration.
 
 Avoid claiming universal router support before it exists. Use simulator support and capability-based feature availability for a realistic MVP.
+
+---
+
+## Backend Quality Progress — 2026-05-14
+
+The backend quality foundation was improved before continuing Step 16.
+
+Completed on 2026-05-14:
+
+- Created and tested a limited PostgreSQL application role: `pulsefi_app`.
+- Updated local `.env` to connect with `pulsefi_app` instead of the `postgres` superuser.
+- Confirmed the backend connects successfully as `pulsefi_app`.
+- Initialized Alembic.
+- Configured Alembic to use the same async PostgreSQL URL from `app/core/config.py`.
+- Configured Alembic to read SQLAlchemy metadata from `Base.metadata`.
+- Created an empty baseline migration for the existing database schema.
+- Stamped the current database at Alembic head: `c384b4d102bc`.
+- Confirmed Alembic current revision: `c384b4d102bc (head)`.
+
+Important database note:
+
+- Existing PulseFi tables and data were not recreated, deleted, or changed.
+- Alembic created/uses the normal `alembic_version` tracking table.
+- `pulsefi_app` was temporarily granted `CREATE` on schema `public` so Alembic could create `alembic_version`.
+
+Future permission hardening:
+
+- Before production deployment, revisit database permissions.
+- The preferred production setup is to separate responsibilities:
+  - an application role for normal backend runtime access
+  - a migration/admin role for Alembic schema changes
+- After migrations are properly managed, avoid giving the normal runtime app role unnecessary schema-creation power.

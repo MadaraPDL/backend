@@ -585,3 +585,72 @@ Avoid:
 - Building huge messy files.
 - Adding features that cannot be demonstrated.
 - Changing database schema without reason.
+
+---
+
+## Backend Quality Progress Log
+
+### 2026-05-14 — Limited DB Role and Alembic Baseline
+
+Completed:
+
+- Limited PostgreSQL role `pulsefi_app` was created and tested.
+- Backend local `.env` was changed to use `pulsefi_app` instead of the `postgres` superuser.
+- Database connection test confirmed: backend connects as `pulsefi_app`.
+- Alembic was initialized with `alembic.ini` and `alembic/`.
+- Alembic `env.py` was configured for the existing async SQLAlchemy setup.
+- Alembic baseline revision was created: `c384b4d102bc_baseline_existing_database_schema.py`.
+- Baseline migration intentionally has empty `upgrade()` and `downgrade()` because the real database schema already exists.
+- Existing database was stamped as current Alembic head: `c384b4d102bc`.
+- `alembic current` confirmed: `c384b4d102bc (head)`.
+
+Impact:
+
+- Database schema: only Alembic tracking table `alembic_version` was added/used.
+- Existing PulseFi app tables: no change.
+- Existing data: no change.
+- SE diagrams: no immediate update needed because this is backend infrastructure, not user-facing behavior.
+
+Future permission hardening reminder:
+
+- `pulsefi_app` currently has enough permission to support local development and Alembic setup.
+- Before production, revisit DB permissions.
+- Preferred production design:
+  - runtime backend role with only needed app permissions
+  - separate migration role for Alembic schema changes
+- Do not forget to reduce unnecessary schema-creation permissions for the runtime app role later.
+
+Next quality improvements after this:
+
+1. Add automated tests with `pytest` and `httpx`.
+2. Add GitHub Actions CI.
+3. Add structured logging.
+4. Standardize API error responses.
+5. Add seed/demo data.
+6. Add production deployment documentation.
+
+---
+
+## Milestone Completion Log
+
+Known completed milestones:
+
+- 2026-05-10 — PostgreSQL database schema phase completed for the main PulseFi tables.
+- 2026-05-10 — Core SQLAlchemy models completed and import-tested.
+- 2026-05-11 — Authentication database update completed.
+- 2026-05-11 — Authentication SQLAlchemy models completed and import-tested.
+- 2026-05-11 — Authentication schemas completed.
+- 2026-05-12 — Authentication services split into focused modules and import-tested.
+- 2026-05-12 — Authentication endpoint package completed and Swagger/OpenAPI confirmed working.
+- 2026-05-12 — Step 14 protected current-account route system completed.
+- 2026-05-12 — Step 15 Platform Admin endpoint work completed through ISP/Admin management and summary features.
+- 2026-05-13 — Backend foundation hardened for Step 16, including safer `.env.example`, production config validation, old-JWT invalidation after password reset, `get_current_isp_admin`, typo fixes, and `pyotp`.
+- 2026-05-14 — Documentation cleanup completed for `README.md`, `ROADMAP.md`, and `AGENTS.md`.
+- 2026-05-14 — Backend quality backlog added.
+- 2026-05-14 — Limited PostgreSQL role `pulsefi_app` created and tested.
+- 2026-05-14 — Alembic initialized, empty baseline migration created, and existing database stamped to revision `c384b4d102bc`.
+
+Notes:
+
+- Some earlier dates are “completed by this date” based on the project work log, not exact minute-by-minute timestamps.
+- Future completed steps should be added here immediately after testing and before commit.

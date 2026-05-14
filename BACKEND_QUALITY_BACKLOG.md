@@ -309,3 +309,95 @@ Best order:
 9. Add deployment docs.
 
 The main goal is to keep PulseFi deployable, secure, modular, and easy to explain for the Final Year Project demo.
+
+---
+
+## Completed Quality Work
+
+### 2026-05-14 — Limited DB Role
+
+Completed:
+
+- Created and tested limited PostgreSQL app role: `pulsefi_app`.
+- Updated local backend `.env` to use `pulsefi_app`.
+- Confirmed database connection works as `pulsefi_app`.
+
+Important future reminder:
+
+- `pulsefi_app` should not keep unnecessary powerful permissions in production.
+- Revisit permissions before deployment.
+- Preferred future setup:
+  - app/runtime role for FastAPI
+  - separate migration role for Alembic
+
+### 2026-05-14 — Alembic Baseline
+
+Completed:
+
+- Initialized Alembic.
+- Configured Alembic for async SQLAlchemy.
+- Connected Alembic to existing app settings and models.
+- Created empty baseline migration: `c384b4d102bc`.
+- Stamped existing database to Alembic head.
+- Confirmed current revision: `c384b4d102bc (head)`.
+
+Impact:
+
+- Existing PulseFi tables were not recreated.
+- Existing data was not changed.
+- Alembic tracking table `alembic_version` is expected and normal.
+
+Next quality work:
+
+1. Add automated tests with `pytest` and `httpx`.
+2. Add GitHub Actions CI.
+3. Add structured logging.
+4. Standardize API error responses.
+5. Add safe seed/demo data.
+6. Add production deployment docs.
+
+---
+
+## Completed Quality Work Log
+
+### 2026-05-14 — Limited PostgreSQL App Role
+
+Completed:
+
+- Created and tested limited PostgreSQL app role: `pulsefi_app`.
+- Updated local backend `.env` to use `pulsefi_app` instead of the `postgres` superuser.
+- Confirmed backend database connection works as `pulsefi_app`.
+
+Important future reminder:
+
+- `pulsefi_app` should not keep unnecessary powerful permissions in production.
+- Revisit permissions before deployment.
+- Preferred future setup:
+  - app/runtime role for FastAPI
+  - separate migration/admin role for Alembic
+
+### 2026-05-14 — Alembic Baseline
+
+Completed:
+
+- Initialized Alembic.
+- Configured Alembic for async SQLAlchemy.
+- Connected Alembic to existing app settings and models.
+- Created empty baseline migration: `c384b4d102bc`.
+- Stamped existing database to Alembic head.
+- Confirmed current revision: `c384b4d102bc (head)`.
+
+Impact:
+
+- Existing PulseFi tables were not recreated.
+- Existing data was not changed.
+- Alembic tracking table `alembic_version` is expected and normal.
+
+Next quality work:
+
+1. Add automated tests with `pytest` and `httpx`.
+2. Add GitHub Actions CI.
+3. Add structured logging.
+4. Standardize API error responses.
+5. Add safe seed/demo data.
+6. Add production deployment docs.
