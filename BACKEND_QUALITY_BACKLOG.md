@@ -540,3 +540,46 @@ Testing reminder:
   - App User can view only their own subscription details.
   - Admin tokens are rejected from `/api/v1/me/*`.
   - Fake/non-owned IDs return 404.
+
+---
+
+## Step 17C Quality Notes — 2026-05-14
+
+Completed:
+
+- Added App User router list/detail endpoints.
+- Added App User device list/detail endpoints.
+- Confirmed endpoints use `get_current_app_user`.
+- Confirmed endpoint logic uses the authenticated App User from the token.
+- Confirmed router queries are scoped through the user's subscriptions.
+- Confirmed device queries are scoped by `Device.user_id = current_user.id`.
+- Confirmed router credentials are not exposed.
+
+Important security rule:
+
+- App User mobile endpoints must not accept `user_id`.
+- App User mobile endpoints should always use `current_user.id`.
+- Router queries should only return routers linked to subscriptions owned by the current App User.
+- Device queries should only return devices owned by the current App User.
+- Never expose `password_encrypted` or router credential fields in App User responses.
+
+Usage design reminder:
+
+- Router/device endpoints show identity and status only.
+- Usage totals/download/upload must be calculated from `usage_records`.
+- Step 17D should aggregate:
+  - total user usage
+  - per-device usage
+  - per-router usage
+  - per-subscription usage
+  - raw records for charts
+
+Testing reminder:
+
+- Future automated tests should verify:
+  - App User can list only own routers.
+  - App User can view only own router details.
+  - App User can list only own devices.
+  - App User can view only own device details.
+  - Admin tokens are rejected from `/api/v1/me/*`.
+  - Fake/non-owned IDs return 404.

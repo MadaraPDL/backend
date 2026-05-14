@@ -705,3 +705,74 @@ Next Step 17 work:
 - Add App User router/device view endpoints, or App User usage endpoints.
 - Continue using `get_current_app_user`.
 - Continue using `current_user.id`; do not accept user IDs for App User self-service routes.
+
+---
+
+## Step 17 Progress — 2026-05-14
+
+### Step 17C — App User Router and Device View Endpoints
+
+Completed and tested:
+
+- Added App User router schemas.
+- Added App User device schemas.
+- Added App User router service logic.
+- Added App User device service logic.
+- Added endpoint modules:
+  - `app/api/v1/endpoints/app_user/routers.py`
+  - `app/api/v1/endpoints/app_user/devices.py`
+- Added endpoints:
+  - `GET /api/v1/me/routers`
+  - `GET /api/v1/me/routers/{router_id}`
+  - `GET /api/v1/me/devices`
+  - `GET /api/v1/me/devices/{device_id}`
+- Connected router/device endpoints to the App User router.
+- Endpoints use `get_current_app_user`.
+- Endpoints use the logged-in App User from the access token.
+- Endpoints do not accept `user_id` from the request.
+- Router queries are scoped through:
+  - `Router -> UserSubscription -> current_user.id`
+- Device queries are scoped through:
+  - `Device.user_id = current_user.id`
+- Tested listing routers for the logged-in App User.
+- Tested viewing one router by ID.
+- Tested router status filtering.
+- Created one local test device for endpoint testing.
+- Tested listing devices for the logged-in App User.
+- Tested viewing one device by ID.
+- Tested filtering devices by `router_id`.
+- Tested admin-token rejection for App User `/me` routes.
+- Tested fake IDs return 404.
+
+Important usage note:
+
+- Step 17C only returns router/device identity and status.
+- It does not return usage totals yet.
+- Per-device `upload_mb`, `download_mb`, and `total_mb` should come from `usage_records`.
+- Overall total usage should also come from `usage_records`.
+- This is planned for Step 17D usage endpoints.
+
+Security rules:
+
+- App User `/me` endpoints must use `get_current_app_user`.
+- App User `/me` endpoints must never accept a target `user_id`.
+- App User `/me` endpoints must only use `current_user.id` from the token.
+- Do not expose router `password_encrypted`.
+- Do not expose router credentials.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: read-only endpoints; local test device may have been inserted during testing.
+- SE diagrams: later update App User/mobile activity and sequence diagrams to include router/device viewing.
+- Security: Step 17C confirms router/device access is scoped to the authenticated App User.
+
+Next Step 17 work:
+
+- Step 17D — App User usage endpoints.
+- Required usage behavior:
+  - total usage for the logged-in user
+  - download/upload/total usage
+  - per-device usage
+  - per-router or per-subscription filtering
+  - raw usage records for charts/history

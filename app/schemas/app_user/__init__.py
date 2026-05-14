@@ -1,3 +1,5 @@
+from app.schemas.app_user.devices import MyDeviceResponse
+from app.schemas.app_user.routers import MyRouterResponse
 from app.schemas.app_user.summary import AppUserSummaryResponse
 from app.schemas.app_user.subscriptions import (
     MySubscriptionPlanSummary,
@@ -6,6 +8,8 @@ from app.schemas.app_user.subscriptions import (
 
 __all__ = [
     "AppUserSummaryResponse",
+    "MyDeviceResponse",
+    "MyRouterResponse",
     "MySubscriptionPlanSummary",
     "MySubscriptionResponse",
 ]
