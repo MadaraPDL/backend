@@ -25,3 +25,4 @@ Thumbs.db
 # Alembic cache
 alembic/__pycache__/
 alembic/versions/__pycache__/
+LOCAL_TEST_ACCOUNTS.md
