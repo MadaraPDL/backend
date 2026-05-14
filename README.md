@@ -353,3 +353,28 @@ Current testing status:
 Recommended test command:
 
 .\venv\Scripts\python.exe -m pytest
+
+---
+
+## CI Progress — 2026-05-14
+
+Completed:
+
+- Added GitHub Actions workflow for backend checks.
+- CI runs on push and pull request to `main`.
+- CI installs backend dependencies from `requirements.txt`.
+- CI imports the FastAPI app.
+- CI imports the API router.
+- CI compiles `app`, `alembic`, and `tests`.
+- CI runs the pytest suite.
+
+Current CI status:
+
+- CI foundation exists.
+- Current test suite includes the health endpoint test.
+- Future CI can be expanded to include database-backed tests, linting, formatting checks, and security checks.
+
+Important note:
+
+- The first CI version does not run real database migrations or database-backed API tests.
+- Future database tests should use a separate test database/service, not the local development database.
