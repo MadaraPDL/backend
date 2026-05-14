@@ -796,3 +796,52 @@ Next Step 16 work:
 - Add ISP Admin subscription plan management endpoints.
 - Continue using `get_current_isp_admin`.
 - Continue filtering all ISP Admin queries by `current_admin.isp_id`.
+
+---
+
+## Step 16 Progress — 2026-05-14
+
+### Step 16D — ISP Admin Subscription Plan Management Endpoints
+
+Completed and tested:
+
+- Added ISP Admin subscription plan schemas.
+- Added ISP Admin subscription plan service logic.
+- Added endpoint module: `app/api/v1/endpoints/isp_admin/plans.py`.
+- Added endpoints:
+  - `POST /api/v1/isp-admin/plans`
+  - `GET /api/v1/isp-admin/plans`
+  - `GET /api/v1/isp-admin/plans/{plan_id}`
+  - `PATCH /api/v1/isp-admin/plans/{plan_id}`
+- Connected subscription plan endpoints to the ISP Admin router.
+- All endpoints use `get_current_isp_admin`.
+- All subscription plan queries are scoped by `current_admin.isp_id`.
+- Tested creating a subscription plan.
+- Tested duplicate plan-name prevention inside the same ISP.
+- Tested listing subscription plans.
+- Tested viewing one subscription plan by ID.
+- Tested updating plan fields.
+- Tested filtering active plans with `is_active=true`.
+- Tested deactivating and reactivating a plan.
+
+Current allowed plan fields:
+
+- `plan_name`
+- `monthly_price`
+- `data_limit_gb`
+- `speed_limit_mbps`
+- `description`
+- `is_active`
+
+Impact:
+
+- Database schema: no change.
+- Existing data: only local test subscription plan data changed during testing.
+- SE diagrams: later update ISP Admin use cases/activity flow to include subscription plan management.
+- Security: Step 16D confirms subscription plan actions are scoped by `current_admin.isp_id`.
+
+Next Step 16 work:
+
+- Add ISP Admin user subscription assignment/listing endpoints.
+- Continue using `get_current_isp_admin`.
+- Continue filtering all ISP Admin queries by `current_admin.isp_id`.

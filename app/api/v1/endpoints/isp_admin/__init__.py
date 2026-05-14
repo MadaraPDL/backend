@@ -1,6 +1,11 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints.isp_admin import summary, user_invitations, users
+from app.api.v1.endpoints.isp_admin import (
+    plans,
+    summary,
+    user_invitations,
+    users,
+)
 
 
 router = APIRouter(
@@ -11,3 +16,4 @@ router = APIRouter(
 router.include_router(summary.router)
 router.include_router(user_invitations.router)
 router.include_router(users.router)
+router.include_router(plans.router)
