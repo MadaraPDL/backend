@@ -352,3 +352,55 @@ Current next step:
 - Step 16: ISP Admin management endpoints.
 - ISP Admin must only manage data under their own ISP.
 - ISP Admin cannot create ISPs or invite/manage ISP Admins.
+
+---
+
+## Latest Progress Update — 2026-05-14
+
+Backend quality improvements completed:
+
+- Limited PostgreSQL runtime role `pulsefi_app` created and tested.
+- Backend local `.env` uses `pulsefi_app` instead of `postgres`.
+- Alembic initialized and baseline migration created.
+- Existing database stamped to Alembic baseline.
+- Pytest/httpx testing foundation added.
+- Health endpoint test added.
+- GitHub Actions backend CI added and confirmed passing.
+
+Important DB permission reminder:
+
+- `pulsefi_app` is intentionally limited and is not table owner.
+- It can run the backend but cannot safely perform all schema migrations.
+- Future production setup should use:
+  - restricted runtime app DB role
+  - separate migration/admin DB role for Alembic/schema changes
+
+Step 16 ISP Admin progress:
+
+- Step 16A completed and tested: ISP Admin router foundation and protected summary endpoint.
+- Step 16B completed and tested: ISP Admin App User invitation endpoints.
+- Step 16C completed and tested: ISP Admin App User list/detail/update endpoints.
+- Step 16D completed and tested: ISP Admin subscription plan management endpoints.
+- Step 16E completed and tested: ISP Admin user subscription assignment/list/detail/update endpoints.
+
+Step 16E database migration:
+
+- Added Alembic migration `285ab0474b39_allow_suspended_user_subscription_status.py`.
+- Updated `user_subscriptions.status` check constraint to allow:
+  - `pending`
+  - `active`
+  - `suspended`
+  - `expired`
+  - `cancelled`
+- `suspended` means a subscription is temporarily stopped, such as unpaid bill/admin action.
+- Migration SQL had to be applied locally through pgAdmin/admin because `pulsefi_app` is not owner of `user_subscriptions`.
+- Alembic should be stamped to head after manual local application.
+
+Current next step:
+
+- Step 16F: ISP Admin router management endpoints.
+
+Step 16F expected rule:
+
+- Routers must be linked only to user subscriptions under `current_admin.isp_id`.
+- Every router query must verify ownership through the linked user subscription and App User ISP.
