@@ -448,3 +448,40 @@ Important note:
 
 - The first CI version does not run real database migrations or database-backed API tests.
 - Future database tests should use a separate test database/service, not the local development database.
+
+---
+
+## Step 16E/16F Quality Notes — 2026-05-14
+
+### Step 16E Migration Permission Note
+
+Completed:
+
+- Added Alembic migration `285ab0474b39_allow_suspended_user_subscription_status.py`.
+- Updated `user_subscriptions.status` check constraint to allow `suspended`.
+- Final allowed subscription statuses:
+  - `pending`
+  - `active`
+  - `suspended`
+  - `expired`
+  - `cancelled`
+
+Important permission note:
+
+- Local migration application required pgAdmin/admin execution because `pulsefi_app` is intentionally not the owner of `user_subscriptions`.
+- This confirms the future production need for a separate migration/admin DB role for Alembic.
+- The runtime FastAPI role should stay restricted.
+
+### Step 16F Router Credential Note
+
+Completed:
+
+- ISP Admin router management endpoints were added and tested.
+- Router records can be created, listed, viewed, updated, set to maintenance, and reactivated.
+- Step 16F does not accept or store router passwords.
+
+Important security note:
+
+- `password_encrypted` exists in the database model for future real-router integration.
+- Do not store raw router passwords.
+- Add encrypted credential storage only after proper encryption helpers and key management are implemented.

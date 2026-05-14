@@ -960,3 +960,106 @@ Next Step 16 work:
 - Add ISP Admin dashboard/summary endpoint or Step 16 final cleanup/testing.
 - Continue using `get_current_isp_admin`.
 - Continue filtering all ISP Admin queries by `current_admin.isp_id`.
+
+---
+
+## Current Backend State — 2026-05-14
+
+Step 16A through Step 16F are complete and tested.
+
+Completed Step 16 areas:
+
+- Step 16A: ISP Admin protected router foundation and summary starter endpoint.
+- Step 16B: ISP Admin App User invitation endpoints.
+- Step 16C: ISP Admin App User management endpoints.
+- Step 16D: ISP Admin subscription plan management endpoints.
+- Step 16E: ISP Admin user subscription assignment and management endpoints.
+- Step 16F: ISP Admin router management endpoints.
+
+Current next step:
+
+- Step 16G: ISP Admin dashboard/summary endpoint, or Step 16 final cleanup/testing.
+
+Core rule remains:
+
+- Every ISP Admin endpoint must use `get_current_isp_admin`.
+- Every ISP Admin query must be scoped by `current_admin.isp_id`.
+
+Important reminders:
+
+- Do not update App User email/username casually; they affect login, verification, password reset, and uniqueness.
+- Do not store router passwords until encrypted credential storage exists.
+- Keep files modular and avoid large mixed-responsibility files.
+- Future production DB setup should use a separate migration/admin role for Alembic and a restricted runtime role for FastAPI.
+
+---
+
+## AI Assistant Workflow Preferences
+
+When helping with PulseFi, the assistant/Codex should follow these rules:
+
+### Explanation style
+
+- Give step-by-step instructions.
+- Explain what each command or code block does.
+- Explain which file is being edited.
+- Explain why the edit is needed.
+- Explain how the change fits the PulseFi architecture.
+- Mention whether each change affects:
+  - database schema
+  - existing data
+  - GitHub
+  - tests
+  - SE diagrams
+- Do not dump large code without explaining it.
+- When possible, explain under or near each code block, not only at the end.
+
+### Coding style
+
+- Keep files modular.
+- Do not create huge mixed-responsibility files.
+- Split schemas, services, endpoints, and dependencies by feature area.
+- Endpoint files should stay thin.
+- Business logic should go in services.
+- Do not rewrite unrelated code.
+- Do not invent database fields.
+- Check existing models/database before writing code that depends on schema details.
+
+### Workflow style
+
+- Before starting a new step, check the current Git status.
+- Before coding a new feature, check the relevant existing files.
+- After coding, run import checks, pytest, compile checks, and git status.
+- Test endpoints through PowerShell/Swagger before committing when the feature affects API behavior.
+- Save important decisions in repo docs before committing.
+- Keep `PULSEFI_MEMORY.md` as the compact source of truth for future chats.
+- Keep `AGENTS.md` useful for Codex/AI coding assistants.
+- Keep `ROADMAP.md` updated with current phase and next step.
+- Keep `BACKEND_QUALITY_BACKLOG.md` updated with quality/security/deployment reminders.
+
+### Logging/output style
+
+- For successful commands, the user can summarize instead of pasting huge logs.
+- For errors, paste the important error section.
+- The assistant should identify the exact failing line/error and provide a focused fix.
+- Avoid making the chat unnecessarily heavy with repeated huge logs.
+
+### Security and local files
+
+- Never ask the user to commit `.env`.
+- Never ask the user to commit local passwords or tokens.
+- `LOCAL_TEST_ACCOUNTS.md` is local only and should stay ignored by Git.
+- Router passwords should not be accepted or stored until encrypted credential storage exists.
+- Do not store raw router passwords.
+- Do not expose access tokens in docs or GitHub.
+
+### Memory/update rules
+
+- After finishing a major backend step, update:
+  - `PULSEFI_MEMORY.md`
+  - `AGENTS.md`
+  - `ROADMAP.md`
+  - `README.md`
+  - `BACKEND_QUALITY_BACKLOG.md` when the change affects quality/security/deployment
+- Add dates for completed milestones when possible.
+- Mention pending SE diagram updates when backend/design changes affect actors, flows, use cases, DFDs, ERDs, activity diagrams, or sequence diagrams.

@@ -1021,3 +1021,34 @@ Next Step 16 work:
 - Add ISP Admin dashboard/summary endpoint or Step 16 final cleanup/testing.
 - Continue using `get_current_isp_admin`.
 - Continue filtering all ISP Admin queries by `current_admin.isp_id`.
+
+---
+
+## Current Backend State — 2026-05-14
+
+Step 16A through Step 16F are complete and tested.
+
+Completed Step 16 areas:
+
+- Step 16A: ISP Admin protected router foundation and summary starter endpoint.
+- Step 16B: ISP Admin App User invitation endpoints.
+- Step 16C: ISP Admin App User management endpoints.
+- Step 16D: ISP Admin subscription plan management endpoints.
+- Step 16E: ISP Admin user subscription assignment and management endpoints.
+- Step 16F: ISP Admin router management endpoints.
+
+Current next step:
+
+- Step 16G: ISP Admin dashboard/summary endpoint, or Step 16 final cleanup/testing.
+
+Core rule remains:
+
+- Every ISP Admin endpoint must use `get_current_isp_admin`.
+- Every ISP Admin query must be scoped by `current_admin.isp_id`.
+
+Important reminders:
+
+- Do not update App User email/username casually; they affect login, verification, password reset, and uniqueness.
+- Do not store router passwords until encrypted credential storage exists.
+- Keep files modular and avoid large mixed-responsibility files.
+- Future production DB setup should use a separate migration/admin role for Alembic and a restricted runtime role for FastAPI.
