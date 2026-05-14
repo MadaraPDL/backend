@@ -776,3 +776,123 @@ Next Step 17 work:
   - per-device usage
   - per-router or per-subscription filtering
   - raw usage records for charts/history
+
+---
+
+## Required Assistant/Codex Response Style for PulseFi
+
+The user strongly prefers careful, step-by-step backend help. Future assistants must follow this style.
+
+### Before coding
+
+- Check the current repo state first with `git status`.
+- Read the relevant existing files before giving code.
+- Do not guess database fields or model relationships.
+- Check the real SQLAlchemy models/database behavior when exact fields matter.
+- Explain what step we are doing and why it is the correct next step.
+- Keep the current roadmap in mind.
+
+### Code delivery style
+
+- Give commands/code in small clear blocks.
+- Explain under each code block:
+  - what file is being edited
+  - why the edit is needed
+  - what the code does
+  - how it fits the architecture
+  - whether it affects database schema
+  - whether it affects existing data
+  - whether it affects GitHub
+  - whether tests are needed
+  - whether SE diagrams should later be updated
+- Do not dump large code without explanation.
+- Do not skip explanations just because the code was given.
+- Do not assume the user already knows what the code does.
+
+### Project architecture rules
+
+- Keep files modular.
+- Do not create huge mixed-responsibility files.
+- Split code by feature area:
+  - schemas
+  - services
+  - endpoints
+  - dependencies
+  - models only when schema/model change is needed
+- Endpoint files should stay thin.
+- Business logic should go in service files.
+- Do not rewrite unrelated code.
+- Do not make broad architecture changes without reason.
+
+### Testing workflow
+
+After coding, always give checks before commit:
+
+- import checks for the new schemas/services/endpoints
+- main API router import check
+- model import check when a model changed
+- `pytest`
+- `compileall`
+- endpoint tests through PowerShell/Swagger when API behavior changed
+- `git status`
+
+When endpoint testing is needed, give PowerShell commands and explain what each one proves.
+
+### Commit workflow
+
+Before committing:
+
+- Confirm tests passed.
+- Confirm endpoint behavior worked.
+- Confirm `git status` shows only expected files.
+- Update docs/memory for major backend steps.
+- Do not commit temporary test scripts.
+- Do not commit `.env`.
+- Do not commit local passwords, reset tokens, access tokens, invitation tokens, or `LOCAL_TEST_ACCOUNTS.md`.
+
+After a successful step, update as needed:
+
+- `PULSEFI_MEMORY.md`
+- `AGENTS.md`
+- `ROADMAP.md`
+- `README.md`
+- `BACKEND_QUALITY_BACKLOG.md` for quality/security/deployment notes
+
+### Error handling style
+
+When there is an error:
+
+- Identify the exact failing line or exact cause.
+- Explain why it happened.
+- Give the smallest safe fix.
+- Do not jump to unrelated changes.
+- Retest after the fix.
+
+### Security rules
+
+- For ISP Admin endpoints, always use `get_current_isp_admin`.
+- For ISP Admin queries, always scope by `current_admin.isp_id`.
+- For App User/mobile `/me` endpoints, always use `get_current_app_user`.
+- App User `/me` endpoints must never accept `user_id`.
+- App User `/me` endpoints must use `current_user.id` from the token.
+- Never expose password hashes, MFA secrets, reset tokens, invitation tokens, backup codes, or router credentials.
+- Do not store router passwords until encrypted credential storage exists.
+
+### Logging/chat style
+
+- The user may summarize successful logs instead of pasting everything.
+- For errors, the user should paste the important error section.
+- Future assistants should avoid making the chat heavy with repeated huge logs.
+- If the chat becomes laggy, continue from GitHub memory files in a fresh chat.
+
+### New chat rule
+
+At the start of a new PulseFi backend chat, read or ask the user to provide the latest state from:
+
+- `PULSEFI_MEMORY.md`
+- `AGENTS.md`
+- `ROADMAP.md`
+- `README.md`
+- `BACKEND_QUALITY_BACKLOG.md`
+
+Then continue from the latest completed step.
