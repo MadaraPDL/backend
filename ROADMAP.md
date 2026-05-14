@@ -967,3 +967,57 @@ Next Step 16 work:
 - Add ISP Admin router management endpoints.
 - Continue using `get_current_isp_admin`.
 - Continue filtering all ISP Admin queries by `current_admin.isp_id`.
+
+---
+
+## Step 16 Progress — 2026-05-14
+
+### Step 16F — ISP Admin Router Management Endpoints
+
+Completed and tested:
+
+- Added ISP Admin router schemas.
+- Added ISP Admin router service logic.
+- Added endpoint module: `app/api/v1/endpoints/isp_admin/routers.py`.
+- Added endpoints:
+  - `POST /api/v1/isp-admin/routers`
+  - `GET /api/v1/isp-admin/routers`
+  - `GET /api/v1/isp-admin/routers/{router_id}`
+  - `PATCH /api/v1/isp-admin/routers/{router_id}`
+- Connected router endpoints to the ISP Admin router.
+- All endpoints use `get_current_isp_admin`.
+- Router creation verifies the target `user_subscription_id` belongs to an App User under `current_admin.isp_id`.
+- Router listing/detail/update is scoped by `Router.isp_id = current_admin.isp_id`.
+- Tested fetching an active user subscription.
+- Tested creating a router linked to the subscription.
+- Tested listing routers.
+- Tested viewing one router by ID.
+- Tested updating router name, model, IP, API endpoint, and status.
+- Tested setting router status to `maintenance`.
+- Tested reactivating router status back to `active`.
+
+Router credential decision:
+
+- Step 16F does not accept or store router passwords.
+- `password_encrypted` exists in the database model for future real-router integration.
+- Router credentials should only be added later after secure encryption helpers are implemented.
+- Do not store raw router passwords.
+
+Current router status values:
+
+- `active`
+- `inactive`
+- `maintenance`
+
+Impact:
+
+- Database schema: no change.
+- Existing data: only local test router data changed during endpoint testing.
+- SE diagrams: later update ISP Admin use cases/activity flow to include router management.
+- Security: Step 16F confirms router actions are scoped by `current_admin.isp_id`.
+
+Next Step 16 work:
+
+- Add ISP Admin dashboard/summary endpoint or Step 16 final cleanup/testing.
+- Continue using `get_current_isp_admin`.
+- Continue filtering all ISP Admin queries by `current_admin.isp_id`.
