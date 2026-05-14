@@ -3,6 +3,12 @@ from app.schemas.isp_admin.plans import (
     SubscriptionPlanResponse,
     SubscriptionPlanUpdateRequest,
 )
+from app.schemas.isp_admin.subscriptions import (
+    UserSubscriptionCreateRequest,
+    UserSubscriptionResponse,
+    UserSubscriptionStatus,
+    UserSubscriptionUpdateRequest,
+)
 from app.schemas.isp_admin.user_invitations import (
     AppUserInvitationCreateRequest,
     AppUserInvitationResponse,
@@ -26,4 +32,8 @@ __all__ = [
     "SubscriptionPlanCreateRequest",
     "SubscriptionPlanResponse",
     "SubscriptionPlanUpdateRequest",
+    "UserSubscriptionCreateRequest",
+    "UserSubscriptionResponse",
+    "UserSubscriptionStatus",
+    "UserSubscriptionUpdateRequest",
 ]

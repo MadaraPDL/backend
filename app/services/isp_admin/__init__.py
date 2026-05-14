@@ -5,6 +5,14 @@ from app.services.isp_admin.plan_service import (
     list_subscription_plans_for_isp,
     update_subscription_plan_for_isp,
 )
+from app.services.isp_admin.subscription_service import (
+    create_user_subscription_for_isp,
+    get_app_user_for_subscription_assignment,
+    get_plan_for_subscription_assignment,
+    get_user_subscription_for_isp,
+    list_user_subscriptions_for_isp,
+    update_user_subscription_for_isp,
+)
 from app.services.isp_admin.user_invitation_service import (
     can_revoke_app_user_invitation,
     create_app_user_invitation,
@@ -23,15 +31,21 @@ __all__ = [
     "can_revoke_app_user_invitation",
     "create_app_user_invitation",
     "create_subscription_plan_for_isp",
+    "create_user_subscription_for_isp",
     "get_app_user_for_isp",
+    "get_app_user_for_subscription_assignment",
     "get_app_user_invitation_by_id",
     "get_pending_app_user_invitation",
+    "get_plan_for_subscription_assignment",
     "get_subscription_plan_by_name_for_isp",
     "get_subscription_plan_for_isp",
+    "get_user_subscription_for_isp",
     "list_app_user_invitations",
     "list_app_users_for_isp",
     "list_subscription_plans_for_isp",
+    "list_user_subscriptions_for_isp",
     "revoke_app_user_invitation",
     "update_app_user_for_isp",
     "update_subscription_plan_for_isp",
+    "update_user_subscription_for_isp",
 ]
