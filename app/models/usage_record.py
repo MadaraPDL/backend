@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, Numeric, String, text
+from sqlalchemy import Computed, DateTime, ForeignKey, Numeric, String, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -67,6 +67,7 @@ class UsageRecord(Base):
 
     total_mb: Mapped[Decimal | None] = mapped_column(
         Numeric,
+        Computed("upload_mb + download_mb", persisted=True),
         nullable=True,
     )
 

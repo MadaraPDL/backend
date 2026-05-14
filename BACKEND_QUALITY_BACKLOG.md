@@ -583,3 +583,37 @@ Testing reminder:
   - App User can view only own device details.
   - Admin tokens are rejected from `/api/v1/me/*`.
   - Fake/non-owned IDs return 404.
+
+---
+
+## Step 17D Quality Notes — 2026-05-14
+
+Completed:
+
+- Added App User usage summary, per-device usage, one-device usage, and raw usage record endpoints.
+- Confirmed usage endpoints use `get_current_app_user`.
+- Confirmed usage endpoints use the authenticated App User from the token.
+- Confirmed per-device usage includes:
+  - upload usage
+  - download usage
+  - total usage
+  - record count
+  - first/last record times
+- Confirmed overall user usage includes upload/download/total usage.
+
+Important database/model note:
+
+- `usage_records.total_mb` is a PostgreSQL generated column.
+- Do not insert `total_mb` manually.
+- Insert only `upload_mb` and `download_mb`.
+- PostgreSQL computes `total_mb`.
+- SQLAlchemy model must keep `total_mb` marked with `Computed(...)`.
+
+Testing reminder:
+
+- Future automated tests should verify:
+  - App User can access only their own usage.
+  - Admin tokens are rejected from `/api/v1/me/usage/*`.
+  - Fake/non-owned devices return 404.
+  - `total_mb` is returned correctly from the generated column.
+  - Per-device usage and overall usage totals are calculated correctly.
