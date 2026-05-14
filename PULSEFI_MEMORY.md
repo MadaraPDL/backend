@@ -563,3 +563,92 @@ Next step:
 - Step 16 final cleanup/testing and documentation update.
 - Then continue to Step 17: App User mobile endpoints.
 
+
+---
+
+## Critical New Chat Rule
+
+When starting or continuing PulseFi in a new chat, the assistant must not guess from old chat context.
+
+Before giving implementation steps, read or ask the user to provide the latest repo state from:
+
+- `PULSEFI_MEMORY.md`
+- `AGENTS.md`
+- `ROADMAP.md`
+- `README.md`
+- `BACKEND_QUALITY_BACKLOG.md`
+
+The assistant must follow the workflow style saved in `PULSEFI_MEMORY.md` and `AGENTS.md`:
+
+- give step-by-step instructions
+- explain every code block/command
+- keep files modular
+- check existing files/models before coding
+- run import checks, pytest, compile checks, and git status before commit
+- update repo memory/docs after major backend steps
+- never commit `.env`, local passwords, tokens, or `LOCAL_TEST_ACCOUNTS.md`
+- do not store router passwords until encrypted credential storage exists
+
+Current backend state:
+
+- Step 16A through Step 16F are complete and tested.
+- Current next work is Step 17: App User/mobile endpoints.
+
+---
+
+## Step 17 Progress — 2026-05-14
+
+### Step 17A — App User Mobile Endpoint Foundation
+
+Completed and tested:
+
+- Added App User schema package under `app/schemas/app_user/`.
+- Added App User service package under `app/services/app_user/`.
+- Added App User endpoint package under `app/api/v1/endpoints/app_user/`.
+- Added endpoint:
+  - `GET /api/v1/me/summary`
+- Connected App User routes to the main API router.
+- Endpoint uses `get_current_app_user`.
+- Endpoint uses the logged-in App User from the access token.
+- Endpoint does not accept `user_id` from the request.
+- Summary returns safe App User profile fields and subscription counts.
+- Tested App User login.
+- Tested `/api/v1/me/summary` with an App User token.
+- Tested that an ISP Admin token cannot access `/api/v1/me/summary`.
+
+Returned summary fields:
+
+- `id`
+- `isp_id`
+- `full_name`
+- `email`
+- `username`
+- `phone_number`
+- `status`
+- `email_verified_at`
+- `created_at`
+- `total_subscriptions`
+- `active_subscriptions`
+
+Security rules:
+
+- App User mobile endpoints must use `get_current_app_user`.
+- App User `/me` endpoints must never accept a target `user_id` from the request.
+- App User `/me` endpoints must use `current_user.id` from the token.
+- Do not expose password hashes, MFA secrets, reset tokens, or sensitive auth fields.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: read-only endpoint. Local test password may have changed if password reset was used for testing.
+- SE diagrams: later update App User/mobile activity and sequence diagrams to include protected `/me` mobile endpoint flow.
+- Security: Step 17A confirms App User-only route protection works.
+
+Next Step 17 work:
+
+- Add App User subscription endpoints.
+- Likely endpoints:
+  - `GET /api/v1/me/subscriptions`
+  - `GET /api/v1/me/subscriptions/{subscription_id}`
+- Continue using `get_current_app_user`.
+- Continue using `current_user.id`; do not accept user IDs for App User self-service routes.

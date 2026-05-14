@@ -745,3 +745,62 @@ It returns ISP-scoped counts for:
 
 All data is scoped to the authenticated ISP Admin's `isp_id`.
 
+
+---
+
+## Step 17 Progress — 2026-05-14
+
+### Step 17A — App User Mobile Endpoint Foundation
+
+Completed and tested:
+
+- Added App User schema package under `app/schemas/app_user/`.
+- Added App User service package under `app/services/app_user/`.
+- Added App User endpoint package under `app/api/v1/endpoints/app_user/`.
+- Added endpoint:
+  - `GET /api/v1/me/summary`
+- Connected App User routes to the main API router.
+- Endpoint uses `get_current_app_user`.
+- Endpoint uses the logged-in App User from the access token.
+- Endpoint does not accept `user_id` from the request.
+- Summary returns safe App User profile fields and subscription counts.
+- Tested App User login.
+- Tested `/api/v1/me/summary` with an App User token.
+- Tested that an ISP Admin token cannot access `/api/v1/me/summary`.
+
+Returned summary fields:
+
+- `id`
+- `isp_id`
+- `full_name`
+- `email`
+- `username`
+- `phone_number`
+- `status`
+- `email_verified_at`
+- `created_at`
+- `total_subscriptions`
+- `active_subscriptions`
+
+Security rules:
+
+- App User mobile endpoints must use `get_current_app_user`.
+- App User `/me` endpoints must never accept a target `user_id` from the request.
+- App User `/me` endpoints must use `current_user.id` from the token.
+- Do not expose password hashes, MFA secrets, reset tokens, or sensitive auth fields.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: read-only endpoint. Local test password may have changed if password reset was used for testing.
+- SE diagrams: later update App User/mobile activity and sequence diagrams to include protected `/me` mobile endpoint flow.
+- Security: Step 17A confirms App User-only route protection works.
+
+Next Step 17 work:
+
+- Add App User subscription endpoints.
+- Likely endpoints:
+  - `GET /api/v1/me/subscriptions`
+  - `GET /api/v1/me/subscriptions/{subscription_id}`
+- Continue using `get_current_app_user`.
+- Continue using `current_user.id`; do not accept user IDs for App User self-service routes.

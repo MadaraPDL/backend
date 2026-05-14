@@ -485,3 +485,31 @@ Important security note:
 - `password_encrypted` exists in the database model for future real-router integration.
 - Do not store raw router passwords.
 - Add encrypted credential storage only after proper encryption helpers and key management are implemented.
+
+---
+
+## Step 17A Quality Notes — 2026-05-14
+
+Completed:
+
+- Added first App User/mobile protected endpoint: `GET /api/v1/me/summary`.
+- Confirmed the endpoint uses `get_current_app_user`.
+- Confirmed `/me` endpoint logic uses the authenticated App User from the token.
+
+Important security rule:
+
+- App User mobile endpoints must not accept a `user_id` to choose which user data to load.
+- App User mobile endpoints should always use `current_user.id`.
+- Admin tokens must not be accepted for App User `/me` endpoints.
+- Sensitive fields must not be returned:
+  - `password_hash`
+  - `mfa_secret`
+  - password reset tokens
+  - email verification tokens
+  - backup codes
+
+Testing reminder:
+
+- Future automated tests should include App User route protection.
+- Add tests confirming admin tokens are rejected from `/api/v1/me/*`.
+- Add tests confirming App User tokens only access their own records.
