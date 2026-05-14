@@ -530,3 +530,36 @@ When helping with PulseFi, the assistant/Codex should follow these rules:
   - `BACKEND_QUALITY_BACKLOG.md` when the change affects quality/security/deployment
 - Add dates for completed milestones when possible.
 - Mention pending SE diagram updates when backend/design changes affect actors, flows, use cases, DFDs, ERDs, activity diagrams, or sequence diagrams.
+
+---
+
+## Step 16G — ISP Admin Dashboard Summary
+
+Completed and tested:
+
+- Replaced the temporary ISP Admin summary endpoint with real dashboard metrics.
+- Endpoint:
+  - `GET /api/v1/isp-admin/summary`
+- Added ISP Admin summary schemas.
+- Added ISP Admin summary service logic.
+- Summary returns ISP-scoped counts for:
+  - App Users
+  - Subscription Plans
+  - User Subscriptions
+  - Routers
+- Subscription counts are scoped through the linked App User because `user_subscriptions` does not directly store `isp_id`.
+- All summary queries remain scoped to `current_admin.isp_id`.
+- Tested successfully with an ISP Admin token.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- SE diagrams: later update ISP Admin dashboard/use-case flow to include dashboard summary metrics.
+- Security: confirmed ISP Admin summary only reads data under the logged-in admin's ISP.
+
+Next step:
+
+- Step 16 final cleanup/testing and documentation update.
+- Then continue to Step 17: App User mobile endpoints.
+

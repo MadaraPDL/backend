@@ -1052,3 +1052,20 @@ Important reminders:
 - Do not store router passwords until encrypted credential storage exists.
 - Keep files modular and avoid large mixed-responsibility files.
 - Future production DB setup should use a separate migration/admin role for Alembic and a restricted runtime role for FastAPI.
+
+---
+
+## Step 16G — ISP Admin Dashboard Summary
+
+Completed:
+
+- `GET /api/v1/isp-admin/summary`
+- Real ISP-scoped dashboard counts for users, plans, subscriptions, and routers.
+- Subscription counting uses join through `AppUser.isp_id`.
+- No database schema change.
+
+Step 16 status:
+
+- Step 16A through Step 16G are complete and tested.
+- Remaining Step 16 work: final cleanup/testing and docs.
+

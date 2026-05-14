@@ -1063,3 +1063,14 @@ When helping with PulseFi, the assistant/Codex should follow these rules:
   - `BACKEND_QUALITY_BACKLOG.md` when the change affects quality/security/deployment
 - Add dates for completed milestones when possible.
 - Mention pending SE diagram updates when backend/design changes affect actors, flows, use cases, DFDs, ERDs, activity diagrams, or sequence diagrams.
+
+## Latest PulseFi Backend Note
+
+Step 16G is complete:
+
+- ISP Admin dashboard summary endpoint is implemented.
+- Endpoint: `GET /api/v1/isp-admin/summary`
+- Counts users, plans, subscriptions, and routers under `current_admin.isp_id`.
+- Subscription counts must use the linked App User because `user_subscriptions` has no direct `isp_id`.
+- Continue enforcing ISP Admin isolation in every Step 16 and Step 17 endpoint.
+

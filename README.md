@@ -729,3 +729,19 @@ Important reminders:
 - Do not store router passwords until encrypted credential storage exists.
 - Keep files modular and avoid large mixed-responsibility files.
 - Future production DB setup should use a separate migration/admin role for Alembic and a restricted runtime role for FastAPI.
+
+### ISP Admin Summary
+
+The ISP Admin API includes a dashboard summary endpoint:
+
+- `GET /api/v1/isp-admin/summary`
+
+It returns ISP-scoped counts for:
+
+- App Users
+- Subscription Plans
+- User Subscriptions
+- Routers
+
+All data is scoped to the authenticated ISP Admin's `isp_id`.
+
