@@ -767,3 +767,37 @@ Next Step 16 work:
 
 - Test App User invitation endpoints through Swagger/Postman.
 - Then add ISP Admin App User listing/detail/update endpoints.
+
+---
+
+## Step 16 Testing Progress — 2026-05-14
+
+### Step 16B — App User Invitation Endpoints Tested
+
+Tested successfully:
+
+- ISP Admin login worked after password reset.
+- `GET /api/v1/isp-admin/summary` confirmed the account is a valid ISP Admin.
+- `POST /api/v1/isp-admin/user-invitations` created an App User invitation.
+- Created invitation was correctly scoped to the ISP Admin's `isp_id`.
+- Created invitation used `account_type = app_user`.
+- Created invitation stored `invited_by_admin_id` as the logged-in ISP Admin.
+- `GET /api/v1/isp-admin/user-invitations?status=pending` listed the pending invitation.
+- Duplicate pending invitation test prevented duplicate active invitations.
+- `PATCH /api/v1/isp-admin/user-invitations/{invitation_id}/revoke` revoked the invitation.
+- Second revoke attempt was rejected.
+- Pending list after revoke returned empty.
+- Revoked list showed the revoked invitation.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: only local test invitation/reset data changed.
+- SE diagrams: later update ISP Admin use cases/activity flow to include App User invitation management.
+- Security: Step 16B confirmed ISP Admin invitation actions are scoped by `current_admin.isp_id`.
+
+Next Step 16 work:
+
+- Add ISP Admin App User listing/detail/update endpoints.
+- Continue using `get_current_isp_admin`.
+- Continue filtering all ISP Admin queries by `current_admin.isp_id`.
