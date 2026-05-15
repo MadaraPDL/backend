@@ -1,1 +1,15 @@
-fastapi\nuvicorn[standard]\nsqlalchemy\nasyncpg\nalembic\npydantic-settings\npyjwt[crypto]\npwdlib[argon2]\npython-multipart\nemail-validator\npyotp\npytest\npytest-asyncio\nhttpx\ncryptography==48.0.0\n
+fastapi
+uvicorn[standard]
+sqlalchemy
+asyncpg
+alembic
+pydantic-settings
+pyjwt[crypto]
+pwdlib[argon2]
+python-multipart
+email-validator
+pyotp
+pytest
+pytest-asyncio
+httpx
+cryptography==48.0.0
