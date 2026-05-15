@@ -705,3 +705,12 @@ Important Step 18 security reminder:
 - `mfa_setup_service.py` handles setup business logic.
 - `mfa_setup_token_service.py` handles setup-token JWT creation and validation.
 - Setup-token hardening tests were added and passed.
+
+
+## Server-Side MFA Setup State Status Update
+
+- Replaced readable JWT-based MFA setup state with server-side pending setup storage.
+- Added `mfa_setup_challenges` table.
+- Setup token sent to the client is now opaque.
+- Setup token hash, pending authenticator secret, expiry, used marker, and attempt count are stored server-side.
+- This fixes the previous issue where the raw authenticator secret was included inside a signed but readable JWT.

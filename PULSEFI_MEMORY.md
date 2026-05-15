@@ -1117,3 +1117,23 @@ Impact:
 - Existing data: no change.
 - Security: setup-token validation is stricter and MFA setup code is better isolated.
 - Architecture: MFA files are now split by responsibility.
+
+
+## Server-Side MFA Setup State ? 2026-05-15
+
+Completed and tested:
+- Added `MFASetupChallenge` model and Alembic migration.
+- Added `mfa_setup_challenges` table for pending MFA setup state.
+- MFA setup tokens are now opaque random tokens.
+- Only the setup token hash is stored in the database.
+- The pending authenticator secret is stored server-side instead of inside a readable JWT payload.
+- Successful setup marks the setup challenge as used.
+- Invalid setup attempts increment `attempt_count`.
+- Setup challenge expiry is enforced.
+- Updated MFA setup services and tests.
+
+Impact:
+- Database schema: added `mfa_setup_challenges`.
+- Existing data: no existing rows changed.
+- Security: MFA setup token no longer exposes the authenticator secret in a client-readable JWT.
+- SE diagrams: later update auth/login sequence and ERD to include pending MFA setup challenge storage.
