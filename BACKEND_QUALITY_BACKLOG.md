@@ -660,3 +660,11 @@ Testing reminder:
 - Added API-level password reset regression tests.
 - Added API-level invitation email guard tests for Platform Admin ISP Admin invitations and ISP Admin App User invitations.
 - These tests verify frontend-facing HTTP responses and help prevent accidental token leakage or token creation when production email delivery is blocked.
+
+
+## API Test Structure Refactor Status Update
+
+- Added shared `tests/api/conftest.py`.
+- Moved repeated API test setup into a shared `api_client` fixture.
+- Removed repeated FakeDB, TestClient, and database dependency override boilerplate from API test files.
+- API tests are now cleaner and easier to extend.

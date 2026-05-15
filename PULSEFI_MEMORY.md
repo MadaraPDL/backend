@@ -1078,3 +1078,5 @@ Recent quality fixes:
 - Email-based MFA is now guarded in production and cannot create email MFA challenges unless email delivery is configured.
 
 - Added API-level auth tests for login, password reset, and invitation email-delivery guards.
+
+- API test setup was refactored into `tests/api/conftest.py` with a shared `api_client` fixture.
