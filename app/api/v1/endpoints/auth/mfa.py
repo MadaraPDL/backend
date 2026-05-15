@@ -10,7 +10,7 @@ from app.schemas.auth import (
     MFAVerifyRequest,
 )
 from app.services.auth_service import build_auth_token_response, complete_mfa_login
-from app.services.mfa_service import complete_mfa_setup
+from app.services.mfa_setup_service import complete_mfa_setup
 
 router = APIRouter(prefix="/mfa")
 
