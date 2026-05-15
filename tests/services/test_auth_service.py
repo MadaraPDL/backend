@@ -134,3 +134,47 @@ async def test_login_requires_mfa_challenge_when_enabled(monkeypatch):
 
     assert response_data["mfa_required"] is True
     assert response_data["challenge_token"] == "challenge-token"
+
+@pytest.mark.asyncio
+async def test_login_blocks_email_mfa_without_email_delivery_in_production(monkeypatch):
+    import app.services.auth_service as auth_service
+
+    fake_account = SimpleNamespace(
+        id=uuid4(),
+        full_name="Email MFA User",
+        email="emailmfa@test.com",
+        role=None,
+        mfa_required=True,
+        mfa_enabled=True,
+        preferred_mfa_method="email",
+    )
+
+    async def fake_authenticate_account(*args, **kwargs):
+        return fake_account
+
+    async def fake_create_mfa_challenge(*args, **kwargs):
+        raise AssertionError("Email MFA challenge should not be created without email delivery.")
+
+    monkeypatch.setattr(
+        "app.services.auth_service.authenticate_account",
+        fake_authenticate_account,
+    )
+
+    monkeypatch.setattr(
+        "app.services.auth_service.create_mfa_challenge",
+        fake_create_mfa_challenge,
+    )
+
+    monkeypatch.setattr(
+        auth_service,
+        "settings",
+        SimpleNamespace(DEBUG=False, EMAIL_DELIVERY_ENABLED=False),
+    )
+
+    with pytest.raises(auth_service.EmailDeliveryRequiredError):
+        await start_login(
+            db=None,
+            account_type="app_user",
+            identifier="emailmfa@test.com",
+            password="password123",
+        )

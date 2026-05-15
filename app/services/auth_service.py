@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.security import create_access_token
 from app.schemas.auth import AccountType
 from app.services.account_service import (
@@ -14,6 +15,9 @@ from app.services.mfa_service import (
     get_mfa_challenge_by_token,
     verify_mfa_challenge_code,
 )
+
+class EmailDeliveryRequiredError(RuntimeError):
+    """Raised when an email-based auth flow is requested without email delivery."""
 
 
 def build_auth_token_response(
@@ -71,6 +75,9 @@ async def start_login(
         account=account,
         account_type=account_type,
     )
+
+    if method == "email" and not settings.DEBUG and not settings.EMAIL_DELIVERY_ENABLED:
+        raise EmailDeliveryRequiredError
 
     challenge, raw_challenge_token, raw_email_code = await create_mfa_challenge(
         db=db,

@@ -13,7 +13,7 @@ from app.schemas.auth import (
     MFARequiredResponse,
     MFASetupRequiredResponse,
 )
-from app.services.auth_service import start_login
+from app.services.auth_service import EmailDeliveryRequiredError, start_login
 
 router = APIRouter()
 
@@ -30,11 +30,20 @@ async def login(
     request: LoginRequest,
     db: AsyncSession = Depends(get_db),
 ): 
-    result = await start_login(
-        db=db, 
-        account_type=request.account_type,
-        identifier=request.identifier,
-        password=request.password,
+    try:
+        result = await start_login(
+            db=db,
+            account_type=request.account_type,
+            identifier=request.identifier,
+            password=request.password,
+        )
+    except EmailDeliveryRequiredError:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Email delivery is not configured. Configure email delivery before "
+                "using email-based MFA in production."
+            ),
         )
     
     if result is None:
