@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, status
+
+from app.api.dependencies import require_email_delivery_for_production
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -24,6 +26,8 @@ async def forgot_password(
     request: ForgotPasswordRequest,
     db: AsyncSession = Depends(get_db),
 ): 
+    require_email_delivery_for_production()
+
     raw_token = await create_password_reset_token(
         db=db,
         account_type=request.account_type,

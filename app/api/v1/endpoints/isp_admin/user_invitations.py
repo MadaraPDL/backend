@@ -5,7 +5,10 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import get_current_isp_admin
+from app.api.dependencies import (
+    get_current_isp_admin,
+    require_email_delivery_for_production,
+)
 from app.core.config import settings
 from app.db.session import get_db
 from app.models.admin import Admin
@@ -68,6 +71,8 @@ async def create_app_user_invitation_endpoint(
             status_code=status.HTTP_409_CONFLICT,
             detail="There is already a pending invitation for this app user",
         )
+
+    require_email_delivery_for_production()
 
     invitation, raw_token = await create_app_user_invitation(
         db=db,

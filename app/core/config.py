@@ -10,6 +10,8 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str
 
+    EMAIL_DELIVERY_ENABLED: bool = False
+
     SECRET_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60

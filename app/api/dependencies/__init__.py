@@ -17,3 +17,4 @@ __all__ = [
     "get_current_isp_admin",
     "require_admin_role",
 ]
+from app.api.dependencies.email_delivery import require_email_delivery_for_production
