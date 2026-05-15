@@ -933,3 +933,47 @@ Impact:
 Next Step 17 work:
 
 - Step 17F — App User predictions and recommendations endpoints, or plan change request endpoints.
+
+---
+
+## Step 17 Progress — 2026-05-15
+
+### Step 17F — App User Prediction and Recommendation Endpoints
+
+Completed and tested:
+
+- Added App User prediction schemas.
+- Added App User recommendation schemas.
+- Added App User prediction service logic.
+- Added App User recommendation service logic.
+- Added endpoint modules:
+  - pp/api/v1/endpoints/app_user/predictions.py
+  - pp/api/v1/endpoints/app_user/recommendations.py
+- Added endpoints:
+  - GET /api/v1/me/predictions
+  - GET /api/v1/me/predictions/{prediction_id}
+  - GET /api/v1/me/recommendations
+  - GET /api/v1/me/recommendations/{recommendation_id}
+- Connected prediction and recommendation endpoints to the App User router.
+- Endpoints use get_current_app_user.
+- Prediction queries are scoped by Prediction.user_id = current_user.id.
+- Recommendation queries are scoped by Recommendation.user_id = current_user.id.
+- App User endpoints do not accept user_id from the request.
+- Tested App User login through PowerShell.
+- Tested listing predictions for the logged-in App User.
+- Tested listing recommendations for the logged-in App User.
+- Tested fake prediction ID returns 404 Prediction not found.
+- Tested fake recommendation ID returns 404 Recommendation not found.
+- Ran pytest successfully.
+- Ran compileall successfully.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- SE diagrams: later update App User/mobile activity and sequence diagrams to include prediction and recommendation viewing.
+- Security: App User can only access their own predictions and recommendations.
+
+Next Step 17 work:
+
+- Step 17G — App User subscription plan change request endpoints.

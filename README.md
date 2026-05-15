@@ -955,3 +955,20 @@ Protected App User endpoints now include:
 Security rule:
 
 - App User /me endpoints use the authenticated token user and do not accept a target user_id.
+
+---
+
+## Latest App User Smart Feature Endpoints
+
+Step 17F added App User prediction and recommendation endpoints.
+
+Protected App User smart endpoints now include:
+
+- GET /api/v1/me/predictions
+- GET /api/v1/me/predictions/{prediction_id}
+- GET /api/v1/me/recommendations
+- GET /api/v1/me/recommendations/{recommendation_id}
+
+Security rule:
+
+- Prediction and recommendation endpoints use the authenticated token user and do not accept a target user_id.

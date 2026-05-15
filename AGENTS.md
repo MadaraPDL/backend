@@ -1431,3 +1431,28 @@ Next likely Step 17 work:
 
 - App User predictions/recommendations endpoints.
 - Or App User subscription plan change request endpoints.
+
+---
+
+## Latest Completed App User Smart Feature Work
+
+Step 17F is complete.
+
+Completed endpoints:
+
+- GET /api/v1/me/predictions
+- GET /api/v1/me/predictions/{prediction_id}
+- GET /api/v1/me/recommendations
+- GET /api/v1/me/recommendations/{recommendation_id}
+
+Rules confirmed:
+
+- Use get_current_app_user.
+- Scope prediction queries by Prediction.user_id = current_user.id.
+- Scope recommendation queries by Recommendation.user_id = current_user.id.
+- Do not accept user_id in App User /me routes.
+- Do not expose sensitive auth fields.
+
+Next likely Step 17 work:
+
+- App User subscription plan change request endpoints.

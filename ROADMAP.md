@@ -1276,3 +1276,29 @@ Behavior:
 Next:
 
 - Step 17F — App User predictions/recommendations endpoints or plan change request endpoints.
+
+---
+
+### Step 17F — App User Prediction and Recommendation Endpoints
+
+Completed on 2026-05-15.
+
+Endpoints:
+
+- GET /api/v1/me/predictions
+- GET /api/v1/me/predictions/{prediction_id}
+- GET /api/v1/me/recommendations
+- GET /api/v1/me/recommendations/{recommendation_id}
+
+Behavior:
+
+- App Users can list their own predictions.
+- App Users can view one prediction by ID.
+- App Users can list their own recommendations.
+- App Users can view one recommendation by ID.
+- All queries are scoped by the authenticated App User.
+- App User routes do not accept user_id from the request.
+
+Next:
+
+- Step 17G — App User subscription plan change request endpoints.
