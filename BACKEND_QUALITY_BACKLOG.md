@@ -805,3 +805,35 @@ Impact:
 - Existing data: no change.
 - API behavior: no intended change; existing secure behavior is now protected.
 - SE diagrams: no change.
+
+---
+
+## DB-Backed Integration Testing Status Update
+
+Status: started.
+
+Completed:
+- Added integration test fixture using a real AsyncSession and transaction rollback.
+- Added first real PostgreSQL-backed integration test for admin invitation acceptance plus MFA setup-required login behavior.
+
+Covered flow:
+- Create ISP.
+- Create AccountInvitation.
+- Accept invitation.
+- Create Admin account.
+- Confirm admin MFA is required but not enabled.
+- Confirm login returns MFA setup instead of an access token.
+
+Important local DB note:
+- Local development database had stale Alembic revision 285ab0474b39.
+- Current valid head is 68eea2a5b4d2.
+- Local database was repaired manually because the runtime role pulsefi_app is intentionally not allowed to perform schema creation.
+- Future migrations/schema repairs should use an admin or migration DB role, not the runtime app role.
+
+Remaining DB-backed test priorities:
+1. Duplicate invitation/email/username behavior.
+2. MFA setup confirmation success/failure with real DB rows.
+3. ISP Admin cross-ISP isolation.
+4. App User ownership isolation.
+5. Subscription, router, device policy, alert, prediction, and recommendation ownership.
+

@@ -1250,3 +1250,39 @@ Current security note:
   - Real email delivery.
   - Redis/DB-backed rate limiting.
   - `DATA_ENCRYPTION_KEY` rotation plan.
+
+## DB-Backed Integration Testing Started - 2026-05-15
+
+Completed and tested:
+- Added shared integration DB fixture:
+  - tests/integration/conftest.py
+- Added first real PostgreSQL-backed integration test:
+  - tests/integration/test_auth_invitation_mfa_integration.py
+- Test covers:
+  - real ISP row creation
+  - real account invitation row creation
+  - invitation acceptance through service logic
+  - real Admin account creation
+  - admin MFA-required defaults
+  - login returning MFA setup instead of access token
+
+Local DB repair note:
+- Local dev database had stale Alembic revision 285ab0474b39.
+- Current repo migration chain is:
+  - 11d8754136bc
+  - 846ac0977099
+  - 68eea2a5b4d2
+- Local DB was repaired by manually creating mfa_setup_challenges with admin privileges and updating alembic_version to 68eea2a5b4d2.
+- This was a local dev DB repair only, not an application code change.
+
+Impact:
+- Database schema: no new migration in this step.
+- Existing data: integration test data rolls back after test.
+- Security: invitation plus MFA setup-required flow now has DB-backed coverage.
+- SE diagrams: no change.
+
+Next recommended quality work:
+- Add DB-backed tests for duplicate invitations/usernames.
+- Add DB-backed tests for ISP Admin isolation.
+- Add DB-backed tests for App User ownership.
+
