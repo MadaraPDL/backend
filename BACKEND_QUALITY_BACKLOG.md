@@ -644,3 +644,11 @@ Testing reminder:
 - Backend CI now starts a PostgreSQL 18 service.
 - CI now runs `alembic upgrade head` and `alembic current` against a fresh PostgreSQL database.
 - This prevents broken baseline migrations or future migration-order problems from reaching `main` unnoticed.
+
+
+## Email MFA Production Guard Status Update
+
+- Email-based MFA login is now blocked in production when email delivery is not configured.
+- The auth service raises a specific email-delivery-required error before creating an email MFA challenge.
+- The login endpoint converts that error into HTTP 503.
+- Added a regression test to prevent email MFA codes from being created silently in production without email delivery.

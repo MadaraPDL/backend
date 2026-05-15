@@ -1074,3 +1074,5 @@ Recent quality fixes:
 - Added a production guard so token-based email flows cannot silently run in production unless email delivery is configured.
 
 - Backend CI now verifies Alembic migrations against a fresh PostgreSQL service before running tests.
+
+- Email-based MFA is now guarded in production and cannot create email MFA challenges unless email delivery is configured.
