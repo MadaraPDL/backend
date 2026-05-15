@@ -1250,4 +1250,3 @@ Current security note:
   - Real email delivery.
   - Redis/DB-backed rate limiting.
   - `DATA_ENCRYPTION_KEY` rotation plan.
-  - Real baseline Alembic migration for fresh database rebuilds.
