@@ -1209,3 +1209,25 @@ Impact:
 - Existing data: no change.
 - Security: reduces brute-force/login/MFA/reset/invitation guessing risk.
 - Production note: current limiter is in-memory and suitable for local/demo/single-server use. Production should use Redis or another shared store.
+
+
+## Final Pre-Step-18 Hardening Pass ? 2026-05-15
+
+Completed and tested:
+- Added encryption helper foundation with `DATA_ENCRYPTION_KEY`.
+- Encrypted pending MFA setup secrets at rest.
+- Encrypted final account MFA secrets at rest for new MFA setup flows.
+- Added MVP in-memory rate limiting for auth-sensitive endpoints.
+- Added API-level login rate-limit test.
+- Applied auth rate limits to login, MFA verify, MFA setup confirm, password reset, and invitation acceptance.
+- Added maintenance command:
+  - `python -m app.maintenance.cleanup_mfa_setup_challenges`
+- Added parser tests for the maintenance command.
+- Cleaned local pytest cache handling and ensured cache ignore rules.
+
+Remaining production hardening:
+- Replace in-memory rate limiter with Redis/shared-store rate limiting before multi-worker deployment.
+- Add real DB-backed integration tests for auth, MFA, invitations, ISP isolation, and App User ownership.
+- Configure real email delivery.
+- Migrate/rotate any existing plaintext MFA secrets if real users already configured MFA before encryption.
+- Reuse encryption helpers for future router credentials.

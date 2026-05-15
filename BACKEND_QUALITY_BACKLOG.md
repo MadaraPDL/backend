@@ -753,3 +753,19 @@ Important Step 18 security reminder:
 - Remaining production work:
   - replace in-memory limiter with Redis/shared-store limiter before multi-worker deployment
   - add DB-backed integration tests for auth/MFA/rate-limit flows
+
+
+## Final Pre-Step-18 Hardening Status Update
+
+- MFA setup-token design is now server-side and opaque-token based.
+- Pending and final MFA secrets are encrypted at rest for new setup flows.
+- Auth-sensitive endpoints have MVP in-memory rate limits.
+- MFA setup cleanup service is now wired to a runnable maintenance command.
+- `.pytest_cache` cleanup/ignore handling was checked.
+
+Remaining before real production:
+- Redis/shared-store rate limiting.
+- Real email sending.
+- Real DB-backed integration tests.
+- Secret migration/rotation plan for any existing plaintext MFA secrets.
+- Deployment-grade secret management.
