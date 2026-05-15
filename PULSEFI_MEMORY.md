@@ -1231,3 +1231,23 @@ Remaining production hardening:
 - Configure real email delivery.
 - Migrate/rotate any existing plaintext MFA secrets if real users already configured MFA before encryption.
 - Reuse encryption helpers for future router credentials.
+
+## Recent Quality/Security Fixes
+
+- Fixed malformed `requirements.txt` where dependencies were stored on one line with literal `\n` characters.
+  - Fresh `pip install -r requirements.txt` should now work.
+  - This removed a CI/fresh setup blocker.
+
+- Verified and protected the MFA-required login behavior.
+  - If an account has `mfa_required=True` and `mfa_enabled=False`, login must return an MFA setup response instead of issuing a normal access token.
+  - Added regression tests in `tests/test_auth_service_mfa_required.py`.
+  - App users with `mfa_required=False` can still log in normally when MFA is not enabled.
+
+Current security note:
+- MFA-required bypass is considered covered by regression tests.
+- Continue improving remaining production items:
+  - Real PostgreSQL-backed integration tests.
+  - Real email delivery.
+  - Redis/DB-backed rate limiting.
+  - `DATA_ENCRYPTION_KEY` rotation plan.
+  - Real baseline Alembic migration for fresh database rebuilds.

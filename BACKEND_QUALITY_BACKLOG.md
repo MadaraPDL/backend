@@ -769,3 +769,39 @@ Remaining before real production:
 - Real DB-backed integration tests.
 - Secret migration/rotation plan for any existing plaintext MFA secrets.
 - Deployment-grade secret management.
+
+---
+
+## Resolved Quality Items
+
+### Fixed malformed requirements.txt
+
+Status: resolved.
+
+The dependency file now uses real line breaks instead of literal `\n` characters.
+
+Why this mattered:
+- Fresh installs were failing.
+- GitHub Actions dependency installation could fail even if local tests passed.
+
+Impact:
+- Database schema: no change.
+- Existing data: no change.
+- SE diagrams: no change.
+
+### Covered MFA-required login behavior with regression tests
+
+Status: resolved / guarded by tests.
+
+Added tests for:
+- MFA-required accounts must receive MFA setup before a token is issued.
+- Accounts without required MFA can still receive a normal token.
+
+Test file:
+- `tests/test_auth_service_mfa_required.py`
+
+Impact:
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: no intended change; existing secure behavior is now protected.
+- SE diagrams: no change.
