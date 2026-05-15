@@ -637,3 +637,10 @@ Testing reminder:
 - Password reset, ISP Admin invitation, and App User invitation token flows are now blocked in production when email delivery is not configured.
 - Development mode can still expose dev-only tokens/codes while `DEBUG=True`.
 - Added regression tests for the email delivery production guard.
+
+
+## Backend CI PostgreSQL/Alembic Status Update
+
+- Backend CI now starts a PostgreSQL 18 service.
+- CI now runs `alembic upgrade head` and `alembic current` against a fresh PostgreSQL database.
+- This prevents broken baseline migrations or future migration-order problems from reaching `main` unnoticed.

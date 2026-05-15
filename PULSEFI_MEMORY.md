@@ -1072,3 +1072,5 @@ Recent quality fixes:
 - Replaced the empty Alembic baseline with a real baseline migration tested against a fresh PostgreSQL database.
 - Handled the circular FK between `isps.created_by_admin_id` and `admins.isp_id` by creating the FK after both tables exist.
 - Added a production guard so token-based email flows cannot silently run in production unless email delivery is configured.
+
+- Backend CI now verifies Alembic migrations against a fresh PostgreSQL service before running tests.
