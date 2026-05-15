@@ -18,6 +18,12 @@ from app.services.app_user.usage_service import (
     list_my_usage_records,
 )
 
+from app.services.app_user.alert_service import (
+    get_my_alert,
+    list_my_alerts,
+    mark_my_alert_as_read,
+)
+
 __all__ = [
     "build_app_user_summary",
     "get_my_device",
@@ -30,4 +36,7 @@ __all__ = [
     "list_my_routers",
     "list_my_subscriptions",
     "list_my_usage_records",
+    "get_my_alert",
+    "list_my_alerts",
+    "mark_my_alert_as_read",
 ]
