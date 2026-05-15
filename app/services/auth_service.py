@@ -11,11 +11,11 @@ from app.services.account_service import (
     get_account_mfa_method,
 )
 from app.services.mfa_service import (
-    build_mfa_setup_response,
     create_mfa_challenge,
     get_mfa_challenge_by_token,
     verify_mfa_challenge_code,
 )
+from app.services.mfa_setup_service import build_mfa_setup_response
 
 class EmailDeliveryRequiredError(RuntimeError):
     """Raised when an email-based auth flow is requested without email delivery."""
