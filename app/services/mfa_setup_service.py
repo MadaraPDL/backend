@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 import pyotp
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -30,6 +30,9 @@ def is_mfa_setup_challenge_active(challenge: MFASetupChallenge) -> bool:
     if challenge.used_at is not None:
         return False
 
+    if challenge.revoked_at is not None:
+        return False
+
     if challenge.expires_at <= now:
         return False
 
@@ -39,11 +42,46 @@ def is_mfa_setup_challenge_active(challenge: MFASetupChallenge) -> bool:
     return True
 
 
+
+async def revoke_active_mfa_setup_challenges(
+    db: AsyncSession,
+    account: Account,
+    account_type: AccountType,
+) -> None:
+    now = datetime.now(timezone.utc)
+
+    owner_filter = (
+        MFASetupChallenge.admin_id == account.id
+        if account_type == "admin"
+        else MFASetupChallenge.app_user_id == account.id
+    )
+
+    stmt = (
+        update(MFASetupChallenge)
+        .where(
+            MFASetupChallenge.account_type == account_type,
+            owner_filter,
+            MFASetupChallenge.used_at.is_(None),
+            MFASetupChallenge.revoked_at.is_(None),
+            MFASetupChallenge.expires_at > now,
+        )
+        .values(revoked_at=now)
+    )
+
+    await db.execute(stmt)
+
+
 async def build_mfa_setup_response(
     db: AsyncSession,
     account: Account,
     account_type: AccountType,
 ) -> dict:
+    await revoke_active_mfa_setup_challenges(
+        db=db,
+        account=account,
+        account_type=account_type,
+    )
+
     authenticator_secret = generate_authenticator_secret()
     raw_setup_token, setup_token_hash = generate_mfa_setup_token()
 
