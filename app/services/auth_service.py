@@ -58,7 +58,8 @@ async def start_login(
         return None
 
     if account.mfa_required and not account.mfa_enabled:
-        return build_mfa_setup_response(
+        return await build_mfa_setup_response(
+            db=db,
             account=account,
             account_type=account_type,
         ), None

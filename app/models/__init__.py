@@ -42,4 +42,6 @@ __all__ = [
     "PasswordResetToken",
     "MFABackupCode",
     "MFAChallenge",
+    "MFASetupChallenge",
 ]
+from app.models.mfa_setup_challenge import MFASetupChallenge

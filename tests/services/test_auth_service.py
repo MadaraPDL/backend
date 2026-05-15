@@ -20,9 +20,26 @@ async def test_login_requires_mfa_setup(monkeypatch):
     async def fake_authenticate_account(*args, **kwargs):
         return fake_account
 
+    async def fake_build_mfa_setup_response(*args, **kwargs):
+        return {
+            "mfa_setup_required": True,
+            "message": "MFA setup is required before this account can complete login.",
+            "account_type": "admin",
+            "account_id": fake_account.id,
+            "method": "authenticator",
+            "mfa_setup_token": "fake-setup-token",
+            "authenticator_secret": "FAKESECRET123",
+            "authenticator_uri": "otpauth://totp/PulseFi:admin@test.com",
+        }
+
     monkeypatch.setattr(
         "app.services.auth_service.authenticate_account",
         fake_authenticate_account,
+    )
+
+    monkeypatch.setattr(
+        "app.services.auth_service.build_mfa_setup_response",
+        fake_build_mfa_setup_response,
     )
 
     result = await start_login(

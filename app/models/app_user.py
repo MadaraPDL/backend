@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from app.models.isp import ISP
     from app.models.mfa_backup_code import MFABackupCode
     from app.models.mfa_challenge import MFAChallenge
+    from app.models.mfa_setup_challenge import MFASetupChallenge
     from app.models.password_reset_token import PasswordResetToken
     from app.models.prediction import Prediction
     from app.models.recommendation import Recommendation
@@ -176,5 +177,10 @@ class AppUser(Base):
 
     mfa_challenges: Mapped[list["MFAChallenge"]] = relationship(
         "MFAChallenge",
+        back_populates="app_user",
+    )
+
+    mfa_setup_challenges: Mapped[list["MFASetupChallenge"]] = relationship(
+        "MFASetupChallenge",
         back_populates="app_user",
     )
