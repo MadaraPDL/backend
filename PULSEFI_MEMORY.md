@@ -1170,3 +1170,21 @@ Impact:
 - Existing data: no automatic deletion yet; this is only a callable cleanup service.
 - Security: reduces long-term retention of inactive MFA setup challenge records once used by a future job/endpoint.
 - Future work: connect this to a scheduled maintenance task, CLI command, or admin-only maintenance endpoint.
+
+
+## MFA Secret Encryption at Rest ? 2026-05-15
+
+Completed and tested:
+- Added encryption helper foundation using `cryptography`.
+- Added `DATA_ENCRYPTION_KEY` setting.
+- Added CI dummy encryption key for automated tests.
+- Pending MFA setup secrets are encrypted in `mfa_setup_challenges`.
+- Final account MFA secrets are encrypted in `admins.mfa_secret` and `app_users.mfa_secret`.
+- Authenticator MFA verification decrypts the stored secret before validating the TOTP code.
+- Added encryption-related tests.
+
+Impact:
+- Database schema: no change for this chunk.
+- Existing data: existing plaintext MFA secrets would need migration/rotation before production if real users already configured MFA.
+- Security: MFA secrets are now encrypted at rest for new setup flows.
+- Deployment: production must configure `DATA_ENCRYPTION_KEY` securely and must not commit it.

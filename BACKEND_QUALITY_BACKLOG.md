@@ -730,3 +730,16 @@ Important Step 18 security reminder:
 - The cleanup service deletes only setup challenges that are used, revoked, or expired and older than the retention window.
 - The service is not scheduled yet.
 - Future production work should connect cleanup services to a scheduled worker or maintenance command.
+
+
+## MFA Secret Encryption Status Update
+
+- Added encryption helper foundation with `DATA_ENCRYPTION_KEY`.
+- New pending MFA setup secrets are encrypted at rest.
+- New final account MFA secrets are encrypted at rest.
+- MFA verification decrypts account MFA secrets before validating authenticator codes.
+- Remaining production work:
+  - migrate or rotate any existing plaintext MFA secrets if real users exist
+  - add rate limiting
+  - add real DB-backed auth/MFA integration tests
+  - reuse encryption helper later for router credentials
