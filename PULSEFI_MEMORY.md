@@ -977,3 +977,46 @@ Impact:
 Next Step 17 work:
 
 - Step 17G — App User subscription plan change request endpoints.
+
+---
+
+## Step 17 Progress — 2026-05-15
+
+### Step 17G — App User Plan Change Request Endpoints
+
+Completed and tested:
+
+- Added App User plan change request schemas.
+- Added App User plan change request service logic.
+- Added endpoint module:
+  - pp/api/v1/endpoints/app_user/plan_change_requests.py
+- Added endpoints:
+  - POST /api/v1/me/plan-change-requests
+  - GET /api/v1/me/plan-change-requests
+  - GET /api/v1/me/plan-change-requests/{request_id}
+- Connected plan change request endpoints to the App User router.
+- Endpoints use get_current_app_user.
+- Plan change request queries are scoped by SubscriptionChangeRequest.user_id = current_user.id.
+- App User endpoints do not accept user_id from the request.
+- Added validation to reject requesting the same current plan before database commit.
+- Confirmed PostgreSQL check constraint chk_requested_plan_different works correctly.
+- Tested invalid same-plan request handling.
+- Created a second ISP plan for successful endpoint testing.
+- Tested successful App User plan change request creation.
+- Tested request listing endpoint.
+- Ran pytest successfully.
+- Ran compileall successfully.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: creates pending plan change requests.
+- SE diagrams: later update App User/mobile activity and sequence diagrams to include plan change request flow.
+- Security:
+  - App User can only access their own requests.
+  - Requested plan must belong to the same ISP.
+  - Recommendation ownership validation enforced.
+
+Next Step 17 work:
+
+- Step 17H — App User device policy endpoints.

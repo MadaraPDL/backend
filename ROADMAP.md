@@ -1302,3 +1302,28 @@ Behavior:
 Next:
 
 - Step 17G — App User subscription plan change request endpoints.
+
+---
+
+### Step 17G — App User Plan Change Request Endpoints
+
+Completed on 2026-05-15.
+
+Endpoints:
+
+- POST /api/v1/me/plan-change-requests
+- GET /api/v1/me/plan-change-requests
+- GET /api/v1/me/plan-change-requests/{request_id}
+
+Behavior:
+
+- App Users can create subscription plan change requests.
+- App Users can list their own requests.
+- App Users can view one request by ID.
+- All queries are scoped by the authenticated App User.
+- Requested plan must differ from the current plan.
+- Requested plan must belong to the same ISP.
+
+Next:
+
+- Step 17H — App User device policy endpoints.

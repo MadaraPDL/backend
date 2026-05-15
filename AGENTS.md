@@ -1456,3 +1456,28 @@ Rules confirmed:
 Next likely Step 17 work:
 
 - App User subscription plan change request endpoints.
+
+---
+
+## Latest Completed App User Subscription Management Work
+
+Step 17G is complete.
+
+Completed endpoints:
+
+- POST /api/v1/me/plan-change-requests
+- GET /api/v1/me/plan-change-requests
+- GET /api/v1/me/plan-change-requests/{request_id}
+
+Rules confirmed:
+
+- Use get_current_app_user.
+- Scope plan change request queries by SubscriptionChangeRequest.user_id = current_user.id.
+- Do not accept user_id in App User /me routes.
+- Requested plan must differ from the current plan.
+- Requested plan must belong to the same ISP.
+- Validate recommendation ownership before linking.
+
+Next likely Step 17 work:
+
+- App User device policy endpoints.

@@ -972,3 +972,22 @@ Protected App User smart endpoints now include:
 Security rule:
 
 - Prediction and recommendation endpoints use the authenticated token user and do not accept a target user_id.
+
+---
+
+## Latest App User Subscription Management Endpoints
+
+Step 17G added App User plan change request endpoints.
+
+Protected App User subscription management endpoints now include:
+
+- POST /api/v1/me/plan-change-requests
+- GET /api/v1/me/plan-change-requests
+- GET /api/v1/me/plan-change-requests/{request_id}
+
+Security rules:
+
+- Plan change request endpoints use the authenticated token user.
+- App Users cannot submit requests for another user.
+- Requested plan must belong to the same ISP.
+- Requested plan cannot equal the current plan.
