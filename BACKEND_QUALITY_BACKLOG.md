@@ -622,3 +622,9 @@ Testing reminder:
 
 - Real baseline migration was generated and tested against a fresh temporary PostgreSQL database.
 - The circular FK between `isps.created_by_admin_id` and `admins.isp_id` was handled by creating the `isps.created_by_admin_id` FK after both tables exist.
+
+## Limited Database Role Status Update
+
+- The backend database connection was moved away from the PostgreSQL superuser.
+- A limited `pulsefi_app` database role is now used in `.env` for normal backend connections.
+- The role has runtime table permissions and temporary schema creation permission while migrations are still being actively developed.
