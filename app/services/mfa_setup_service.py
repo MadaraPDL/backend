@@ -43,6 +43,28 @@ def is_mfa_setup_challenge_active(challenge: MFASetupChallenge) -> bool:
 
 
 
+
+async def redact_inactive_mfa_setup_challenge_secrets(
+    db: AsyncSession,
+) -> None:
+    now = datetime.now(timezone.utc)
+
+    stmt = (
+        update(MFASetupChallenge)
+        .where(
+            MFASetupChallenge.authenticator_secret != "",
+            (
+                MFASetupChallenge.used_at.is_not(None)
+                | MFASetupChallenge.revoked_at.is_not(None)
+                | (MFASetupChallenge.expires_at <= now)
+            ),
+        )
+        .values(authenticator_secret="")
+    )
+
+    await db.execute(stmt)
+
+
 async def revoke_active_mfa_setup_challenges(
     db: AsyncSession,
     account: Account,
@@ -65,7 +87,7 @@ async def revoke_active_mfa_setup_challenges(
             MFASetupChallenge.revoked_at.is_(None),
             MFASetupChallenge.expires_at > now,
         )
-        .values(revoked_at=now)
+        .values(revoked_at=now, authenticator_secret="")
     )
 
     await db.execute(stmt)
@@ -76,6 +98,8 @@ async def build_mfa_setup_response(
     account: Account,
     account_type: AccountType,
 ) -> dict:
+    await redact_inactive_mfa_setup_challenge_secrets(db=db)
+
     await revoke_active_mfa_setup_challenges(
         db=db,
         account=account,
@@ -182,12 +206,15 @@ async def complete_mfa_setup(
     if account.mfa_enabled:
         return None
 
-    account.mfa_secret = challenge.authenticator_secret
+    authenticator_secret = challenge.authenticator_secret
+
+    account.mfa_secret = authenticator_secret
     account.mfa_enabled = True
     account.preferred_mfa_method = "authenticator"
     account.updated_at = datetime.now(timezone.utc)
 
     challenge.used_at = datetime.now(timezone.utc)
+    challenge.authenticator_secret = ""
 
     await db.flush()
 
