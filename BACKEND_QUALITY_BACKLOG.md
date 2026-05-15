@@ -687,3 +687,12 @@ Important Step 18 security reminder:
 - Do not store raw router passwords.
 - Do not expose router credentials.
 - Start with a simulator adapter before real router integrations.
+
+
+## MFA Setup Flow Status Update
+
+- The MFA-required login dead-end was fixed.
+- Accounts with `mfa_required=True` and `mfa_enabled=False` now receive a signed setup token and authenticator setup data.
+- Setup confirmation is handled through `POST /api/v1/auth/mfa/setup/confirm`.
+- MFA setup logic was placed in `app/services/mfa_setup_service.py` to keep `mfa_service.py` from becoming too large.
+- API regression tests were added for MFA setup confirmation.

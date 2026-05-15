@@ -1080,3 +1080,22 @@ Recent quality fixes:
 - Added API-level auth tests for login, password reset, and invitation email-delivery guards.
 
 - API test setup was refactored into `tests/api/conftest.py` with a shared `api_client` fixture.
+
+
+## MFA Setup Flow Fix ? 2026-05-15
+
+Completed and tested:
+- Added signed MFA setup token helpers.
+- Added `MFASetupConfirmRequest`.
+- Added separate `app/services/mfa_setup_service.py` to avoid making `mfa_service.py` too large.
+- Login now returns setup data when `mfa_required=True` and `mfa_enabled=False`.
+- Added endpoint:
+  - `POST /api/v1/auth/mfa/setup/confirm`
+- MFA setup confirmation verifies the authenticator code, enables MFA, stores the authenticator secret, and returns a normal access token.
+- Added API tests for successful and invalid MFA setup confirmation.
+
+Impact:
+- Database schema: no change.
+- Existing data: changes only when an account successfully confirms MFA setup.
+- Security: fixes the MFA setup dead-end after the bypass was closed.
+- SE diagrams: later update auth/login sequence to include MFA setup required -> setup confirm -> token issued.
