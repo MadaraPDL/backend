@@ -837,3 +837,21 @@ Remaining DB-backed test priorities:
 4. App User ownership isolation.
 5. Subscription, router, device policy, alert, prediction, and recommendation ownership.
 
+---
+
+## DB-Backed Invitation Duplicate Test Status Update
+
+Completed:
+- Added real PostgreSQL-backed tests for duplicate email and duplicate username rejection during admin invitation acceptance.
+- Updated integration fixture to use NullPool so asyncpg connections are not reused across closed Windows event loops.
+
+Covered:
+- Existing email prevents second account creation.
+- Existing username prevents second account creation.
+- Rejected duplicate invitation remains unaccepted.
+
+Remaining priority:
+1. DB-backed MFA setup confirmation success/failure tests.
+2. DB-backed ISP Admin cross-ISP isolation tests.
+3. DB-backed App User ownership tests.
+

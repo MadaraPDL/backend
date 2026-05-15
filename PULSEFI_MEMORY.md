@@ -1286,3 +1286,23 @@ Next recommended quality work:
 - Add DB-backed tests for ISP Admin isolation.
 - Add DB-backed tests for App User ownership.
 
+## DB-Backed Invitation Duplicate Tests - 2026-05-15
+
+Completed and tested:
+- Added DB-backed duplicate email protection test for admin invitation acceptance.
+- Added DB-backed duplicate username protection test for admin invitation acceptance.
+- Updated integration DB fixture to use a fresh async engine with NullPool.
+- This avoids asyncpg connection reuse across closed Windows pytest event loops.
+
+Impact:
+- Database schema: no change.
+- Existing data: no lasting change; tests roll back.
+- API behavior: no change.
+- Security/data integrity: duplicate admin account creation is now covered by real DB-backed tests.
+- SE diagrams: no change.
+
+Next recommended DB-backed tests:
+- MFA setup confirmation success/failure with real DB rows.
+- ISP Admin cross-ISP isolation.
+- App User ownership isolation.
+
