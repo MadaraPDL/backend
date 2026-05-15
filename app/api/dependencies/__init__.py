@@ -18,3 +18,4 @@ __all__ = [
     "require_admin_role",
 ]
 from app.api.dependencies.email_delivery import require_email_delivery_for_production
+from app.api.dependencies.rate_limit import rate_limit
