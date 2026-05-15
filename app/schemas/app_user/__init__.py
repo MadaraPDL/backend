@@ -20,6 +20,10 @@ from app.schemas.app_user.plan_change_requests import (
     MyPlanChangeRequestResponse,
 )
 
+from app.schemas.app_user.device_policies import (
+    MyDevicePolicyCreate,
+    MyDevicePolicyResponse,
+)
 
 __all__ = [
     "AppUserSummaryResponse",
@@ -36,4 +40,6 @@ __all__ = [
     "MyRecommendationResponse"
     "MyPlanChangeRequestCreate",
     "MyPlanChangeRequestResponse",
+    "MyDevicePolicyCreate",
+    "MyDevicePolicyResponse",
 ]

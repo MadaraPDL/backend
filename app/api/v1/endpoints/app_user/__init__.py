@@ -10,6 +10,7 @@ from app.api.v1.endpoints.app_user import (
     predictions,
     recommendations,
     plan_change_requests,
+    device_policies,
 )
 
 
@@ -24,3 +25,4 @@ router.include_router(usage.router)
 router.include_router(predictions.router)
 router.include_router(recommendations.router)
 router.include_router(plan_change_requests.router)
+router.include_router(device_policies.router)
