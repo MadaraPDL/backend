@@ -7,6 +7,8 @@ from app.api.v1.endpoints.app_user import (
     subscriptions,
     summary,
     usage,
+    predictions,
+    recommendations,
 )
 
 
@@ -18,3 +20,5 @@ router.include_router(subscriptions.router)
 router.include_router(routers.router)
 router.include_router(devices.router)
 router.include_router(usage.router)
+router.include_router(predictions.router)
+router.include_router(recommendations.router)

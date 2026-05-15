@@ -24,6 +24,15 @@ from app.services.app_user.alert_service import (
     mark_my_alert_as_read,
 )
 
+from app.services.app_user.prediction_service import (
+    get_my_prediction,
+    list_my_predictions,
+)
+from app.services.app_user.recommendation_service import (
+    get_my_recommendation,
+    list_my_recommendations,
+)
+
 __all__ = [
     "build_app_user_summary",
     "get_my_device",
@@ -39,4 +48,8 @@ __all__ = [
     "get_my_alert",
     "list_my_alerts",
     "mark_my_alert_as_read",
+    "get_my_prediction",
+    "get_my_recommendation",
+    "list_my_predictions",
+    "list_my_recommendations",
 ]
