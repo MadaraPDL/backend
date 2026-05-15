@@ -652,3 +652,11 @@ Testing reminder:
 - The auth service raises a specific email-delivery-required error before creating an email MFA challenge.
 - The login endpoint converts that error into HTTP 503.
 - Added a regression test to prevent email MFA codes from being created silently in production without email delivery.
+
+
+## Auth API Regression Test Status Update
+
+- Added API-level login regression tests.
+- Added API-level password reset regression tests.
+- Added API-level invitation email guard tests for Platform Admin ISP Admin invitations and ISP Admin App User invitations.
+- These tests verify frontend-facing HTTP responses and help prevent accidental token leakage or token creation when production email delivery is blocked.
