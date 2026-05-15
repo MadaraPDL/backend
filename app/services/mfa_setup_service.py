@@ -1,19 +1,20 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from uuid import UUID
 
-import jwt
 import pyotp
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.core.security import create_mfa_setup_token, decode_mfa_setup_token
 from app.models.admin import Admin
 from app.models.app_user import AppUser
 from app.schemas.auth.common import AccountType
 from app.services.account_service import Account
 from app.services.mfa_service import generate_authenticator_secret, verify_authenticator_code
+from app.services.mfa_setup_token_service import (
+    create_mfa_setup_token,
+    decode_mfa_setup_token,
+)
 
 
 def build_mfa_setup_response(
@@ -50,31 +51,16 @@ async def complete_mfa_setup(
     mfa_setup_token: str,
     code: str,
 ) -> tuple[Account, AccountType] | None:
-    try:
-        payload = decode_mfa_setup_token(mfa_setup_token)
-    except jwt.PyJWTError:
+    payload = decode_mfa_setup_token(mfa_setup_token)
+
+    if payload is None:
         return None
 
-    account_type = payload.get("setup_account_type")
-    raw_account_id = payload.get("sub")
-    authenticator_secret = payload.get("authenticator_secret")
-
-    if account_type not in ("admin", "app_user"):
+    if not verify_authenticator_code(payload.authenticator_secret, code):
         return None
 
-    if not isinstance(authenticator_secret, str):
-        return None
-
-    try:
-        account_id = UUID(str(raw_account_id))
-    except ValueError:
-        return None
-
-    if not verify_authenticator_code(authenticator_secret, code):
-        return None
-
-    model = Admin if account_type == "admin" else AppUser
-    account = await db.get(model, account_id)
+    model = Admin if payload.account_type == "admin" else AppUser
+    account = await db.get(model, payload.account_id)
 
     if account is None:
         return None
@@ -88,11 +74,11 @@ async def complete_mfa_setup(
     if account.mfa_enabled:
         return None
 
-    account.mfa_secret = authenticator_secret
+    account.mfa_secret = payload.authenticator_secret
     account.mfa_enabled = True
     account.preferred_mfa_method = "authenticator"
     account.updated_at = datetime.now(timezone.utc)
 
     await db.flush()
 
-    return account, account_type
+    return account, payload.account_type
