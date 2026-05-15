@@ -13,11 +13,27 @@ jobs:
     name: Backend checks
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: ci_user
+          POSTGRES_PASSWORD: ci_password
+          POSTGRES_DB: pulsefi_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U ci_user -d pulsefi_ci"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     env:
       PYTHONPATH: .
       APP_NAME: PulseFi
       APP_VERSION: 0.1.0
       DEBUG: "True"
+      EMAIL_DELIVERY_ENABLED: "False"
       API_V1_PREFIX: /api/v1
       DATABASE_URL: postgresql+asyncpg://ci_user:ci_password@localhost:5432/pulsefi_ci
       SECRET_KEY: ci_test_secret_key_replace_in_real_deployment_123456
@@ -50,6 +66,11 @@ jobs:
       - name: Compile Python files
         run: |
           python -m compileall app alembic tests
+
+      - name: Verify Alembic migrations on fresh PostgreSQL database
+        run: |
+          alembic upgrade head
+          alembic current
 
       - name: Run tests
         run: |
