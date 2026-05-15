@@ -15,6 +15,12 @@ from app.schemas.app_user.usage import (
     MyUsageTotalsResponse,
 )
 
+from app.schemas.app_user.plan_change_requests import (
+    MyPlanChangeRequestCreate,
+    MyPlanChangeRequestResponse,
+)
+
+
 __all__ = [
     "AppUserSummaryResponse",
     "MyDeviceResponse",
@@ -28,4 +34,6 @@ __all__ = [
     "MyAlertResponse",
     "MyPredictionResponse",
     "MyRecommendationResponse"
+    "MyPlanChangeRequestCreate",
+    "MyPlanChangeRequestResponse",
 ]

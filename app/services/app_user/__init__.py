@@ -28,10 +28,19 @@ from app.services.app_user.prediction_service import (
     get_my_prediction,
     list_my_predictions,
 )
+
 from app.services.app_user.recommendation_service import (
     get_my_recommendation,
     list_my_recommendations,
 )
+
+from app.services.app_user.plan_change_request_service import (
+    create_my_plan_change_request,
+    get_my_plan_change_request,
+    list_my_plan_change_requests,
+)
+
+
 
 __all__ = [
     "build_app_user_summary",
@@ -52,4 +61,7 @@ __all__ = [
     "get_my_recommendation",
     "list_my_predictions",
     "list_my_recommendations",
+    "create_my_plan_change_request",
+    "get_my_plan_change_request",
+    "list_my_plan_change_requests",
 ]
