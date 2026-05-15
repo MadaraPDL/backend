@@ -1099,3 +1099,21 @@ Impact:
 - Existing data: changes only when an account successfully confirms MFA setup.
 - Security: fixes the MFA setup dead-end after the bypass was closed.
 - SE diagrams: later update auth/login sequence to include MFA setup required -> setup confirm -> token issued.
+
+
+## MFA Setup Token Hardening and Cleanup ? 2026-05-15
+
+Completed and tested:
+- Hardened MFA setup-token handling.
+- Moved setup-token JWT logic into `app/services/mfa_setup_token_service.py`.
+- Kept MFA setup business logic in `app/services/mfa_setup_service.py`.
+- Restored `app/services/mfa_service.py` to focus only on MFA challenge, verification, and backup-code logic.
+- Removed duplicated MFA setup responsibility from `mfa_service.py`.
+- Added tests for MFA setup-token validation.
+- Confirmed tests pass after the cleanup.
+
+Impact:
+- Database schema: no change.
+- Existing data: no change.
+- Security: setup-token validation is stricter and MFA setup code is better isolated.
+- Architecture: MFA files are now split by responsibility.

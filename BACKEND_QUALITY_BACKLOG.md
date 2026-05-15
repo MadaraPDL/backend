@@ -696,3 +696,12 @@ Important Step 18 security reminder:
 - Setup confirmation is handled through `POST /api/v1/auth/mfa/setup/confirm`.
 - MFA setup logic was placed in `app/services/mfa_setup_service.py` to keep `mfa_service.py` from becoming too large.
 - API regression tests were added for MFA setup confirmation.
+
+
+## MFA Setup Cleanup Status Update
+
+- Removed duplicated MFA setup logic from `mfa_service.py`.
+- `mfa_service.py` now stays focused on MFA challenge/verify behavior.
+- `mfa_setup_service.py` handles setup business logic.
+- `mfa_setup_token_service.py` handles setup-token JWT creation and validation.
+- Setup-token hardening tests were added and passed.
