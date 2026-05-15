@@ -855,3 +855,23 @@ Remaining priority:
 2. DB-backed ISP Admin cross-ISP isolation tests.
 3. DB-backed App User ownership tests.
 
+---
+
+## DB-Backed MFA Setup Confirmation Test Status Update
+
+Completed:
+- Added real PostgreSQL-backed tests for MFA setup confirmation success and invalid-code failure.
+
+Covered:
+- Correct authenticator code enables MFA.
+- Final account MFA secret is encrypted at rest.
+- Used setup challenge is marked used.
+- Used setup challenge authenticator secret is cleared.
+- Wrong authenticator code does not enable MFA.
+- Wrong code increments attempt_count.
+
+Remaining priority:
+1. DB-backed ISP Admin cross-ISP isolation tests.
+2. DB-backed App User ownership tests.
+3. Subscription, router, device policy, alert, prediction, and recommendation ownership tests.
+

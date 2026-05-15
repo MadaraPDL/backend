@@ -1306,3 +1306,34 @@ Next recommended DB-backed tests:
 - ISP Admin cross-ISP isolation.
 - App User ownership isolation.
 
+## DB-Backed MFA Setup Confirmation Tests - 2026-05-15
+
+Completed and tested:
+- Added DB-backed MFA setup confirmation integration tests.
+- Test file:
+  - tests/integration/test_mfa_setup_integration.py
+- Covered successful MFA setup confirmation:
+  - creates real ISP/Admin rows
+  - creates real MFA setup challenge
+  - verifies authenticator TOTP code
+  - enables account MFA
+  - stores final account MFA secret encrypted
+  - marks setup challenge as used
+  - clears setup challenge authenticator secret
+- Covered invalid MFA setup confirmation:
+  - rejects wrong authenticator code
+  - keeps account MFA disabled
+  - keeps account MFA secret empty
+  - increments setup challenge attempt_count
+
+Impact:
+- Database schema: no change.
+- Existing data: no lasting change; tests roll back.
+- API behavior: no change.
+- Security: MFA setup success and invalid-code failure now have DB-backed coverage.
+- SE diagrams: no change.
+
+Next recommended DB-backed tests:
+- ISP Admin cross-ISP isolation.
+- App User ownership isolation.
+
