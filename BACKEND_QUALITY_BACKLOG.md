@@ -743,3 +743,13 @@ Important Step 18 security reminder:
   - add rate limiting
   - add real DB-backed auth/MFA integration tests
   - reuse encryption helper later for router credentials
+
+
+## Auth Rate Limiting Status Update
+
+- Added MVP in-memory rate limiting for auth-sensitive endpoints.
+- Current rate limiter protects login, MFA verification, MFA setup confirmation, password reset, and invitation acceptance.
+- Added tests for rate-limit behavior.
+- Remaining production work:
+  - replace in-memory limiter with Redis/shared-store limiter before multi-worker deployment
+  - add DB-backed integration tests for auth/MFA/rate-limit flows

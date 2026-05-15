@@ -1188,3 +1188,24 @@ Impact:
 - Existing data: existing plaintext MFA secrets would need migration/rotation before production if real users already configured MFA.
 - Security: MFA secrets are now encrypted at rest for new setup flows.
 - Deployment: production must configure `DATA_ENCRYPTION_KEY` securely and must not commit it.
+
+
+## Auth Rate Limiting MVP ? 2026-05-15
+
+Completed and tested:
+- Added shared in-memory rate limiting dependency.
+- Applied rate limits to auth-sensitive endpoints:
+  - `POST /api/v1/auth/login`
+  - `POST /api/v1/auth/mfa/verify`
+  - `POST /api/v1/auth/mfa/setup/confirm`
+  - `POST /api/v1/auth/password/forgot`
+  - `POST /api/v1/auth/password/reset`
+  - `POST /api/v1/auth/invitations/accept`
+- Added unit tests for the rate limiter.
+- Added API-level login rate-limit regression test.
+
+Impact:
+- Database schema: no change.
+- Existing data: no change.
+- Security: reduces brute-force/login/MFA/reset/invitation guessing risk.
+- Production note: current limiter is in-memory and suitable for local/demo/single-server use. Production should use Redis or another shared store.
