@@ -7,14 +7,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.db.session import get_db
-from app.schemas.auth import AuthTokenResponse, LoginRequest, MFARequiredResponse
+from app.schemas.auth import (
+    AuthTokenResponse,
+    LoginRequest,
+    MFARequiredResponse,
+    MFASetupRequiredResponse,
+)
 from app.services.auth_service import start_login
 
 router = APIRouter()
 
 @router.post(
     "/login",
-    response_model=Union[AuthTokenResponse, MFARequiredResponse],
+response_model=Union[
+    AuthTokenResponse,
+    MFARequiredResponse,
+    MFASetupRequiredResponse,
+],
 )
 
 async def login(

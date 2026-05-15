@@ -19,6 +19,13 @@ class MFARequiredResponse(BaseModel):
     dev_email_code: str | None = None
 
 
+class MFASetupRequiredResponse(BaseModel):
+    mfa_setup_required: bool = True
+    message: str = "MFA setup is required before this account can complete login."
+    account_type: str
+    account_id: str
+
+
 class MFAVerifyRequest(BaseModel):
     challenge_token: str = Field(..., min_length=20)
     code: str = Field(

@@ -50,6 +50,7 @@ async def start_login(
     )
 
     if account is None:
+        
         return None
     if account.mfa_required and not account.mfa_enabled:
 
