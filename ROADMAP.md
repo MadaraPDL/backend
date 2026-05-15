@@ -1252,3 +1252,27 @@ Next Step 17 work:
   - per-device usage
   - per-router or per-subscription filtering
   - raw usage records for charts/history
+
+---
+
+### Step 17E — App User Alert Endpoints
+
+Completed on 2026-05-15.
+
+Endpoints:
+
+- GET /api/v1/me/alerts
+- GET /api/v1/me/alerts/{alert_id}
+- PATCH /api/v1/me/alerts/{alert_id}/read
+
+Behavior:
+
+- App Users can list their own alerts.
+- App Users can view one alert by ID.
+- App Users can mark one alert as read.
+- All alert queries are scoped by the authenticated App User.
+- App User routes do not accept user_id from the request.
+
+Next:
+
+- Step 17F — App User predictions/recommendations endpoints or plan change request endpoints.

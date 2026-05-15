@@ -896,3 +896,40 @@ At the start of a new PulseFi backend chat, read or ask the user to provide the 
 - `BACKEND_QUALITY_BACKLOG.md`
 
 Then continue from the latest completed step.
+
+---
+
+## Step 17 Progress — 2026-05-15
+
+### Step 17E — App User Alert Endpoints
+
+Completed and tested:
+
+- Added App User alert schemas.
+- Added App User alert service logic.
+- Added endpoint module: pp/api/v1/endpoints/app_user/alerts.py.
+- Added endpoints:
+  - GET /api/v1/me/alerts
+  - GET /api/v1/me/alerts/{alert_id}
+  - PATCH /api/v1/me/alerts/{alert_id}/read
+- Connected alert endpoints to the App User router.
+- Endpoints use get_current_app_user.
+- Alert queries are scoped by Alert.user_id = current_user.id.
+- App User endpoints do not accept user_id from the request.
+- Tested App User login through PowerShell.
+- Tested listing alerts for the logged-in App User.
+- Tested empty alert list returns 0 alerts.
+- Tested fake alert ID returns 404 Alert not found.
+- Ran pytest successfully: 1 passed.
+- Ran compileall successfully.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: only changes when marking an alert as read.
+- SE diagrams: later update App User/mobile activity and sequence diagrams to include alert list/detail/read flow.
+- Security: App User can only access their own alerts.
+
+Next Step 17 work:
+
+- Step 17F — App User predictions and recommendations endpoints, or plan change request endpoints.

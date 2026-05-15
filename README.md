@@ -928,3 +928,30 @@ Next Step 17 work:
   - per-device usage
   - per-router or per-subscription filtering
   - raw usage records for charts/history
+
+---
+
+## Latest App User Mobile Endpoints
+
+Step 17E added App User alert endpoints.
+
+Protected App User endpoints now include:
+
+- GET /api/v1/me/summary
+- GET /api/v1/me/subscriptions
+- GET /api/v1/me/subscriptions/{subscription_id}
+- GET /api/v1/me/routers
+- GET /api/v1/me/routers/{router_id}
+- GET /api/v1/me/devices
+- GET /api/v1/me/devices/{device_id}
+- GET /api/v1/me/usage/summary
+- GET /api/v1/me/usage/devices
+- GET /api/v1/me/usage/devices/{device_id}
+- GET /api/v1/me/usage/records
+- GET /api/v1/me/alerts
+- GET /api/v1/me/alerts/{alert_id}
+- PATCH /api/v1/me/alerts/{alert_id}/read
+
+Security rule:
+
+- App User /me endpoints use the authenticated token user and do not accept a target user_id.

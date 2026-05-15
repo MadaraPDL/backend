@@ -1407,3 +1407,27 @@ At the start of a new PulseFi backend chat, read or ask the user to provide the 
 - `BACKEND_QUALITY_BACKLOG.md`
 
 Then continue from the latest completed step.
+
+---
+
+## Latest Completed App User Work
+
+Step 17E is complete.
+
+Completed endpoints:
+
+- GET /api/v1/me/alerts
+- GET /api/v1/me/alerts/{alert_id}
+- PATCH /api/v1/me/alerts/{alert_id}/read
+
+Rules confirmed:
+
+- Use get_current_app_user.
+- Scope alert queries by Alert.user_id = current_user.id.
+- Do not accept user_id in App User /me routes.
+- Do not expose sensitive auth fields.
+
+Next likely Step 17 work:
+
+- App User predictions/recommendations endpoints.
+- Or App User subscription plan change request endpoints.
