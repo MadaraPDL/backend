@@ -1151,3 +1151,22 @@ Impact:
 - Database schema: no change.
 - Existing data: inactive setup challenge secrets may be cleared during future setup challenge creation.
 - Security: improves secret retention behavior, but full encryption at rest is still pending before production.
+
+
+## MFA Setup Challenge Cleanup Service ? 2026-05-15
+
+Completed and tested:
+- Added `app/services/mfa_setup_cleanup_service.py`.
+- Added cleanup logic for old inactive MFA setup challenges.
+- Cleanup removes setup challenge rows only when they are old enough and inactive:
+  - used
+  - revoked
+  - expired
+- Default retention is 7 days.
+- Added service tests for cleanup count and invalid retention handling.
+
+Impact:
+- Database schema: no change.
+- Existing data: no automatic deletion yet; this is only a callable cleanup service.
+- Security: reduces long-term retention of inactive MFA setup challenge records once used by a future job/endpoint.
+- Future work: connect this to a scheduled maintenance task, CLI command, or admin-only maintenance endpoint.

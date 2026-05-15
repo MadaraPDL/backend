@@ -722,3 +722,11 @@ Important Step 18 security reminder:
 - Revoking old setup challenges clears their pending authenticator secret.
 - Successful MFA setup copies the secret to the account and clears it from the setup challenge row.
 - Full encryption at rest is still required before production for account MFA secrets and future router credentials.
+
+
+## MFA Setup Challenge Cleanup Service Status Update
+
+- Added a cleanup service for old inactive MFA setup challenges.
+- The cleanup service deletes only setup challenges that are used, revoked, or expired and older than the retention window.
+- The service is not scheduled yet.
+- Future production work should connect cleanup services to a scheduled worker or maintenance command.
