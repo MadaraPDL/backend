@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
 
     EMAIL_DELIVERY_ENABLED: bool = False
+    DATA_ENCRYPTION_KEY: str = ""
 
     SECRET_KEY: str
     ALGORITHM: str
@@ -34,6 +35,11 @@ class Settings(BaseSettings):
         if "*" in self.BACKEND_CORS_ORIGINS:
             raise ValueError(
                 "Wildcard CORS origins are not allowed when DEBUG=False."
+            )
+
+        if not self.DATA_ENCRYPTION_KEY:
+            raise ValueError(
+                "DATA_ENCRYPTION_KEY must be configured when DEBUG=False."
             )
 
         return self

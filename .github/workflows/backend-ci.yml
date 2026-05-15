@@ -34,6 +34,7 @@ jobs:
       APP_VERSION: 0.1.0
       DEBUG: "True"
       EMAIL_DELIVERY_ENABLED: "False"
+      DATA_ENCRYPTION_KEY: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
       API_V1_PREFIX: /api/v1
       DATABASE_URL: postgresql+asyncpg://ci_user:ci_password@localhost:5432/pulsefi_ci
       SECRET_KEY: ci_test_secret_key_replace_in_real_deployment_123456
