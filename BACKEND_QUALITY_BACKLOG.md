@@ -628,3 +628,12 @@ Testing reminder:
 - The backend database connection was moved away from the PostgreSQL superuser.
 - A limited `pulsefi_app` database role is now used in `.env` for normal backend connections.
 - The role has runtime table permissions and temporary schema creation permission while migrations are still being actively developed.
+
+
+## Production Token Email Flow Guard Status Update
+
+- Added `EMAIL_DELIVERY_ENABLED` setting.
+- Added `require_email_delivery_for_production()` dependency guard.
+- Password reset, ISP Admin invitation, and App User invitation token flows are now blocked in production when email delivery is not configured.
+- Development mode can still expose dev-only tokens/codes while `DEBUG=True`.
+- Added regression tests for the email delivery production guard.

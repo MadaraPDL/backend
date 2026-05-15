@@ -1062,3 +1062,13 @@ Impact:
 Next Backend Step:
 
 - Step 18 — Router adapter and simulator layer.
+
+
+## Backend Quality Fixes Completed
+
+Recent quality fixes:
+- MFA-required accounts can no longer bypass MFA setup and receive a normal login token.
+- Added auth service regression tests for normal login, MFA challenge login, and MFA setup-required login.
+- Replaced the empty Alembic baseline with a real baseline migration tested against a fresh PostgreSQL database.
+- Handled the circular FK between `isps.created_by_admin_id` and `admins.isp_id` by creating the FK after both tables exist.
+- Added a production guard so token-based email flows cannot silently run in production unless email delivery is configured.
