@@ -875,3 +875,20 @@ Remaining priority:
 2. DB-backed App User ownership tests.
 3. Subscription, router, device policy, alert, prediction, and recommendation ownership tests.
 
+---
+
+## DB-Backed ISP Admin Isolation Test Status Update
+
+Completed:
+- Added combined real PostgreSQL-backed ISP Admin isolation test.
+
+Covered:
+- ISP Admin from one ISP cannot access another ISP's App User.
+- ISP Admin from one ISP cannot access another ISP's Subscription Plan.
+- ISP Admin from one ISP cannot access another ISP's User Subscription.
+- ISP Admin from one ISP cannot access another ISP's Router.
+
+Remaining priority:
+1. DB-backed App User ownership isolation tests.
+2. DB-backed App User action ownership tests.
+

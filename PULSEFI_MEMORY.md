@@ -1337,3 +1337,26 @@ Next recommended DB-backed tests:
 - ISP Admin cross-ISP isolation.
 - App User ownership isolation.
 
+## DB-Backed ISP Admin Isolation Test - 2026-05-15
+
+Completed and tested:
+- Added combined DB-backed ISP Admin cross-ISP isolation test.
+- Test file:
+  - tests/integration/test_isp_admin_isolation_integration.py
+- Covered that ISP Admin from ISP A cannot access ISP B:
+  - App User
+  - Subscription Plan
+  - User Subscription
+  - Router
+
+Impact:
+- Database schema: no change.
+- Existing data: no lasting change; test rolls back.
+- API behavior: no change.
+- Security: core ISP Admin multi-tenant isolation now has DB-backed coverage.
+- SE diagrams: no change.
+
+Next recommended DB-backed tests:
+- App User ownership isolation.
+- App User action ownership for plan change requests and device policies.
+
