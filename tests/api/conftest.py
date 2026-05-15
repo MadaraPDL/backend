@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 
 from app.db.session import get_db
 from app.main import app
+from app.api.dependencies.rate_limit import reset_rate_limit_state
 
 
 class FakeDB:
@@ -23,9 +24,11 @@ async def override_get_db():
 
 @pytest.fixture
 def api_client():
+    reset_rate_limit_state()
     app.dependency_overrides[get_db] = override_get_db
 
     with TestClient(app) as client:
         yield client
 
     app.dependency_overrides.clear()
+    reset_rate_limit_state()

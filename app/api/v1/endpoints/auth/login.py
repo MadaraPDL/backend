@@ -20,11 +20,20 @@ router = APIRouter()
 
 @router.post(
     "/login",
-response_model=Union[
-    AuthTokenResponse,
-    MFARequiredResponse,
-    MFASetupRequiredResponse,
-],
+    response_model=Union[
+        AuthTokenResponse,
+        MFARequiredResponse,
+        MFASetupRequiredResponse,
+    ],
+    dependencies=[
+        Depends(
+            rate_limit(
+                "auth_login",
+                max_attempts=10,
+                window_seconds=60,
+            )
+        ),
+    ],
 )
 
 async def login(
