@@ -7,6 +7,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
+from app.core.encryption import DecryptionError, decrypt_text, encrypt_text
 from app.models.admin import Admin
 from app.models.app_user import AppUser
 from app.models.mfa_setup_challenge import MFASetupChallenge
@@ -37,6 +38,9 @@ def is_mfa_setup_challenge_active(challenge: MFASetupChallenge) -> bool:
         return False
 
     if challenge.attempt_count >= MAX_MFA_SETUP_ATTEMPTS:
+        return False
+
+    if not challenge.authenticator_secret:
         return False
 
     return True
@@ -114,7 +118,7 @@ async def build_mfa_setup_response(
         admin_id=account.id if account_type == "admin" else None,
         app_user_id=account.id if account_type == "app_user" else None,
         setup_token_hash=setup_token_hash,
-        authenticator_secret=authenticator_secret,
+        authenticator_secret=encrypt_text(authenticator_secret),
         expires_at=datetime.now(timezone.utc) + timedelta(minutes=10),
     )
 
@@ -184,7 +188,12 @@ async def complete_mfa_setup(
     if not is_mfa_setup_challenge_active(challenge):
         return None
 
-    if not verify_authenticator_code(challenge.authenticator_secret, code):
+    try:
+        authenticator_secret = decrypt_text(challenge.authenticator_secret)
+    except DecryptionError:
+        return None
+
+    if not verify_authenticator_code(authenticator_secret, code):
         challenge.attempt_count += 1
         await db.flush()
         return None
@@ -206,9 +215,7 @@ async def complete_mfa_setup(
     if account.mfa_enabled:
         return None
 
-    authenticator_secret = challenge.authenticator_secret
-
-    account.mfa_secret = authenticator_secret
+    account.mfa_secret = encrypt_text(authenticator_secret)
     account.mfa_enabled = True
     account.preferred_mfa_method = "authenticator"
     account.updated_at = datetime.now(timezone.utc)

@@ -6,6 +6,7 @@ import pyotp
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.encryption import DecryptionError, decrypt_text
 from app.core.security import (
     generate_numeric_code,
     generate_secure_token,
@@ -161,10 +162,16 @@ async def verify_mfa_challenge_code(
 
     elif challenge.method == "authenticator":
         if account.mfa_secret is not None:
-            is_valid = verify_authenticator_code(
-                secret=account.mfa_secret,
-                code=code,
-            )
+            try:
+                authenticator_secret = decrypt_text(account.mfa_secret)
+            except DecryptionError:
+                authenticator_secret = None
+
+            if authenticator_secret is not None:
+                is_valid = verify_authenticator_code(
+                    secret=authenticator_secret,
+                    code=code,
+                )
 
     if not is_valid:
         is_valid = await verify_backup_code(
