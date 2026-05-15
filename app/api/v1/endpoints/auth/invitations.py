@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.dependencies import rate_limit
 from app.db.session import get_db
 from app.models.admin import Admin
 from app.schemas.auth import AcceptInvitationRequest, AcceptInvitationResponse, AccountType

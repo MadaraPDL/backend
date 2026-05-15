@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.api.dependencies import require_email_delivery_for_production
+from app.api.dependencies import rate_limit, require_email_delivery_for_production
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -20,7 +20,11 @@ from app.services.password_reset_service import (
 
 router = APIRouter(prefix="/password")
 
-@router.post("/forgot", response_model=ForgotPasswordResponse)
+@router.post(
+    "/forgot",
+    response_model=ForgotPasswordResponse,
+    dependencies=[Depends(rate_limit("auth_password_forgot", max_attempts=5, window_seconds=300))],
+)
 
 async def forgot_password(
     request: ForgotPasswordRequest,
@@ -56,7 +60,11 @@ async def forgot_password(
     return response
 
 
-@router.post("/reset", response_model=ResetPasswordResponse)
+@router.post(
+    "/reset",
+    response_model=ResetPasswordResponse,
+    dependencies=[Depends(rate_limit("auth_password_reset", max_attempts=10, window_seconds=300))],
+)
 
 async def reset_password(
     request: ResetPasswordRequest,

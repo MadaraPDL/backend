@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.dependencies import rate_limit
 from app.db.session import get_db
 from app.schemas.auth import (
     AuthTokenResponse,
@@ -15,7 +16,11 @@ from app.services.mfa_setup_service import complete_mfa_setup
 router = APIRouter(prefix="/mfa")
 
 
-@router.post("/verify", response_model=AuthTokenResponse)
+@router.post(
+    "/verify",
+    response_model=AuthTokenResponse,
+    dependencies=[Depends(rate_limit("auth_mfa_verify", max_attempts=10, window_seconds=300))],
+)
 async def verify_mfa(
     request: MFAVerifyRequest,
     db: AsyncSession = Depends(get_db),
@@ -36,7 +41,11 @@ async def verify_mfa(
     return response_data
 
 
-@router.post("/setup/confirm", response_model=AuthTokenResponse)
+@router.post(
+    "/setup/confirm",
+    response_model=AuthTokenResponse,
+    dependencies=[Depends(rate_limit("auth_mfa_setup_confirm", max_attempts=10, window_seconds=300))],
+)
 async def confirm_mfa_setup(
     request: MFASetupConfirmRequest,
     db: AsyncSession = Depends(get_db),
