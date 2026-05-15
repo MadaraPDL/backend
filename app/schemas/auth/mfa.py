@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -23,7 +24,7 @@ class MFASetupRequiredResponse(BaseModel):
     mfa_setup_required: bool = True
     message: str = "MFA setup is required before this account can complete login."
     account_type: str
-    account_id: str
+    account_id: UUID
 
 
 class MFAVerifyRequest(BaseModel):
