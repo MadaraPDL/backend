@@ -17,6 +17,15 @@ router = APIRouter(prefix="/invitations")
     "/accept",
     response_model=AcceptInvitationResponse,
     status_code=status.HTTP_201_CREATED,
+    dependencies=[
+        Depends(
+            rate_limit(
+                "auth_invitation_accept",
+                max_attempts=10,
+                window_seconds=300,
+            )
+        ),
+    ],
 )
 
 async def accept_account_invitation(
