@@ -2,25 +2,11 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 from fastapi import HTTPException, status
-from fastapi.testclient import TestClient
 
 import app.api.v1.endpoints.isp_admin.user_invitations as user_invitation_endpoint
 import app.api.v1.endpoints.platform_admin.admin_invitations as admin_invitation_endpoint
 from app.api.dependencies import get_current_admin, get_current_isp_admin
-from app.db.session import get_db
 from app.main import app
-
-
-class FakeDB:
-    async def commit(self):
-        return None
-
-    async def rollback(self):
-        return None
-
-
-async def override_get_db():
-    yield FakeDB()
 
 
 async def override_platform_admin():
@@ -39,19 +25,6 @@ async def override_isp_admin():
     )
 
 
-def setup_function():
-    app.dependency_overrides[get_db] = override_get_db
-    app.dependency_overrides[get_current_admin] = override_platform_admin
-    app.dependency_overrides[get_current_isp_admin] = override_isp_admin
-
-
-def teardown_function():
-    app.dependency_overrides.clear()
-
-
-client = TestClient(app)
-
-
 def invitation_payload():
     return {
         "email": "newuser@test.com",
@@ -67,8 +40,10 @@ def raise_email_delivery_error():
     )
 
 
-def test_platform_admin_invitation_blocks_without_email_delivery(monkeypatch):
+def test_platform_admin_invitation_blocks_without_email_delivery(api_client, monkeypatch):
     isp_id = uuid4()
+
+    app.dependency_overrides[get_current_admin] = override_platform_admin
 
     async def fake_get_isp_by_id(*args, **kwargs):
         return SimpleNamespace(
@@ -115,7 +90,7 @@ def test_platform_admin_invitation_blocks_without_email_delivery(monkeypatch):
         fake_create_invitation,
     )
 
-    response = client.post(
+    response = api_client.post(
         f"/api/v1/platform-admin/isps/{isp_id}/admin-invitations",
         json=invitation_payload(),
     )
@@ -124,7 +99,9 @@ def test_platform_admin_invitation_blocks_without_email_delivery(monkeypatch):
     assert "Email delivery is not configured" in response.json()["detail"]
 
 
-def test_isp_admin_user_invitation_blocks_without_email_delivery(monkeypatch):
+def test_isp_admin_user_invitation_blocks_without_email_delivery(api_client, monkeypatch):
+    app.dependency_overrides[get_current_isp_admin] = override_isp_admin
+
     async def fake_get_account_by_identifier(*args, **kwargs):
         return None
 
@@ -158,7 +135,7 @@ def test_isp_admin_user_invitation_blocks_without_email_delivery(monkeypatch):
         fake_create_invitation,
     )
 
-    response = client.post(
+    response = api_client.post(
         "/api/v1/isp-admin/user-invitations",
         json=invitation_payload(),
     )

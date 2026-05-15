@@ -1,35 +1,4 @@
-import pytest
-from fastapi.testclient import TestClient
-
 import app.api.v1.endpoints.auth.password_reset as password_reset_endpoint
-from app.db.session import get_db
-from app.main import app
-
-
-class FakeDB:
-    def __init__(self):
-        self.committed = False
-        self.rolled_back = False
-
-    async def commit(self):
-        self.committed = True
-
-    async def rollback(self):
-        self.rolled_back = True
-
-
-async def override_get_db():
-    yield FakeDB()
-
-
-@pytest.fixture(autouse=True)
-def override_db_dependency():
-    app.dependency_overrides[get_db] = override_get_db
-    yield
-    app.dependency_overrides.clear()
-
-
-client = TestClient(app)
 
 
 def valid_forgot_password_payload():
@@ -39,7 +8,7 @@ def valid_forgot_password_payload():
     }
 
 
-def test_forgot_password_returns_dev_token_in_debug(monkeypatch):
+def test_forgot_password_returns_dev_token_in_debug(api_client, monkeypatch):
     def fake_email_guard():
         return None
 
@@ -64,7 +33,7 @@ def test_forgot_password_returns_dev_token_in_debug(monkeypatch):
         True,
     )
 
-    response = client.post(
+    response = api_client.post(
         "/api/v1/auth/password/forgot",
         json=valid_forgot_password_payload(),
     )
@@ -77,7 +46,7 @@ def test_forgot_password_returns_dev_token_in_debug(monkeypatch):
     assert body["dev_reset_token"] == "fake-reset-token"
 
 
-def test_forgot_password_blocks_when_email_delivery_guard_blocks(monkeypatch):
+def test_forgot_password_blocks_when_email_delivery_guard_blocks(api_client, monkeypatch):
     def fake_email_guard():
         from fastapi import HTTPException, status
 
@@ -101,7 +70,7 @@ def test_forgot_password_blocks_when_email_delivery_guard_blocks(monkeypatch):
         fake_create_password_reset_token,
     )
 
-    response = client.post(
+    response = api_client.post(
         "/api/v1/auth/password/forgot",
         json=valid_forgot_password_payload(),
     )
