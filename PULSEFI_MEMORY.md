@@ -1360,3 +1360,34 @@ Next recommended DB-backed tests:
 - App User ownership isolation.
 - App User action ownership for plan change requests and device policies.
 
+## DB-Backed App User Read Ownership Test - 2026-05-15
+
+Completed and tested:
+- Added combined DB-backed App User read ownership isolation test.
+- Test file:
+  - tests/integration/test_app_user_ownership_integration.py
+- Covered that App User A cannot read App User B:
+  - Alert
+  - Prediction
+  - Recommendation
+
+Real DB constraint notes found during testing:
+- Prediction risk_level must use allowed DB values such as "low".
+- Alert severity constraint currently allows "low", "meduim", "high", "critical".
+- Alert type constraint allows "high_usage", "new_device", "plan_exceeds_risk", "policy_failed", "system".
+- Recommendation type constraint allows "upgrade_plan", "downgrade_pan", "keep_plan", "optimize_usage".
+
+Schema cleanup needed later:
+- Fix typo "meduim" to "medium".
+- Fix typo "downgrade_pan" to "downgrade_plan".
+
+Impact:
+- Database schema: no change.
+- Existing data: no lasting change; test rolls back.
+- API behavior: no change.
+- Security: App User read ownership now has DB-backed coverage.
+- SE diagrams: no change.
+
+Next recommended test:
+- App User action ownership for device policies and subscription change requests.
+

@@ -892,3 +892,23 @@ Remaining priority:
 1. DB-backed App User ownership isolation tests.
 2. DB-backed App User action ownership tests.
 
+---
+
+## DB-Backed App User Read Ownership Test Status Update
+
+Completed:
+- Added combined real PostgreSQL-backed App User read ownership test.
+
+Covered:
+- App User cannot read another user's Alert.
+- App User cannot read another user's Prediction.
+- App User cannot read another user's Recommendation.
+
+Schema cleanup discovered:
+- Alert severity check constraint contains typo "meduim".
+- Recommendation type check constraint contains typo "downgrade_pan".
+
+Remaining priority:
+1. DB-backed App User action ownership test.
+2. Later schema cleanup migration for enum/check-constraint typos.
+
