@@ -668,3 +668,22 @@ Testing reminder:
 - Moved repeated API test setup into a shared `api_client` fixture.
 - Removed repeated FakeDB, TestClient, and database dependency override boilerplate from API test files.
 - API tests are now cleaner and easier to extend.
+
+---
+
+## Latest Current Context Update ? 2026-05-15
+
+Current backend phase: **Step 18 ? Router adapter and simulator layer**.
+
+Recent quality work completed:
+- MFA-required login bypass fixed.
+- Auth service and API regression tests added.
+- Real Alembic baseline migration added and tested.
+- GitHub Actions now checks PostgreSQL + Alembic migrations.
+- Production token/email flows are guarded when email delivery is not configured.
+- API test setup was refactored into shared fixtures.
+
+Important Step 18 security reminder:
+- Do not store raw router passwords.
+- Do not expose router credentials.
+- Start with a simulator adapter before real router integrations.

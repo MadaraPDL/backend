@@ -1352,3 +1352,25 @@ Behavior:
 Next:
 
 - Step 18 — Router adapter and simulator layer.
+
+---
+
+## Latest Current State Update ? 2026-05-15
+
+Current backend position: **Step 18 ? Router adapter and simulator layer**.
+
+Recently completed:
+- Step 16: ISP Admin management endpoints.
+- Step 17: App User/mobile endpoints through device policy requests.
+- Backend quality/security fixes:
+  - MFA setup enforcement.
+  - Real Alembic baseline migration.
+  - GitHub Actions PostgreSQL + Alembic migration checks.
+  - Production email delivery guards.
+  - Auth API regression tests.
+
+Next:
+- Step 18A: Router adapter interface.
+- Step 18B: Simulator router adapter.
+- Step 18C: Service layer for router sync/action simulation.
+- Step 18D: Safe API endpoints/logging around simulated router actions.

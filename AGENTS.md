@@ -1505,3 +1505,22 @@ Rules confirmed:
 Next backend work:
 
 - Step 18 — Router adapter and simulator layer.
+
+---
+
+## Latest Current State Update ? 2026-05-15
+
+Current backend position: **Step 18 ? Router adapter and simulator layer**.
+
+Completed:
+- Step 16 ISP Admin MVP endpoints are complete.
+- Step 17 App User/mobile MVP endpoints are complete through device policy requests.
+- Backend quality fixes are complete for MFA login enforcement, Alembic baseline migration, PostgreSQL CI migration checks, production email-token guards, and auth API regression tests.
+
+Next backend step:
+- Step 18: create the router adapter foundation and simulator adapter.
+
+Step 18 rule:
+- Do not connect to real routers yet.
+- Do not store raw router passwords.
+- Start with a simulator adapter so router behavior can be demoed safely and tested reliably.

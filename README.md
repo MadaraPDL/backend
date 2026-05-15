@@ -1010,3 +1010,19 @@ Security rules:
 - App Users cannot create policies for another user's device.
 - Device ownership validation enforced before policy creation.
 - Router actions are not yet executed directly in Step 17.
+
+---
+
+## Latest Current Backend Status ? 2026-05-15
+
+Current phase: **Step 18 ? Router adapter and simulator layer**.
+
+Completed:
+- Platform Admin MVP endpoints.
+- ISP Admin MVP endpoints.
+- App User/mobile MVP endpoints through subscriptions, routers/devices, usage-adjacent views, alerts, predictions, recommendations, plan change requests, and device policy requests.
+- Backend quality fixes for auth security, migrations, CI, production email-token guards, and API tests.
+
+Next backend focus:
+- Build a router adapter architecture starting with a simulator adapter.
+- Real router integrations come later after safe credential encryption and router-specific capability handling are designed.
