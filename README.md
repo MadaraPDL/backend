@@ -8,7 +8,7 @@ The backend is a FastAPI + PostgreSQL service designed for a deployable Final Ye
 
 ## Current Backend Status
 
-Current phase: **Step 16 — ISP Admin management endpoints**.
+Current phase: **Step 18 — ISP Admin management endpoints**.
 
 Recently completed and tested:
 
@@ -23,7 +23,7 @@ Recently completed and tested:
 - Platform Admin dashboard summary metrics.
 - Platform Admin pending ISP Admin invitation management.
 
-Step 15 is complete. The next backend work should start from Step 16.
+Step 16 and Step 17 MVP work are complete. The next backend work should start from Step 18.
 
 ---
 
@@ -45,7 +45,7 @@ Protected by `platform_admin` role only:
 
 ---
 
-## Step 16 Rule
+## ISP Admin Isolation Rule
 
 ISP Admin endpoints must be scoped to the authenticated ISP Admin's own `isp_id`.
 

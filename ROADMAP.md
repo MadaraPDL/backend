@@ -2,9 +2,9 @@
 
 ## Current Position
 
-Current phase: **Step 16 — ISP Admin management endpoints**.
+Current phase: **Step 18 — ISP Admin management endpoints**.
 
-Step 15 is complete and tested.
+Step 16 and Step 17 MVP work are complete and tested.
 
 Recently completed:
 
@@ -17,7 +17,7 @@ Recently completed:
 
 Next step:
 
-- Step 16: ISP Admin management endpoints.
+- Step 18: Router adapter and simulator layer.
 
 ---
 

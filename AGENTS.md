@@ -16,7 +16,7 @@ This backend is being built step by step by the student/developer, so changes sh
 
 ## Current Backend Position
 
-Current phase: **Step 16 — ISP Admin management endpoints**.
+Current phase: **Step 18 — ISP Admin management endpoints**.
 
 Recently completed and tested:
 
@@ -27,7 +27,7 @@ Recently completed and tested:
 - Step 15D: Platform Admin dashboard summary endpoint.
 - Step 15E: Platform Admin pending ISP Admin invitation management.
 
-Step 15 is complete. Step 16 is next.
+Step 16 and Step 17 MVP work are complete. Step 18 is next.
 
 ---
 
@@ -51,7 +51,7 @@ Protected by `platform_admin` role only:
 
 ## Current Next Step
 
-Step 16: ISP Admin management endpoints.
+Step 18: Router adapter and simulator layer.
 
 Core rule:
 

@@ -8,9 +8,9 @@ These items are not all required before every small feature, but they should be 
 
 ## Current Context
 
-Current backend phase: **Step 16 — ISP Admin management endpoints**.
+Current backend phase: **Step 18 — ISP Admin management endpoints**.
 
-Step 15 Platform Admin endpoints are complete.
+Step 16 ISP Admin MVP and Step 17 App User MVP endpoints are complete.
 
 Step 16 must be built using the ISP Admin guard:
 
