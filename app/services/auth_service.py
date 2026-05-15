@@ -11,6 +11,7 @@ from app.services.account_service import (
     get_account_mfa_method,
 )
 from app.services.mfa_service import (
+    build_mfa_setup_response,
     create_mfa_challenge,
     get_mfa_challenge_by_token,
     verify_mfa_challenge_code,
@@ -54,22 +55,19 @@ async def start_login(
     )
 
     if account is None:
-        
         return None
-    if account.mfa_required and not account.mfa_enabled:
 
-        return {
-        "mfa_setup_required": True,
-        "message": "MFA setup is required before this account can complete login.",
-        "account_type": account_type,
-        "account_id": account.id,
-    }, None
+    if account.mfa_required and not account.mfa_enabled:
+        return build_mfa_setup_response(
+            account=account,
+            account_type=account_type,
+        ), None
 
     if not account.mfa_enabled:
         return build_auth_token_response(
-        account=account,
-        account_type=account_type,
-    ), None
+            account=account,
+            account_type=account_type,
+        ), None
 
     method = get_account_mfa_method(
         account=account,

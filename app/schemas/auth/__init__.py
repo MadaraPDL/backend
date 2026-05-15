@@ -5,6 +5,7 @@ from app.schemas.auth.invitation import AcceptInvitationRequest, AcceptInvitatio
 from app.schemas.auth.login import AuthTokenResponse, LoginRequest
 from app.schemas.auth.mfa import (
     MFARequiredResponse,
+    MFASetupConfirmRequest,
     MFASetupRequiredResponse,
     MFAVerifyRequest,
 )
@@ -32,4 +33,5 @@ __all__ = [
     "VerifyEmailRequest",
     "VerifyEmailResponse",
     "MFASetupRequiredResponse",
+    "MFASetupConfirmRequest",
 ]

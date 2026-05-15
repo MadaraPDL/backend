@@ -34,6 +34,10 @@ def test_login_returns_mfa_setup_required_response(api_client, monkeypatch):
                 "message": "MFA setup is required before this account can complete login.",
                 "account_type": "admin",
                 "account_id": account_id,
+                "method": "authenticator",
+                "mfa_setup_token": "fake-mfa-setup-token",
+                "authenticator_secret": "FAKESECRET123",
+                "authenticator_uri": "otpauth://totp/PulseFi:admin@test.com",
             },
             None,
         )
@@ -49,6 +53,10 @@ def test_login_returns_mfa_setup_required_response(api_client, monkeypatch):
     assert body["mfa_setup_required"] is True
     assert body["account_type"] == "admin"
     assert body["account_id"] == str(account_id)
+    assert body["method"] == "authenticator"
+    assert body["mfa_setup_token"] == "fake-mfa-setup-token"
+    assert body["authenticator_secret"] == "FAKESECRET123"
+    assert body["authenticator_uri"].startswith("otpauth://")
     assert "access_token" not in body
 
 

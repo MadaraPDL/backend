@@ -5,7 +5,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from app.schemas.auth.common import MFAMethod
+from app.schemas.auth.common import AccountType, MFAMethod
 
 
 class MFARequiredResponse(BaseModel):
@@ -23,8 +23,12 @@ class MFARequiredResponse(BaseModel):
 class MFASetupRequiredResponse(BaseModel):
     mfa_setup_required: bool = True
     message: str = "MFA setup is required before this account can complete login."
-    account_type: str
+    account_type: AccountType
     account_id: UUID
+    method: MFAMethod = "authenticator"
+    mfa_setup_token: str
+    authenticator_secret: str
+    authenticator_uri: str
 
 
 class MFAVerifyRequest(BaseModel):
@@ -34,4 +38,14 @@ class MFAVerifyRequest(BaseModel):
         min_length=6,
         max_length=20,
         description="Email OTP, authenticator code, or backup code",
+    )
+
+
+class MFASetupConfirmRequest(BaseModel):
+    mfa_setup_token: str = Field(..., min_length=20)
+    code: str = Field(
+        ...,
+        min_length=6,
+        max_length=20,
+        description="Authenticator app code from the newly configured MFA secret.",
     )
