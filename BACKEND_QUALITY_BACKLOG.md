@@ -912,3 +912,25 @@ Remaining priority:
 1. DB-backed App User action ownership test.
 2. Later schema cleanup migration for enum/check-constraint typos.
 
+---
+
+## DB-Backed App User Action Ownership Test Status Update
+
+Completed:
+- Added combined real PostgreSQL-backed App User action ownership test.
+
+Covered:
+- App User cannot create a device policy for another user's device.
+- App User cannot create a plan change request using another user's subscription.
+- App User cannot create a plan change request using another user's recommendation.
+- Blocked action attempts do not create policy/change-request rows.
+
+Immediate ownership hardening pass:
+- Complete.
+
+Next priority:
+1. Continue Step 18.
+2. Later schema cleanup migration for check-constraint typos:
+   - "meduim" -> "medium"
+   - "downgrade_pan" -> "downgrade_plan"
+

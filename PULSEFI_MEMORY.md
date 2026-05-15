@@ -1391,3 +1391,34 @@ Impact:
 Next recommended test:
 - App User action ownership for device policies and subscription change requests.
 
+## DB-Backed App User Action Ownership Test - 2026-05-15
+
+Completed and tested:
+- Added combined DB-backed App User action ownership test.
+- Test file:
+  - tests/integration/test_app_user_action_ownership_integration.py
+- Covered that App User A cannot:
+  - create a device policy for App User B's device
+  - create a plan change request using App User B's subscription
+  - create a plan change request using App User B's recommendation
+- Also confirms blocked attempts do not create DeviceNetworkPolicy or SubscriptionChangeRequest rows.
+
+Impact:
+- Database schema: no change.
+- Existing data: no lasting change; test rolls back.
+- API behavior: no change.
+- Security: App User action ownership now has DB-backed coverage.
+- SE diagrams: no change.
+
+Current quality status:
+- DB-backed integration testing now covers:
+  - invitation acceptance and MFA setup-required login
+  - duplicate invitation/account protection
+  - MFA setup confirmation success/failure
+  - ISP Admin cross-ISP isolation
+  - App User read ownership
+  - App User action ownership
+
+Next backend step:
+- Continue Step 18.
+
