@@ -714,3 +714,11 @@ Important Step 18 security reminder:
 - Setup token sent to the client is now opaque.
 - Setup token hash, pending authenticator secret, expiry, used marker, and attempt count are stored server-side.
 - This fixes the previous issue where the raw authenticator secret was included inside a signed but readable JWT.
+
+
+## MFA Setup Secret Redaction Status Update
+
+- Used, revoked, and expired MFA setup challenge secrets are now redacted.
+- Revoking old setup challenges clears their pending authenticator secret.
+- Successful MFA setup copies the secret to the account and clears it from the setup challenge row.
+- Full encryption at rest is still required before production for account MFA secrets and future router credentials.

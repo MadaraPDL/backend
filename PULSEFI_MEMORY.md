@@ -1137,3 +1137,17 @@ Impact:
 - Existing data: no existing rows changed.
 - Security: MFA setup token no longer exposes the authenticator secret in a client-readable JWT.
 - SE diagrams: later update auth/login sequence and ERD to include pending MFA setup challenge storage.
+
+
+## MFA Setup Secret Redaction ? 2026-05-15
+
+Completed and tested:
+- Pending MFA setup secrets are redacted from `mfa_setup_challenges` after successful setup.
+- Revoked MFA setup challenges now have their pending authenticator secret cleared.
+- Expired, used, and revoked setup challenge secrets are cleaned when a new setup challenge is created.
+- This reduces how long pending authenticator secrets remain in the database.
+
+Impact:
+- Database schema: no change.
+- Existing data: inactive setup challenge secrets may be cleared during future setup challenge creation.
+- Security: improves secret retention behavior, but full encryption at rest is still pending before production.
