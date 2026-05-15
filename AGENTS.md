@@ -1481,3 +1481,27 @@ Rules confirmed:
 Next likely Step 17 work:
 
 - App User device policy endpoints.
+
+---
+
+## Latest Completed App User Device Control Work
+
+Step 17H is complete.
+
+Completed endpoints:
+
+- POST /api/v1/me/device-policies
+- GET /api/v1/me/device-policies
+- GET /api/v1/me/device-policies/{policy_id}
+
+Rules confirmed:
+
+- Use get_current_app_user.
+- Scope device policy queries by DeviceNetworkPolicy.requested_by_user_id = current_user.id.
+- Do not accept user_id in App User /me routes.
+- Validate device ownership before policy creation.
+- Device policies remain pending until future router adapter execution.
+
+Next backend work:
+
+- Step 18 — Router adapter and simulator layer.

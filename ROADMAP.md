@@ -1327,3 +1327,28 @@ Behavior:
 Next:
 
 - Step 17H — App User device policy endpoints.
+
+---
+
+### Step 17H — App User Device Policy Endpoints
+
+Completed on 2026-05-15.
+
+Endpoints:
+
+- POST /api/v1/me/device-policies
+- GET /api/v1/me/device-policies
+- GET /api/v1/me/device-policies/{policy_id}
+
+Behavior:
+
+- App Users can create device network policy requests.
+- App Users can list their own device policy requests.
+- App Users can view one device policy request by ID.
+- All queries are scoped by the authenticated App User.
+- Device ownership validation enforced before policy creation.
+- Device policy requests remain pending until router execution layer implementation.
+
+Next:
+
+- Step 18 — Router adapter and simulator layer.

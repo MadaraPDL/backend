@@ -991,3 +991,22 @@ Security rules:
 - App Users cannot submit requests for another user.
 - Requested plan must belong to the same ISP.
 - Requested plan cannot equal the current plan.
+
+---
+
+## Latest App User Device Control Endpoints
+
+Step 17H added App User device policy endpoints.
+
+Protected App User device control endpoints now include:
+
+- POST /api/v1/me/device-policies
+- GET /api/v1/me/device-policies
+- GET /api/v1/me/device-policies/{policy_id}
+
+Security rules:
+
+- Device policy endpoints use the authenticated token user.
+- App Users cannot create policies for another user's device.
+- Device ownership validation enforced before policy creation.
+- Router actions are not yet executed directly in Step 17.

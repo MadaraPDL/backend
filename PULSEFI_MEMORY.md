@@ -1020,3 +1020,45 @@ Impact:
 Next Step 17 work:
 
 - Step 17H — App User device policy endpoints.
+
+---
+
+## Step 17 Progress — 2026-05-15
+
+### Step 17H — App User Device Policy Endpoints
+
+Completed and tested:
+
+- Added App User device policy schemas.
+- Added App User device policy service logic.
+- Added endpoint module:
+  - pp/api/v1/endpoints/app_user/device_policies.py
+- Added endpoints:
+  - POST /api/v1/me/device-policies
+  - GET /api/v1/me/device-policies
+  - GET /api/v1/me/device-policies/{policy_id}
+- Connected device policy endpoints to the App User router.
+- Endpoints use get_current_app_user.
+- Device policy queries are scoped by DeviceNetworkPolicy.requested_by_user_id = current_user.id.
+- App User endpoints do not accept user_id from the request.
+- Device ownership validation enforced before policy creation.
+- Router ID automatically derived from the validated device.
+- Tested successful device policy creation.
+- Tested device policy listing endpoint.
+- Tested fake policy ID returns 404 Device policy not found.
+- Device policy requests currently remain in pending status until future router adapter execution layer is implemented.
+- Ran pytest successfully.
+- Ran compileall successfully.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: creates pending device policy requests.
+- SE diagrams: later update App User/mobile activity and sequence diagrams to include device policy request flow.
+- Security:
+  - App User can only access their own policy requests.
+  - Device ownership validation enforced before policy creation.
+
+Next Backend Step:
+
+- Step 18 — Router adapter and simulator layer.
