@@ -1,4 +1,4 @@
-# AGENTS.md â€” PulseFi Backend Instructions
+﻿# AGENTS.md Ã¢â‚¬â€ PulseFi Backend Instructions
 
 ## Project Name
 
@@ -31,9 +31,7 @@ Recently completed and tested:
 - Step 18F: Router action integration tests.
 - Step 18G: App User router capability visibility endpoint.
 
-Current next backend work:
-
-- Step 19: Usage data ingestion and simulator usage generation.
+Current next backend work:`r`n`r`n- Step 20B: Generate policy failed alerts from failed router/device policy execution.
 
 Important Step 18 result:
 
@@ -542,7 +540,7 @@ After editing:
 
 ---
 
-## Backend Quality State — 2026-05-14
+## Backend Quality State â€” 2026-05-14
 
 The backend has a limited PostgreSQL app role and an Alembic baseline.
 
@@ -587,29 +585,29 @@ Next recommended quality work:
 
 Known completed milestones:
 
-- 2026-05-10 — PostgreSQL database schema phase completed for the main PulseFi tables.
-- 2026-05-10 — Core SQLAlchemy models completed and import-tested.
-- 2026-05-11 — Authentication database update completed.
-- 2026-05-11 — Authentication SQLAlchemy models completed and import-tested.
-- 2026-05-11 — Authentication schemas completed.
-- 2026-05-12 — Authentication services split into focused modules and import-tested.
-- 2026-05-12 — Authentication endpoint package completed and Swagger/OpenAPI confirmed working.
-- 2026-05-12 — Step 14 protected current-account route system completed.
-- 2026-05-12 — Step 15 Platform Admin endpoint work completed through ISP/Admin management and summary features.
-- 2026-05-13 — Backend foundation hardened for Step 16, including safer `.env.example`, production config validation, old-JWT invalidation after password reset, `get_current_isp_admin`, typo fixes, and `pyotp`.
-- 2026-05-14 — Documentation cleanup completed for `README.md`, `ROADMAP.md`, and `AGENTS.md`.
-- 2026-05-14 — Backend quality backlog added.
-- 2026-05-14 — Limited PostgreSQL role `pulsefi_app` created and tested.
-- 2026-05-14 — Alembic initialized, empty baseline migration created, and existing database stamped to revision `c384b4d102bc`.
+- 2026-05-10 â€” PostgreSQL database schema phase completed for the main PulseFi tables.
+- 2026-05-10 â€” Core SQLAlchemy models completed and import-tested.
+- 2026-05-11 â€” Authentication database update completed.
+- 2026-05-11 â€” Authentication SQLAlchemy models completed and import-tested.
+- 2026-05-11 â€” Authentication schemas completed.
+- 2026-05-12 â€” Authentication services split into focused modules and import-tested.
+- 2026-05-12 â€” Authentication endpoint package completed and Swagger/OpenAPI confirmed working.
+- 2026-05-12 â€” Step 14 protected current-account route system completed.
+- 2026-05-12 â€” Step 15 Platform Admin endpoint work completed through ISP/Admin management and summary features.
+- 2026-05-13 â€” Backend foundation hardened for Step 16, including safer `.env.example`, production config validation, old-JWT invalidation after password reset, `get_current_isp_admin`, typo fixes, and `pyotp`.
+- 2026-05-14 â€” Documentation cleanup completed for `README.md`, `ROADMAP.md`, and `AGENTS.md`.
+- 2026-05-14 â€” Backend quality backlog added.
+- 2026-05-14 â€” Limited PostgreSQL role `pulsefi_app` created and tested.
+- 2026-05-14 â€” Alembic initialized, empty baseline migration created, and existing database stamped to revision `c384b4d102bc`.
 
 Notes:
 
-- Some earlier dates are “completed by this date” based on the project work log, not exact minute-by-minute timestamps.
+- Some earlier dates are â€œcompleted by this dateâ€ based on the project work log, not exact minute-by-minute timestamps.
 - Future completed steps should be added here immediately after testing and before commit.
 
 ---
 
-## Testing Progress — 2026-05-14
+## Testing Progress â€” 2026-05-14
 
 Completed:
 
@@ -631,7 +629,7 @@ Recommended test command:
 
 ---
 
-## CI Progress — 2026-05-14
+## CI Progress â€” 2026-05-14
 
 Completed:
 
@@ -656,9 +654,9 @@ Important note:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16A — ISP Admin Router Foundation
+### Step 16A â€” ISP Admin Router Foundation
 
 Completed:
 
@@ -686,9 +684,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16B — ISP Admin App User Invitation Endpoints
+### Step 16B â€” ISP Admin App User Invitation Endpoints
 
 Completed:
 
@@ -722,9 +720,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Testing Progress — 2026-05-14
+## Step 16 Testing Progress â€” 2026-05-14
 
-### Step 16B — App User Invitation Endpoints Tested
+### Step 16B â€” App User Invitation Endpoints Tested
 
 Tested successfully:
 
@@ -756,9 +754,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16C — ISP Admin App User Management Endpoints
+### Step 16C â€” ISP Admin App User Management Endpoints
 
 Completed and tested:
 
@@ -812,9 +810,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16D — ISP Admin Subscription Plan Management Endpoints
+### Step 16D â€” ISP Admin Subscription Plan Management Endpoints
 
 Completed and tested:
 
@@ -861,9 +859,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16E — ISP Admin User Subscription Assignment and Management Endpoints
+### Step 16E â€” ISP Admin User Subscription Assignment and Management Endpoints
 
 Completed and tested:
 
@@ -893,11 +891,11 @@ Completed and tested:
 
 Subscription status values:
 
-- `pending` — assigned but not active yet
-- `active` — currently active subscription
-- `suspended` — temporarily stopped, such as unpaid bill/admin action
-- `expired` — ended by date
-- `cancelled` — permanently cancelled
+- `pending` â€” assigned but not active yet
+- `active` â€” currently active subscription
+- `suspended` â€” temporarily stopped, such as unpaid bill/admin action
+- `expired` â€” ended by date
+- `cancelled` â€” permanently cancelled
 
 Database migration:
 
@@ -922,9 +920,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16F — ISP Admin Router Management Endpoints
+### Step 16F â€” ISP Admin Router Management Endpoints
 
 Completed and tested:
 
@@ -976,7 +974,7 @@ Next Step 16 work:
 
 ---
 
-## Current Backend State — 2026-05-14
+## Current Backend State â€” 2026-05-14
 
 Step 16A through Step 16F are complete and tested.
 
@@ -1120,9 +1118,9 @@ Current backend state:
 
 ---
 
-## Step 17 Progress — 2026-05-14
+## Step 17 Progress â€” 2026-05-14
 
-### Step 17A — App User Mobile Endpoint Foundation
+### Step 17A â€” App User Mobile Endpoint Foundation
 
 Completed and tested:
 
@@ -1179,9 +1177,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress — 2026-05-14
+## Step 17 Progress â€” 2026-05-14
 
-### Step 17B — App User Subscription Endpoints
+### Step 17B â€” App User Subscription Endpoints
 
 Completed and tested:
 
@@ -1232,9 +1230,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress — 2026-05-14
+## Step 17 Progress â€” 2026-05-14
 
-### Step 17C — App User Router and Device View Endpoints
+### Step 17C â€” App User Router and Device View Endpoints
 
 Completed and tested:
 
@@ -1293,7 +1291,7 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17D — App User usage endpoints.
+- Step 17D â€” App User usage endpoints.
 - Required usage behavior:
   - total usage for the logged-in user
   - download/upload/total usage
@@ -1517,7 +1515,7 @@ Rules confirmed:
 
 Next backend work:
 
-- Step 18 — Router adapter and simulator layer.
+- Step 18 â€” Router adapter and simulator layer.
 
 ---
 
@@ -1537,3 +1535,24 @@ Step 18 rule:
 - Do not connect to real routers yet.
 - Do not store raw router passwords.
 - Start with a simulator adapter so router behavior can be demoed safely and tested reliably.
+
+
+## Step 20A Completed
+
+Alert generation is now connected to simulator ingestion.
+
+Completed alert types:
+
+- `high_usage`
+- `plan_exceed_risk`
+- `unusual_consumption`
+- `new_device_connected`
+
+The `alerts.alert_type` check constraint was updated through Alembic to allow Step 20 alert types.
+
+Important next rule:
+
+- `policy_failed` is allowed by the database constraint but still needs generation logic from failed router/device policy execution.
+- App User alert endpoints already exist and must stay scoped by `get_current_app_user`.
+- ISP Admin alert visibility, if added, must be scoped by `current_admin.isp_id`.
+

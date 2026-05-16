@@ -1,4 +1,4 @@
-# PulseFi Backend
+﻿# PulseFi Backend
 
 PulseFi is a Smart Network Monitoring and Optimization System built for internet users, ISP administrators, and platform administrators.
 
@@ -8,7 +8,7 @@ The backend is a FastAPI + PostgreSQL service designed for a deployable Final Ye
 
 ## Current Backend Status
 
-Current phase: **Step 19 in progress - Usage data ingestion and simulator usage generation**.
+Current phase: **Step 20 in progress - Alerts system**.
 
 Recently completed and tested:
 
@@ -21,9 +21,7 @@ Recently completed and tested:
 - Step 18F: Router action integration tests.
 - Step 18G: App User router capability visibility endpoint.
 
-Current next backend work:
-
-- Step 19: Usage data ingestion and simulator usage generation.
+Current next backend work:`r`n`r`n- Step 20B: Generate policy failed alerts from failed router/device policy execution.
 
 Step 18 added the router integration foundation without storing router passwords or credentials. Router execution currently uses the simulator adapter for safe demo/testing.
 
@@ -304,7 +302,7 @@ Avoid claiming universal router support before it exists. Use simulator support 
 
 ---
 
-## Backend Quality Progress — 2026-05-14
+## Backend Quality Progress â€” 2026-05-14
 
 The backend quality foundation was improved before continuing Step 16.
 
@@ -336,7 +334,7 @@ Future permission hardening:
 
 ---
 
-## Testing Progress — 2026-05-14
+## Testing Progress â€” 2026-05-14
 
 Completed:
 
@@ -358,7 +356,7 @@ Recommended test command:
 
 ---
 
-## CI Progress — 2026-05-14
+## CI Progress â€” 2026-05-14
 
 Completed:
 
@@ -383,9 +381,9 @@ Important note:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16A — ISP Admin Router Foundation
+### Step 16A â€” ISP Admin Router Foundation
 
 Completed:
 
@@ -413,9 +411,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16B — ISP Admin App User Invitation Endpoints
+### Step 16B â€” ISP Admin App User Invitation Endpoints
 
 Completed:
 
@@ -449,9 +447,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Testing Progress — 2026-05-14
+## Step 16 Testing Progress â€” 2026-05-14
 
-### Step 16B — App User Invitation Endpoints Tested
+### Step 16B â€” App User Invitation Endpoints Tested
 
 Tested successfully:
 
@@ -483,9 +481,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16C — ISP Admin App User Management Endpoints
+### Step 16C â€” ISP Admin App User Management Endpoints
 
 Completed and tested:
 
@@ -539,9 +537,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16D — ISP Admin Subscription Plan Management Endpoints
+### Step 16D â€” ISP Admin Subscription Plan Management Endpoints
 
 Completed and tested:
 
@@ -588,9 +586,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16E — ISP Admin User Subscription Assignment and Management Endpoints
+### Step 16E â€” ISP Admin User Subscription Assignment and Management Endpoints
 
 Completed and tested:
 
@@ -620,11 +618,11 @@ Completed and tested:
 
 Subscription status values:
 
-- `pending` — assigned but not active yet
-- `active` — currently active subscription
-- `suspended` — temporarily stopped, such as unpaid bill/admin action
-- `expired` — ended by date
-- `cancelled` — permanently cancelled
+- `pending` â€” assigned but not active yet
+- `active` â€” currently active subscription
+- `suspended` â€” temporarily stopped, such as unpaid bill/admin action
+- `expired` â€” ended by date
+- `cancelled` â€” permanently cancelled
 
 Database migration:
 
@@ -649,9 +647,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress â€” 2026-05-14
 
-### Step 16F — ISP Admin Router Management Endpoints
+### Step 16F â€” ISP Admin Router Management Endpoints
 
 Completed and tested:
 
@@ -703,7 +701,7 @@ Next Step 16 work:
 
 ---
 
-## Current Backend State — 2026-05-14
+## Current Backend State â€” 2026-05-14
 
 Step 16A through Step 16F are complete and tested.
 
@@ -750,9 +748,9 @@ All data is scoped to the authenticated ISP Admin's `isp_id`.
 
 ---
 
-## Step 17 Progress — 2026-05-14
+## Step 17 Progress â€” 2026-05-14
 
-### Step 17A — App User Mobile Endpoint Foundation
+### Step 17A â€” App User Mobile Endpoint Foundation
 
 Completed and tested:
 
@@ -809,9 +807,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress — 2026-05-14
+## Step 17 Progress â€” 2026-05-14
 
-### Step 17B — App User Subscription Endpoints
+### Step 17B â€” App User Subscription Endpoints
 
 Completed and tested:
 
@@ -862,9 +860,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress — 2026-05-14
+## Step 17 Progress â€” 2026-05-14
 
-### Step 17C — App User Router and Device View Endpoints
+### Step 17C â€” App User Router and Device View Endpoints
 
 Completed and tested:
 
@@ -923,7 +921,7 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17D — App User usage endpoints.
+- Step 17D â€” App User usage endpoints.
 - Required usage behavior:
   - total usage for the logged-in user
   - download/upload/total usage
@@ -1153,3 +1151,16 @@ PulseFi now supports:
 - ISP Admin read-only visibility for device connection logs.
 
 The simulator flow remains demo-safe and does not require real router passwords or real router login.
+
+
+### Step 20A Alert Generation
+
+The backend now generates alerts after simulator ingestion for:
+
+- High usage.
+- Plan exceed risk.
+- Unusual consumption.
+- New connected device.
+
+App Users can view generated alerts through `/api/v1/me/alerts` and mark alerts as read through `/api/v1/me/alerts/{alert_id}/read`.
+

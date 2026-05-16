@@ -1957,3 +1957,50 @@ Step 19 status:
 Next step:
 
 - Step 20 - Alerts system.
+
+---
+
+## Step 20 Progress - 2026-05-16
+
+### Step 20A - Alert Generation Service
+
+Completed and tested:
+
+- Added modular alert generation service under `app/services/alerts/`.
+- Connected alert generation to ISP Admin simulator ingestion endpoints.
+- Added automatic alert generation for:
+  - `high_usage`
+  - `plan_exceed_risk`
+  - `unusual_consumption`
+  - `new_device_connected`
+- Added `alerts_created` fields to simulator ingestion responses.
+- Added Alembic migration to update the `alerts.alert_type` check constraint.
+- Confirmed old `chk_alert_type` constraint blocked `plan_exceed_risk`.
+- Fixed the constraint so Step 20 alert types are allowed.
+- Tested simulator ingestion with a tiny temporary plan limit.
+- Confirmed a plan exceed alert can be generated.
+- Confirmed App User can view alerts through `/api/v1/me/alerts`.
+- Confirmed App User can mark an alert as read through `/api/v1/me/alerts/{alert_id}/read`.
+- Restored the original plan limit after local testing.
+
+Important behavior:
+
+- High usage alert triggers at 80% of plan limit.
+- Plan exceed risk alert triggers at 100% or more of plan limit.
+- Unusual consumption alert triggers when the latest usage window is at least 3x the recent average and enough previous windows exist.
+- New device alert triggers when simulator discovers a newly connected device.
+- Duplicate unread alerts are avoided.
+
+Impact:
+
+- Database schema: yes, alert type check constraint updated.
+- Existing data: no existing rows deleted.
+- API behavior: simulator ingestion can now create alerts.
+- App User/mobile: existing alert list/detail/mark-read endpoints now have generated alerts to show.
+- SE diagrams: later update alert flows in DFD, user activity diagram, and sequence diagrams.
+
+Pending Step 20 work:
+
+- Step 20B: Generate `policy_failed` alerts from failed router/device policy execution.
+- Step 20C: Add ISP Admin alert visibility if needed for dashboard monitoring.
+- Step 20D: Add focused tests for alert generation and ownership isolation.

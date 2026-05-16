@@ -22,6 +22,7 @@ class SimulatorUsageIngestionResponse(BaseModel):
     upload_mb: Decimal
     download_mb: Decimal
     total_mb: Decimal
+    alerts_created: int = 0
     source: str = "simulator"
 
 
@@ -33,6 +34,7 @@ class SimulatorDeviceIngestionResponse(BaseModel):
     devices_created: int
     devices_updated: int
     connection_logs_created: int
+    alerts_created: int = 0
     source: str = "simulator"
 
 
@@ -42,4 +44,5 @@ class SimulatorFullIngestionResponse(BaseModel):
     user_subscription_id: UUID
     device_ingestion: SimulatorDeviceIngestionResponse
     usage_ingestion: SimulatorUsageIngestionResponse
+    alerts_created: int = 0
     source: str = "simulator"

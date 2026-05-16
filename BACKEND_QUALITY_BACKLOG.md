@@ -1020,3 +1020,28 @@ Remaining future improvements:
 - Add alert generation from high usage and new device connection logs.
 - Add production-grade logging around ingestion success/failure.
 - Keep real-router credential support deferred until encrypted credential storage is intentionally designed.
+
+---
+
+## Step 20A Quality Note - 2026-05-16
+
+Completed:
+
+- Alert generation service added.
+- Alert generation connected to simulator ingestion.
+- Alert type check constraint updated through Alembic.
+- Manual behavior test confirmed generated alerts can be viewed and marked as read by the App User.
+
+Quality reminders:
+
+- Add focused tests for:
+  - high usage alert generation
+  - plan exceed risk alert generation
+  - unusual consumption alert generation
+  - new device alert generation
+  - duplicate unread alert prevention
+  - App User alert ownership isolation
+  - ISP Admin alert scoping if ISP Admin alert visibility is added
+- Add `policy_failed` alert generation from failed router/device policy execution.
+- Consider daily/monthly usage timeline endpoints for mobile charts later.
+
