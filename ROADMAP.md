@@ -1466,3 +1466,39 @@ Testing:
 Next:
 
 - Step 18E — Add visibility for router action logs, likely ISP Admin first, or add focused integration tests for policy execution.
+
+---
+
+## Step 18 Progress — 2026-05-16
+
+### Step 18E — ISP Admin Router Action Log Visibility
+
+Completed:
+
+- Added ISP Admin router action log visibility.
+- Added endpoints:
+  - `GET /api/v1/isp-admin/router-action-logs`
+  - `GET /api/v1/isp-admin/router-action-logs/{action_log_id}`
+- Router action log access is scoped through `Router.isp_id`.
+- ISP Admins can only see logs for routers under their own ISP.
+- Supported filters:
+  - router ID
+  - policy ID
+  - status
+  - action type
+  - pagination
+
+Testing:
+
+- Router action log schema import check passed.
+- Router action log service import check passed.
+- Router action log endpoint import check passed.
+- FastAPI app import check passed.
+- API router import check passed.
+- Compile check passed.
+- Pytest passed.
+- Integration tests used `pulsefi_test` through `TEST_DATABASE_URL`.
+
+Next:
+
+- Step 18F — Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.

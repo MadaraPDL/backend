@@ -1583,3 +1583,49 @@ Impact:
 Next:
 
 - Step 18E — Add ISP Admin/router action log visibility or add tests for policy execution endpoint.
+
+---
+
+## Step 18 Progress — 2026-05-16
+
+### Step 18E — ISP Admin Router Action Log Visibility
+
+Completed and tested:
+
+- Added ISP Admin router action log schemas.
+- Added ISP Admin router action log service.
+- Added ISP Admin router action log endpoint module.
+- Added endpoints:
+  - `GET /api/v1/isp-admin/router-action-logs`
+  - `GET /api/v1/isp-admin/router-action-logs/{action_log_id}`
+- ISP Admins can list router action logs for their own ISP.
+- ISP Admins can view one router action log by ID.
+- Router action log queries are scoped through the related router:
+  - `Router.isp_id == current_admin.isp_id`
+- List endpoint supports filters:
+  - `router_id`
+  - `policy_id`
+  - `status`
+  - `action_type`
+  - `limit`
+  - `offset`
+- Endpoints are read-only.
+- No router credentials or passwords are exposed.
+- Import checks passed.
+- App import check passed.
+- API router import check passed.
+- Compile check passed.
+- Pytest passed.
+- Integration tests continue using `TEST_DATABASE_URL` with database name `pulsefi_test`.
+
+Impact:
+
+- Database schema: no change.
+- Existing dev data: no change because endpoints are read-only.
+- Test database: safe; tests use `pulsefi_test`.
+- SE diagrams: later update ISP Admin dashboard/use cases to include router action log visibility.
+- Security: strict ISP scoping is enforced through router ownership.
+
+Next:
+
+- Step 18F — Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.
