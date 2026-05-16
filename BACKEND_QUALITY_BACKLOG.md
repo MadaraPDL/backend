@@ -1045,3 +1045,21 @@ Quality reminders:
 - Add `policy_failed` alert generation from failed router/device policy execution.
 - Consider daily/monthly usage timeline endpoints for mobile charts later.
 
+
+---
+
+## Step 20B Quality Note - 2026-05-16
+
+Completed:
+
+- `policy_failed` alert generation added.
+- Failed device policy execution was manually tested.
+- Router action type check constraint updated.
+
+Quality reminders:
+
+- Add tests for failed policy alert generation.
+- Add tests that App Users cannot read another user's policy failed alerts.
+- Add tests that ISP Admin alert visibility, if added, is scoped by `current_admin.isp_id`.
+- Consider creating a migration/admin DB role so Alembic can apply schema changes without manual pgAdmin steps.
+

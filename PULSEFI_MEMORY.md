@@ -2004,3 +2004,37 @@ Pending Step 20 work:
 - Step 20B: Generate `policy_failed` alerts from failed router/device policy execution.
 - Step 20C: Add ISP Admin alert visibility if needed for dashboard monitoring.
 - Step 20D: Add focused tests for alert generation and ownership isolation.
+
+---
+
+## Step 20 Progress - 2026-05-16
+
+### Step 20B - Policy Failed Alerts
+
+Completed and tested:
+
+- Connected failed device policy execution to the alert generation system.
+- Added `generate_policy_failed_alert_for_policy`.
+- Failed device policy execution now creates a `policy_failed` App User alert.
+- Confirmed failed `bandwidth_limit` policy creates:
+  - failed `DeviceNetworkPolicy`
+  - failed `RouterActionLog`
+  - unread `policy_failed` alert
+- Updated `router_action_logs.action_type` database check constraint to allow:
+  - `bandwidth_limit`
+  - `device_priority`
+- Applied the router action constraint manually through pgAdmin because the limited app DB role is not the owner of `router_action_logs`.
+- Stamped Alembic to the latest head after manual schema application.
+
+Impact:
+
+- Database schema: yes, router action type check constraint updated.
+- Existing data: no rows deleted.
+- API behavior: failed device policy execution now creates an App User alert.
+- App User/mobile: users can now see policy failure alerts.
+- SE diagrams: later update device policy failure alert flow.
+
+Current next Step 20 work:
+
+- Step 20C: Add ISP Admin alert visibility if needed for dashboard monitoring.
+- Step 20D: Add focused alert generation tests and ownership/isolation tests.

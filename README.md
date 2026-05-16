@@ -1164,3 +1164,15 @@ The backend now generates alerts after simulator ingestion for:
 
 App Users can view generated alerts through `/api/v1/me/alerts` and mark alerts as read through `/api/v1/me/alerts/{alert_id}/read`.
 
+
+### Step 20B Policy Failed Alerts
+
+The backend now creates a `policy_failed` alert when device policy execution fails.
+
+Example:
+
+- A bandwidth limit policy without `bandwidth_limit_mbps` fails.
+- The policy status becomes `failed`.
+- A router action log is stored with status `failed`.
+- The App User receives a `policy_failed` alert.
+

@@ -1708,3 +1708,19 @@ Pending:
 - Add ISP Admin alert visibility if needed.
 - Add focused alert tests.
 
+
+### Step 20B - Policy Failed Alerts
+
+Completed:
+
+- Failed device policy execution now generates a `policy_failed` alert for the App User.
+- Router action type constraint was updated to support:
+  - `bandwidth_limit`
+  - `device_priority`
+- Manual DB constraint update was needed locally because the runtime app DB role is not the owner of `router_action_logs`.
+
+Pending:
+
+- ISP Admin alert visibility if needed.
+- Focused automated tests for alert generation and ownership isolation.
+

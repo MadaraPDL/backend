@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from datetime import UTC, datetime
 from uuid import UUID
@@ -10,6 +10,7 @@ from sqlalchemy.orm import selectinload
 from app.models.device_network_policy import DeviceNetworkPolicy
 from app.models.router_action_log import RouterActionLog
 from app.router_adapters import RouterActionResult, get_router_adapter
+from app.services.alerts import generate_policy_failed_alert_for_policy
 
 
 POLICY_STATUS_PENDING = "pending"
@@ -163,9 +164,16 @@ async def execute_device_network_policy(
 
     policy.updated_at = now
 
+    if not result.success:
+        await generate_policy_failed_alert_for_policy(
+            db=db,
+            policy=policy,
+        )
+
     db.add(action_log)
     await db.commit()
     await db.refresh(policy)
     await db.refresh(action_log)
 
     return policy, action_log
+

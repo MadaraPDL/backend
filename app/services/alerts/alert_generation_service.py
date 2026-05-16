@@ -12,6 +12,7 @@ from sqlalchemy.orm import selectinload
 from app.models.alert import Alert
 from app.models.device import Device
 from app.models.device_connection_log import DeviceConnectionLog
+from app.models.device_network_policy import DeviceNetworkPolicy
 from app.models.router import Router
 from app.models.usage_record import UsageRecord
 from app.models.user_subscription import UserSubscription
@@ -418,3 +419,59 @@ async def generate_alerts_after_router_ingestion(
         plan_exceed_alert_created=usage_result.plan_exceed_alert_created,
         unusual_consumption_alert_created=usage_result.unusual_consumption_alert_created,
     )
+
+
+async def generate_policy_failed_alert_for_policy(
+    *,
+    db: AsyncSession,
+    policy: DeviceNetworkPolicy,
+) -> bool:
+    router = policy.router
+
+    if router is None:
+        return False
+
+    if router.user_subscription_id is None:
+        return False
+
+    user_id = policy.requested_by_user_id
+    user_subscription_id = router.user_subscription_id
+
+    existing_stmt = (
+        select(Alert.id)
+        .where(
+            Alert.user_id == user_id,
+            Alert.user_subscription_id == user_subscription_id,
+            Alert.device_id == policy.device_id,
+            Alert.alert_type == "policy_failed",
+            Alert.status == "unread",
+        )
+        .limit(1)
+    )
+
+    existing_result = await db.execute(existing_stmt)
+
+    if existing_result.scalar_one_or_none() is not None:
+        return False
+
+    failure_reason = policy.failure_reason or "Device policy execution failed."
+
+    db.add(
+        Alert(
+            user_id=user_id,
+            user_subscription_id=user_subscription_id,
+            device_id=policy.device_id,
+            alert_type="policy_failed",
+            severity="high",
+            title="Device policy failed",
+            message=(
+                f"Your {policy.policy_type} device policy could not be applied. "
+                f"Reason: {failure_reason}"
+            ),
+            status="unread",
+        )
+    )
+
+    await db.flush()
+
+    return True
