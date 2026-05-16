@@ -2078,3 +2078,30 @@ Impact:
 Current next Step 20 work:
 
 - Step 20D: Add focused alert tests and ownership/isolation tests.
+
+---
+
+## Step 20 Progress - 2026-05-16
+
+### Step 20D - Alert Generation Tests
+
+Completed:
+
+- Added focused alert generation service tests.
+- Tested `plan_exceed_risk` alert creation.
+- Tested `policy_failed` alert creation.
+- Tested duplicate unread `policy_failed` alert prevention.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: no new endpoint behavior.
+- Quality: improves confidence in Step 20 alert generation logic.
+
+Pending test expansion:
+
+- App User alert ownership isolation.
+- ISP Admin alert ISP isolation.
+- New device alert generation.
+- Unusual consumption alert generation.

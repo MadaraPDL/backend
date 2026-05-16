@@ -1186,3 +1186,14 @@ ISP Admins can now view App User alerts under their own ISP through:
 
 This is read-only dashboard visibility. Alerts still belong to App Users, not admins.
 
+
+### Step 20D Alert Tests
+
+Focused alert generation tests were added for:
+
+- `plan_exceed_risk`
+- `policy_failed`
+- duplicate unread `policy_failed` prevention
+
+More isolation tests are still planned.
+

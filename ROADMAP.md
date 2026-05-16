@@ -1742,3 +1742,18 @@ Pending:
 - Focused tests for alert generation.
 - Ownership/isolation tests for App User and ISP Admin alert access.
 
+
+### Step 20D - Alert Generation Tests
+
+Completed:
+
+- Added focused tests for `plan_exceed_risk` alert generation.
+- Added focused tests for `policy_failed` alert generation.
+- Added duplicate unread `policy_failed` alert prevention test.
+
+Pending:
+
+- App User alert ownership isolation tests.
+- ISP Admin alert ISP isolation tests.
+- New device and unusual consumption alert tests.
+

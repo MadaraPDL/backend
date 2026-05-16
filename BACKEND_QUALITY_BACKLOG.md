@@ -1085,3 +1085,20 @@ Quality reminders:
   - device_id
 - Consider whether admin-owned notifications are needed later as a separate feature.
 
+
+---
+
+## Step 20D Quality Note - 2026-05-16
+
+Completed:
+
+- Added focused alert generation tests.
+- Added duplicate unread policy-failed alert prevention test.
+
+Still needed:
+
+- App User ownership isolation tests.
+- ISP Admin cross-ISP isolation tests.
+- New device alert tests.
+- Unusual consumption alert tests.
+

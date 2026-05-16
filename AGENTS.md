@@ -1573,3 +1573,20 @@ Next recommended work:
 
 - Add focused alert tests and ownership/isolation tests.
 
+
+## Step 20D Completed
+
+Focused alert generation tests were added.
+
+Covered:
+
+- `plan_exceed_risk`
+- `policy_failed`
+- duplicate unread `policy_failed` prevention
+
+Next recommended work:
+
+- App User alert ownership isolation tests.
+- ISP Admin alert ISP isolation tests.
+- New device and unusual consumption alert tests.
+
