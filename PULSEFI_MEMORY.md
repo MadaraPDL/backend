@@ -1,4 +1,34 @@
-# PulseFi Project Memory
+@'
+
+---
+
+## Step 18 Progress â€” 2026-05-16
+
+### Step 18C â€” Router Policy Execution Service
+
+Completed:
+
+- Added `app/services/router_actions/`.
+- Added router policy execution service.
+- Device network policies can now be executed through the router adapter registry.
+- Simulator adapter is used for current execution.
+- Router action logs are created for execution history.
+- Policy status is updated to `applied` or `failed`.
+- Non-pending policies are not executed again.
+
+Testing:
+
+- Router action service import check passed.
+- FastAPI app import check passed.
+- API router import check passed.
+- Compile check passed.
+- Pytest passed.
+- Integration tests used `pulsefi_test` through `TEST_DATABASE_URL`.
+
+Next:
+
+- Step 18D â€” API endpoint for safely triggering pending device policy execution.
+'@ | Add-Content ROADMAP.md# PulseFi Project Memory
 
 This file is the grouped project context for PulseFi. It should be read before continuing major backend work, especially when starting a new step.
 
@@ -355,7 +385,7 @@ Current next step:
 
 ---
 
-## Latest Progress Update — 2026-05-14
+## Latest Progress Update ï¿½ 2026-05-14
 
 Backend quality improvements completed:
 
@@ -407,9 +437,9 @@ Step 16F expected rule:
 
 ---
 
-## Step 16 Progress — 2026-05-14
+## Step 16 Progress ï¿½ 2026-05-14
 
-### Step 16F — ISP Admin Router Management Endpoints
+### Step 16F ï¿½ ISP Admin Router Management Endpoints
 
 Completed and tested:
 
@@ -533,7 +563,7 @@ When helping with PulseFi, the assistant/Codex should follow these rules:
 
 ---
 
-## Step 16G — ISP Admin Dashboard Summary
+## Step 16G ï¿½ ISP Admin Dashboard Summary
 
 Completed and tested:
 
@@ -596,9 +626,9 @@ Current backend state:
 
 ---
 
-## Step 17 Progress — 2026-05-14
+## Step 17 Progress ï¿½ 2026-05-14
 
-### Step 17A — App User Mobile Endpoint Foundation
+### Step 17A ï¿½ App User Mobile Endpoint Foundation
 
 Completed and tested:
 
@@ -655,9 +685,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress — 2026-05-14
+## Step 17 Progress ï¿½ 2026-05-14
 
-### Step 17B — App User Subscription Endpoints
+### Step 17B ï¿½ App User Subscription Endpoints
 
 Completed and tested:
 
@@ -708,9 +738,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress — 2026-05-14
+## Step 17 Progress ï¿½ 2026-05-14
 
-### Step 17C — App User Router and Device View Endpoints
+### Step 17C ï¿½ App User Router and Device View Endpoints
 
 Completed and tested:
 
@@ -769,7 +799,7 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17D — App User usage endpoints.
+- Step 17D ï¿½ App User usage endpoints.
 - Required usage behavior:
   - total usage for the logged-in user
   - download/upload/total usage
@@ -899,9 +929,9 @@ Then continue from the latest completed step.
 
 ---
 
-## Step 17 Progress — 2026-05-15
+## Step 17 Progress ï¿½ 2026-05-15
 
-### Step 17E — App User Alert Endpoints
+### Step 17E ï¿½ App User Alert Endpoints
 
 Completed and tested:
 
@@ -932,13 +962,13 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17F — App User predictions and recommendations endpoints, or plan change request endpoints.
+- Step 17F ï¿½ App User predictions and recommendations endpoints, or plan change request endpoints.
 
 ---
 
-## Step 17 Progress — 2026-05-15
+## Step 17 Progress ï¿½ 2026-05-15
 
-### Step 17F — App User Prediction and Recommendation Endpoints
+### Step 17F ï¿½ App User Prediction and Recommendation Endpoints
 
 Completed and tested:
 
@@ -976,13 +1006,13 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17G — App User subscription plan change request endpoints.
+- Step 17G ï¿½ App User subscription plan change request endpoints.
 
 ---
 
-## Step 17 Progress — 2026-05-15
+## Step 17 Progress ï¿½ 2026-05-15
 
-### Step 17G — App User Plan Change Request Endpoints
+### Step 17G ï¿½ App User Plan Change Request Endpoints
 
 Completed and tested:
 
@@ -1019,13 +1049,13 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17H — App User device policy endpoints.
+- Step 17H ï¿½ App User device policy endpoints.
 
 ---
 
-## Step 17 Progress — 2026-05-15
+## Step 17 Progress ï¿½ 2026-05-15
 
-### Step 17H — App User Device Policy Endpoints
+### Step 17H ï¿½ App User Device Policy Endpoints
 
 Completed and tested:
 
@@ -1061,7 +1091,7 @@ Impact:
 
 Next Backend Step:
 
-- Step 18 — Router adapter and simulator layer.
+- Step 18 ï¿½ Router adapter and simulator layer.
 
 
 ## Backend Quality Fixes Completed
@@ -1425,9 +1455,9 @@ Next backend step:
 
 ---
 
-## Step 18 Progress — 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18A/18B — Router Adapter Interface and Simulator Adapter
+### Step 18A/18B ï¿½ Router Adapter Interface and Simulator Adapter
 
 Completed and tested:
 
@@ -1464,4 +1494,47 @@ Impact:
 
 Next:
 
-- Step 18C — Add service layer that uses the router adapter registry to apply pending device network policies and create router action logs.
+- Step 18C ï¿½ Add service layer that uses the router adapter registry to apply pending device network policies and create router action logs.
+
+---
+
+## Step 18 Progress ï¿½ 2026-05-16
+
+### Step 18C ï¿½ Router Policy Execution Service
+
+Completed and tested:
+
+- Added router action service package: `app/services/router_actions/`.
+- Added `device_policy_execution_service.py`.
+- Added service function: `execute_device_network_policy`.
+- The service can load a pending `DeviceNetworkPolicy`.
+- The service loads the related router and device.
+- The service uses the router adapter registry to pick the correct router adapter.
+- For now, the registry uses the simulator adapter.
+- The service supports simulated execution for:
+  - `bandwidth_limit`
+  - `device_priority`
+- The service checks router capabilities before applying actions.
+- The service creates a `RouterActionLog` for audit/history.
+- The service updates device policy status:
+  - `applied` when simulator action succeeds
+  - `failed` when simulator action fails
+- Non-pending policies are not executed again.
+- Import checks passed.
+- App import check passed.
+- API router import check passed.
+- Compile check passed.
+- Pytest passed.
+- Integration tests continue using `TEST_DATABASE_URL` with database name `pulsefi_test`.
+
+Impact:
+
+- Database schema: no change.
+- Existing dev data: no change unless the service is called manually/later by an endpoint.
+- Test database: safe; tests use `pulsefi_test`.
+- SE diagrams: later update router/device-policy sequence flow to show policy request -> execution service -> adapter registry -> simulator/real adapter -> router action log.
+- Security: no router passwords or credentials are accepted or stored.
+
+Next:
+
+- Step 18D ï¿½ Add safe API endpoint for executing a pending device policy through the router execution service.
