@@ -8,6 +8,7 @@ from . import (
     plans,
     predictions,
     recommendations,
+    reports,
     router_action_logs,
     routers,
     subscriptions,
@@ -27,6 +28,7 @@ router = APIRouter(
 router.include_router(summary.router)
 router.include_router(alerts.router)
 router.include_router(analytics.router)
+router.include_router(reports.router)
 router.include_router(user_invitations.router)
 router.include_router(users.router)
 router.include_router(plans.router)

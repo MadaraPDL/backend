@@ -21,6 +21,11 @@ from app.services.isp_admin.plan_service import (
     list_subscription_plans_for_isp,
     update_subscription_plan_for_isp,
 )
+from app.services.isp_admin.report_service import (
+    generate_report_for_isp,
+    get_report_for_isp,
+    list_reports_for_isp,
+)
 from app.services.isp_admin.router_action_log_service import (
     get_router_action_log_for_isp,
     list_router_action_logs_for_isp,
@@ -65,6 +70,7 @@ __all__ = [
     "create_router_for_isp",
     "create_subscription_plan_for_isp",
     "create_user_subscription_for_isp",
+    "generate_report_for_isp",
     "get_alert_for_isp",
     "get_app_user_for_isp",
     "get_app_user_for_subscription_assignment",
@@ -75,6 +81,7 @@ __all__ = [
     "get_pending_app_user_invitation",
     "get_plan_change_request_for_isp",
     "get_plan_for_subscription_assignment",
+    "get_report_for_isp",
     "get_router_action_log_for_isp",
     "get_router_for_isp",
     "get_subscription_for_router_assignment",
@@ -87,6 +94,7 @@ __all__ = [
     "list_app_users_for_isp",
     "list_device_connection_logs_for_isp",
     "list_plan_change_requests_for_isp",
+    "list_reports_for_isp",
     "list_router_action_logs_for_isp",
     "list_routers_for_isp",
     "list_subscription_plans_for_isp",

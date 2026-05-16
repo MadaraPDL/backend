@@ -26,6 +26,11 @@ from app.schemas.isp_admin.recommendations import (
     ISPAdminRecommendationGenerationResponse,
     ISPAdminRecommendationResponse,
 )
+from app.schemas.isp_admin.reports import (
+    ISPAdminReportCreateRequest,
+    ISPAdminReportResponse,
+    ISPAdminReportType,
+)
 from app.schemas.isp_admin.router_action_logs import (
     RouterActionLogResponse,
     RouterActionLogStatus,
@@ -82,6 +87,9 @@ __all__ = [
     "ISPAdminPredictionGenerateRequest",
     "ISPAdminPredictionGenerationResponse",
     "ISPAdminPredictionResponse",
+    "ISPAdminReportCreateRequest",
+    "ISPAdminReportResponse",
+    "ISPAdminReportType",
     "ISPAdminSummaryResponse",
     "ISPAdminUsageRecordResponse",
     "PlanChangeRequestStatus",

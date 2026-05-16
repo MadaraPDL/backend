@@ -15,7 +15,7 @@ Step 18 is complete through Step 18G:
 - Step 18F: Router action integration tests.
 - Step 18G: App User router capability visibility endpoint.
 
-Next step: Step 23B - Report generation/list/detail.
+Next step: Step 23C - Expand report types or polish report analytics.
 
 ---
 
@@ -2103,5 +2103,70 @@ Next backend work:
   - `POST /api/v1/isp-admin/reports`
   - `GET /api/v1/isp-admin/reports`
   - `GET /api/v1/isp-admin/reports/{report_id}`
+
+
+
+---
+
+## Step 23 Progress - 2026-05-16
+
+### Step 23B - ISP Admin Stored Report Generation/List/Detail
+
+Completed and tested:
+
+- Added ISP Admin report endpoints:
+  - `POST /api/v1/isp-admin/reports`
+  - `GET /api/v1/isp-admin/reports`
+  - `GET /api/v1/isp-admin/reports/{report_id}`
+- Added ISP Admin report schemas:
+  - `ISPAdminReportCreateRequest`
+  - `ISPAdminReportResponse`
+  - `ISPAdminReportType`
+- Added ISP Admin report service logic for:
+  - generating a stored report
+  - listing reports under the current ISP
+  - viewing one report under the current ISP
+- MVP report generation uses the existing valid database report type:
+  - `usage_report`
+- The generated report stores analytics summary data inside `reports.report_data` as JSONB:
+  - `summary_type = usage_analytics_summary`
+  - `summary = analytics summary payload`
+- No Alembic migration was needed because the existing `reports` table already supports JSONB `report_data`.
+- The database report type constraint allows `usage_report`, so Step 23B uses that instead of inventing a new `analytics_summary` report type.
+- Security/isolation:
+  - reports are scoped by `Report.isp_id`
+  - ISP Admins can only list/view reports from their own ISP
+  - generated reports use `current_admin.isp_id`
+- Added integration tests for:
+  - report generation
+  - stored report JSON payload
+  - report list/detail
+  - cross-ISP report isolation
+- Endpoint smoke test passed through FastAPI route.
+
+Validation completed:
+
+- Import checks passed.
+- Report table constraints checked.
+- New integration tests passed.
+- Full pytest suite passed.
+- Compile check passed.
+- Endpoint smoke test passed.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: reports are created only when endpoint is called.
+- GitHub: Step 23B endpoint, schemas, services, and tests changed.
+- SE diagrams: later update ISP Admin report generation/list/detail sequence and activity flow.
+
+Next backend work:
+
+- Step 23C: expand report types or add report analytics polish.
+- Possible next report types using existing allowed DB values:
+  - `device_report`
+  - `alert_report`
+  - `recommendation_report`
+  - `network_performance_report`
 
 
