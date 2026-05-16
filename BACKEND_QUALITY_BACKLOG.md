@@ -969,3 +969,15 @@ Quality/security reminders:
 - Keep connection logs useful for future alert generation.
 - Add integration tests for cross-ISP router/device ingestion isolation.
 - Later connect new-device connection logs to alert generation.
+
+---
+
+## Step 19C Device Ingestion Quality Notes
+
+Quality/security reminders:
+
+- Keep simulator device ingestion scoped by current_admin.isp_id.
+- Do not create duplicate devices for repeated simulator runs.
+- Keep connection logs useful for future alert generation.
+- Add integration tests for cross-ISP router/device ingestion isolation.
+- Later connect new-device connection logs to alert generation.
