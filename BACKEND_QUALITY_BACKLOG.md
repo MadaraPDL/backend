@@ -1137,3 +1137,23 @@ Quality reminders:
 - Add recommendation generation tests after Step 21B.
 - Later, compare rule-based prediction against real collected usage data for better accuracy.
 
+
+---
+
+## Step 21B Quality Note - 2026-05-16
+
+Completed:
+
+- Rule-based recommendation generation added.
+- ISP Admin recommendation generation endpoint added.
+- Recommendation type check constraint updated.
+- Manual API test confirmed recommendation generation and App User recommendation visibility.
+
+Quality reminders:
+
+- Add focused tests for recommendation generation.
+- Add tests that ISP Admin cannot generate recommendations from another ISP's predictions.
+- Add tests that App Users cannot view another user's recommendations.
+- Add tests for duplicate new recommendation prevention.
+- Add tests for upgrade, downgrade, stay current, and monitor usage paths.
+

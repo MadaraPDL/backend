@@ -1223,3 +1223,24 @@ The prediction estimates full-cycle usage from observed usage and average daily 
 - `GET /api/v1/me/predictions`
 - `GET /api/v1/me/predictions/{prediction_id}`
 
+
+### Step 21B Recommendation Foundation
+
+The backend can now generate rule-based recommendations from prediction records.
+
+ISP Admin endpoint:
+
+- `POST /api/v1/isp-admin/recommendations/predictions/{prediction_id}/generate`
+
+Generated recommendations are visible to App Users through:
+
+- `GET /api/v1/me/recommendations`
+- `GET /api/v1/me/recommendations/{recommendation_id}`
+
+Recommendation types include:
+
+- `upgrade_plan`
+- `downgrade_plan`
+- `stay_current`
+- `monitor_usage`
+

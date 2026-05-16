@@ -2172,3 +2172,50 @@ Impact:
 Current next Step 21 work:
 
 - Step 21B: Recommendation foundation based on predictions and available plans.
+
+---
+
+## Step 21 Progress - 2026-05-16
+
+### Step 21B - Recommendation Foundation
+
+Completed and tested:
+
+- Added modular recommendation generation service under `app/services/recommendations/`.
+- Added rule-based recommendation generation from prediction records.
+- Added ISP Admin recommendation generation endpoint:
+  - `POST /api/v1/isp-admin/recommendations/predictions/{prediction_id}/generate`
+- Recommendation logic supports:
+  - `upgrade_plan`
+  - `downgrade_plan`
+  - `stay_current`
+  - `monitor_usage`
+- Added ISP Admin recommendation response schemas.
+- Connected ISP Admin recommendation endpoint to the ISP Admin router.
+- Generated recommendations are stored in the existing `recommendations` table.
+- App User can view generated recommendations through existing:
+  - `GET /api/v1/me/recommendations`
+  - `GET /api/v1/me/recommendations/{recommendation_id}`
+- Recommendation generation is scoped by `current_admin.isp_id`.
+- Added Alembic migration to update `recommendations.recommendation_type` check constraint.
+- Confirmed recommendation generation works after updating the database constraint.
+
+Important behavior:
+
+- If predicted usage exceeds current plan capacity, the system recommends an upgrade when a better active plan exists.
+- If predicted usage is far below the current plan, the system may recommend a downgrade when a suitable smaller active plan exists.
+- If the current plan is suitable, the system recommends staying on the current plan.
+- If no better plan exists, the system recommends monitoring usage.
+- Duplicate new recommendations for the same prediction are avoided.
+
+Impact:
+
+- Database schema: yes, recommendation type check constraint updated.
+- Existing data: no existing rows deleted.
+- API behavior: ISP Admin can generate recommendation records from predictions.
+- App User/mobile: users can now see generated recommendation records.
+- SE diagrams: later update recommendation generation flow in DFD and sequence diagrams.
+
+Current next Step 21 work:
+
+- Step 21C: Add prediction/recommendation tests and isolation tests.

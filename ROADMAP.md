@@ -1790,3 +1790,19 @@ Pending:
 - Step 21C: Connect high-risk predictions to alerts if needed.
 - Step 21D: Add prediction/recommendation tests.
 
+
+### Step 21B - Recommendation Foundation
+
+Completed:
+
+- Added rule-based recommendation generation from predictions.
+- Added ISP Admin endpoint to generate recommendations from predictions.
+- Stored recommendations in the existing `recommendations` table.
+- App Users can view generated recommendations through existing mobile recommendation endpoints.
+- Updated recommendation type database constraint for Step 21 recommendation types.
+
+Pending:
+
+- Step 21C: Add prediction/recommendation tests and isolation tests.
+- Step 21D: Connect recommendations to subscription change request flow if needed.
+

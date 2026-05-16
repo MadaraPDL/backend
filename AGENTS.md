@@ -1630,3 +1630,27 @@ Next recommended work:
 
 - Step 21B: Generate recommendations based on predictions and available plans.
 
+
+## Step 21B Completed
+
+Recommendation foundation is complete.
+
+Completed:
+
+- Rule-based recommendation generation service.
+- ISP Admin recommendation generation endpoint.
+- Recommendation rows stored in the existing `recommendations` table.
+- App User can view generated recommendations through existing `/me/recommendations` endpoints.
+- Recommendation type check constraint updated through Alembic/manual DB application if needed.
+
+Important rules:
+
+- ISP Admin recommendation generation must remain scoped by `current_admin.isp_id`.
+- App User recommendation visibility must remain scoped by `current_user.id`.
+- This is rule-based recommendation logic for MVP.
+- Do not treat this as full ML yet.
+
+Next recommended work:
+
+- Step 21C: Prediction/recommendation tests and isolation tests.
+

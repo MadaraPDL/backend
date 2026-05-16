@@ -14,6 +14,10 @@ from app.schemas.isp_admin.plans import (
     SubscriptionPlanResponse,
     SubscriptionPlanUpdateRequest,
 )
+from app.schemas.isp_admin.recommendations import (
+    ISPAdminRecommendationGenerationResponse,
+    ISPAdminRecommendationResponse,
+)
 from app.schemas.isp_admin.router_action_logs import (
     RouterActionLogResponse,
     RouterActionLogStatus,
@@ -70,6 +74,8 @@ __all__ = [
     "ISPAdminSummaryResponse",
     "ISPAdminUsageRecordResponse",
     "RevokeAppUserInvitationResponse",
+    "ISPAdminRecommendationGenerationResponse",
+    "ISPAdminRecommendationResponse",
     "RouterActionLogResponse",
     "RouterActionLogStatus",
     "RouterCreateRequest",
