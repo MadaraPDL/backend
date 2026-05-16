@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.app_user import AppUser
 from app.models.router import Router
 from app.models.user_subscription import UserSubscription
+from app.router_adapters import get_router_adapter
+from app.schemas.app_user import MyRouterCapabilitiesResponse
 
 
 async def list_my_routers(
@@ -48,3 +50,20 @@ async def get_my_router(
     )
 
     return result.scalar_one_or_none()
+
+
+def get_my_router_capabilities(
+    router: Router,
+) -> MyRouterCapabilitiesResponse:
+    adapter = get_router_adapter(router)
+    capabilities = adapter.get_capabilities(router)
+
+    return MyRouterCapabilitiesResponse(
+        router_id=router.id,
+        adapter_name=adapter.adapter_name,
+        can_read_total_usage=capabilities.can_read_total_usage,
+        can_read_connected_devices=capabilities.can_read_connected_devices,
+        can_read_device_usage=capabilities.can_read_device_usage,
+        can_apply_bandwidth_limit=capabilities.can_apply_bandwidth_limit,
+        can_apply_device_priority=capabilities.can_apply_device_priority,
+    )

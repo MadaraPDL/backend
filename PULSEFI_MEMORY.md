@@ -1671,3 +1671,49 @@ Impact:
 Next:
 
 - Step 18G — Add router capability visibility endpoint or Step 18 cleanup/docs before moving to Step 19 usage ingestion.
+
+---
+
+## Step 18 Progress — 2026-05-16
+
+### Step 18G — App User Router Capability Visibility Endpoint
+
+Completed and tested:
+
+- Added App User router capability response schema.
+- Added router capability service helper:
+  - `get_my_router_capabilities`
+- Added endpoint:
+  - `GET /api/v1/me/routers/{router_id}/capabilities`
+- Endpoint uses `get_current_app_user`.
+- Endpoint first loads the router through `get_my_router`, so the router must belong to the authenticated App User.
+- Capability data comes from the router adapter registry.
+- Current adapter is the simulator adapter.
+- Response includes:
+  - `router_id`
+  - `adapter_name`
+  - `can_read_total_usage`
+  - `can_read_connected_devices`
+  - `can_read_device_usage`
+  - `can_apply_bandwidth_limit`
+  - `can_apply_device_priority`
+- This allows the mobile app to show/hide router features safely.
+- Import checks passed.
+- App import check passed.
+- API router import check passed.
+- Compile check passed.
+- Pytest passed.
+- Integration tests continue using `TEST_DATABASE_URL` with database name `pulsefi_test`.
+
+Impact:
+
+- Database schema: no change.
+- Existing dev data: no change because endpoint is read-only.
+- Test database: safe; tests use `pulsefi_test`.
+- SE diagrams: later update App User router/device flow to include capability-based feature availability.
+- Security: App User can only view capabilities for their own router.
+- Router credentials: no router passwords or credentials are exposed.
+
+Next:
+
+- Step 18 cleanup/docs, then Step 19 — usage data ingestion and simulator usage generation.

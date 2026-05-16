@@ -12,6 +12,7 @@ class MyRouterResponse(BaseModel):
     id: UUID
     isp_id: UUID
     user_subscription_id: UUID | None
+    assigned_by_admin_id: UUID | None
     router_name: str | None
     router_model: str | None
     router_ip: IPvAnyAddress | None
@@ -21,3 +22,13 @@ class MyRouterResponse(BaseModel):
     status: str
     created_at: datetime
     updated_at: datetime
+
+
+class MyRouterCapabilitiesResponse(BaseModel):
+    router_id: UUID
+    adapter_name: str
+    can_read_total_usage: bool
+    can_read_connected_devices: bool
+    can_read_device_usage: bool
+    can_apply_bandwidth_limit: bool
+    can_apply_device_priority: bool

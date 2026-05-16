@@ -4,6 +4,7 @@ from app.services.app_user.device_service import (
 )
 from app.services.app_user.router_service import (
     get_my_router,
+    get_my_router_capabilities,
     list_my_routers,
 )
 from app.services.app_user.summary_service import build_app_user_summary
@@ -51,6 +52,7 @@ __all__ = [
     "get_my_device",
     "get_my_device_usage",
     "get_my_router",
+    "get_my_router_capabilities",
     "get_my_subscription",
     "get_my_usage_summary",
     "list_my_devices",

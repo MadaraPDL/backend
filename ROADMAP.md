@@ -1528,3 +1528,35 @@ Testing:
 Next:
 
 - Step 18G — Add router capability visibility endpoint or Step 18 cleanup before Step 19 usage ingestion.
+
+---
+
+## Step 18 Progress — 2026-05-16
+
+### Step 18G — App User Router Capability Visibility Endpoint
+
+Completed:
+
+- Added endpoint:
+  - `GET /api/v1/me/routers/{router_id}/capabilities`
+- Added App User router capability response schema.
+- Added service helper for reading capabilities from the router adapter registry.
+- Current capability source is the simulator adapter.
+- Endpoint is App User protected.
+- Endpoint only returns capabilities for routers owned by the authenticated App User.
+- Capability response helps the frontend decide which router features to show or disable.
+
+Testing:
+
+- Router capabilities schema import check passed.
+- Router capabilities service import check passed.
+- App User router endpoint import check passed.
+- FastAPI app import check passed.
+- API router import check passed.
+- Compile check passed.
+- Pytest passed.
+- Integration tests used `pulsefi_test` through `TEST_DATABASE_URL`.
+
+Next:
+
+- Step 18 cleanup/docs, then Step 19 — usage data ingestion and simulator usage generation.

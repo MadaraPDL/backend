@@ -1,5 +1,8 @@
 from app.schemas.app_user.devices import MyDeviceResponse
-from app.schemas.app_user.routers import MyRouterResponse
+from app.schemas.app_user.routers import (
+    MyRouterCapabilitiesResponse,
+    MyRouterResponse,
+)
 from app.schemas.app_user.summary import AppUserSummaryResponse
 from app.schemas.app_user.alerts import MyAlertResponse
 from app.schemas.app_user.predictions import MyPredictionResponse
@@ -31,6 +34,7 @@ __all__ = [
     "AppUserSummaryResponse",
     "MyDeviceResponse",
     "MyDeviceUsageResponse",
+    "MyRouterCapabilitiesResponse",
     "MyRouterResponse",
     "MySubscriptionPlanSummary",
     "MySubscriptionResponse",
