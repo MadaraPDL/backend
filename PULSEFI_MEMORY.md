@@ -1629,3 +1629,45 @@ Impact:
 Next:
 
 - Step 18F — Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.
+
+---
+
+## Step 18 Progress — 2026-05-16
+
+### Step 18F — Router Policy Execution and Router Action Log Integration Tests
+
+Completed and tested:
+
+- Added focused integration test file:
+  - `tests/integration/test_router_action_execution_integration.py`
+- Added test for router policy execution:
+  - creates ISP, App User, plan, subscription, router, device, and pending device policy
+  - executes the policy through `execute_device_network_policy`
+  - confirms policy status becomes `applied`
+  - confirms `applied_at` is set
+  - confirms `failure_reason` stays empty
+  - confirms a `RouterActionLog` row is created
+  - confirms action log uses simulator adapter response
+- Added test for ISP Admin router action log isolation:
+  - creates ISP A and ISP B
+  - creates router action log under ISP B
+  - confirms ISP A cannot list or view ISP B's action log
+  - confirms ISP B can list and view its own action log
+- Focused test initially caught a simulator typo:
+  - `succe=True` was corrected to `success=True`
+- Fixed simulator router adapter success response.
+- Focused router action integration tests passed.
+- Full test suite passed.
+- Integration tests continue using `TEST_DATABASE_URL` with database name `pulsefi_test`.
+
+Impact:
+
+- Database schema: no change.
+- Existing dev data: no change.
+- Test database: used safely by integration tests.
+- SE diagrams: no immediate diagram update, but later router policy execution and action log visibility should be reflected.
+- Security: tests now verify ISP Admin router action log access is scoped by ISP ownership.
+
+Next:
+
+- Step 18G — Add router capability visibility endpoint or Step 18 cleanup/docs before moving to Step 19 usage ingestion.

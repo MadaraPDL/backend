@@ -23,19 +23,18 @@ class SimulatorRouterAdapter:
             can_apply_bandwidth_limit=True,
             can_apply_device_priority=True,
         )
-    
+
     async def list_connected_devices(self, router: Router) -> list[RouterDeviceSnapshot]:
-        router_label = router.router_name or "Pulsefi Demo Router"
+        router_label = router.router_name or "PulseFi Demo Router"
 
         return [
             RouterDeviceSnapshot(
-                 mac_address="AA:BB:CC:DD:EE:01",
-                 ip_address="192.168.1.10",
-                 device_name=f"{router_label} Demo Phone",
-                 device_type="phone",
-                 status="connected",
+                mac_address="AA:BB:CC:DD:EE:01",
+                ip_address="192.168.1.10",
+                device_name=f"{router_label} Demo Phone",
+                device_type="phone",
+                status="connected",
             ),
-
             RouterDeviceSnapshot(
                 mac_address="AA:BB:CC:DD:EE:02",
                 ip_address="192.168.1.20",
@@ -44,28 +43,28 @@ class SimulatorRouterAdapter:
                 status="connected",
             ),
         ]
-    
+
     async def apply_bandwidth_limit(
-            self,
-            *,
-            router: Router,
-            device: Device,
-            limit_mbps: Decimal,
+        self,
+        *,
+        router: Router,
+        device: Device,
+        limit_mbps: Decimal,
     ) -> RouterActionResult:
         if limit_mbps <= 0:
             return RouterActionResult(
                 success=False,
                 action_type="bandwidth_limit",
                 status="failed",
-                message="Bandwidth limit must be greater than 0. ",
-                error_message="Invalid bandwidth limit."
+                message="Bandwidth limit must be greater than 0.",
+                error_message="Invalid bandwidth limit.",
             )
-        
+
         return RouterActionResult(
-            succe=True,
+            success=True,
             action_type="bandwidth_limit",
             status="success",
-            message="Simulated bandwidth limit applies successfully.",
+            message="Simulated bandwidth limit applied successfully.",
             response_payload={
                 "adapter": self.adapter_name,
                 "router_id": str(router.id),
@@ -73,14 +72,13 @@ class SimulatorRouterAdapter:
                 "limit_mbps": str(limit_mbps),
             },
         )
-    
 
     async def apply_device_priority(
-            self,
-            *,
-            router: Router,
-            device: Device,
-            priority_level: int,
+        self,
+        *,
+        router: Router,
+        device: Device,
+        priority_level: int,
     ) -> RouterActionResult:
         if priority_level < 1 or priority_level > 10:
             return RouterActionResult(
@@ -90,7 +88,7 @@ class SimulatorRouterAdapter:
                 message="Priority level must be between 1 and 10.",
                 error_message="Invalid priority level.",
             )
-        
+
         return RouterActionResult(
             success=True,
             action_type="device_priority",
