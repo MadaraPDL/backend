@@ -2254,3 +2254,41 @@ Pending Step 21 work:
 
 - Add downgrade and monitor usage path tests if needed.
 - Connect recommendations to subscription change request flow if needed.
+
+---
+
+## Step 21 Progress - 2026-05-16
+
+### Step 21D - Recommendation Cleanup Tests
+
+Completed:
+
+- Added `downgrade_plan` recommendation path test.
+- Added `monitor_usage` recommendation path test.
+- Confirmed recommendation generation test coverage now includes:
+  - `upgrade_plan`
+  - `downgrade_plan`
+  - `stay_current`
+  - `monitor_usage`
+  - duplicate new recommendation prevention
+  - ISP-scoped recommendation generation query
+  - App User prediction/recommendation ownership query filters
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: no new endpoint behavior.
+- Quality: Step 21 recommendation paths are now covered by focused service tests.
+
+Step 21 status:
+
+- Step 21A complete: Prediction generation foundation.
+- Step 21B complete: Recommendation generation foundation.
+- Step 21C complete: Prediction/recommendation service tests.
+- Step 21D complete: Recommendation cleanup path tests.
+
+Recommended next backend work:
+
+- Connect recommendations to subscription change request flow if needed.
+- Or move to reporting/analytics/dashboard improvements.

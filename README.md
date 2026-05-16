@@ -1255,3 +1255,15 @@ Focused service tests were added for:
 - ISP-scoped recommendation generation.
 - App User prediction/recommendation ownership queries.
 
+
+### Step 21D Recommendation Cleanup Tests
+
+Recommendation service tests now cover all MVP recommendation types:
+
+- `upgrade_plan`
+- `downgrade_plan`
+- `stay_current`
+- `monitor_usage`
+
+Step 21 prediction and recommendation foundation is complete enough to support the next backend phase.
+

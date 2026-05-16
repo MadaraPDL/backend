@@ -1175,3 +1175,21 @@ Still useful later:
 - End-to-end API tests for prediction and recommendation generation.
 - Subscription change request integration tests.
 
+
+---
+
+## Step 21D Quality Note - 2026-05-16
+
+Completed:
+
+- Added downgrade recommendation path test.
+- Added monitor usage recommendation path test.
+- All MVP recommendation types now have focused service test coverage.
+
+Still useful later:
+
+- End-to-end API tests for prediction generation.
+- End-to-end API tests for recommendation generation.
+- Subscription change request integration tests.
+- More realistic ML/data-quality validation once real router usage data exists.
+

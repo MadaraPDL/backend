@@ -371,3 +371,122 @@ async def test_app_user_get_recommendation_requires_current_user_id_and_recommen
     assert "recommendations.user_id" in sql
     assert recommendation_id in params
     assert user_id in params
+
+
+@pytest.mark.asyncio
+async def test_recommendation_generation_downgrade_path():
+    prediction_id = uuid4()
+    user_id = uuid4()
+    subscription_id = uuid4()
+    current_plan_id = uuid4()
+    recommended_plan_id = uuid4()
+    isp_id = uuid4()
+
+    current_plan = SimpleNamespace(
+        id=current_plan_id,
+        isp_id=isp_id,
+        plan_name="Large Plan",
+        data_limit_gb=Decimal("100"),
+    )
+
+    recommended_plan = SimpleNamespace(
+        id=recommended_plan_id,
+        isp_id=isp_id,
+        plan_name="Smaller Plan",
+        data_limit_gb=Decimal("50"),
+        monthly_price=Decimal("10"),
+    )
+
+    prediction = SimpleNamespace(
+        id=prediction_id,
+        user_id=user_id,
+        user_subscription_id=subscription_id,
+        plan_id=current_plan_id,
+        predicted_usage_gb=Decimal("40"),
+        confidence_score=Decimal("0.72"),
+        plan=current_plan,
+    )
+
+    db = FakeDb(
+        execute_values=[
+            FakeScalarResult(prediction),
+            FakeScalarResult(None),
+            FakeScalarResult(recommended_plan),
+        ]
+    )
+
+    result = await generate_recommendation_for_prediction(
+        db=db,
+        prediction_id=prediction_id,
+    )
+
+    assert result.created is True
+    assert result.recommended_plan_limit_gb == Decimal("50")
+
+    recommendation = result.recommendation
+
+    assert isinstance(recommendation, Recommendation)
+    assert recommendation.user_id == user_id
+    assert recommendation.user_subscription_id == subscription_id
+    assert recommendation.current_plan_id == current_plan_id
+    assert recommendation.recommendation_plan_id == recommended_plan_id
+    assert recommendation.prediction_id == prediction_id
+    assert recommendation.recommendation_type == "downgrade_plan"
+    assert recommendation.recommendation_text == "Consider switching to Smaller Plan."
+    assert recommendation.confidence_score == Decimal("0.72")
+    assert recommendation.status == "new"
+
+
+@pytest.mark.asyncio
+async def test_recommendation_generation_monitor_usage_when_no_upgrade_plan_exists():
+    prediction_id = uuid4()
+    user_id = uuid4()
+    subscription_id = uuid4()
+    current_plan_id = uuid4()
+    isp_id = uuid4()
+
+    current_plan = SimpleNamespace(
+        id=current_plan_id,
+        isp_id=isp_id,
+        plan_name="Current Plan",
+        data_limit_gb=Decimal("100"),
+    )
+
+    prediction = SimpleNamespace(
+        id=prediction_id,
+        user_id=user_id,
+        user_subscription_id=subscription_id,
+        plan_id=current_plan_id,
+        predicted_usage_gb=Decimal("130"),
+        confidence_score=Decimal("0.81"),
+        plan=current_plan,
+    )
+
+    db = FakeDb(
+        execute_values=[
+            FakeScalarResult(prediction),
+            FakeScalarResult(None),
+            FakeScalarResult(None),
+        ]
+    )
+
+    result = await generate_recommendation_for_prediction(
+        db=db,
+        prediction_id=prediction_id,
+    )
+
+    assert result.created is True
+    assert result.recommended_plan_limit_gb is None
+
+    recommendation = result.recommendation
+
+    assert isinstance(recommendation, Recommendation)
+    assert recommendation.user_id == user_id
+    assert recommendation.user_subscription_id == subscription_id
+    assert recommendation.current_plan_id == current_plan_id
+    assert recommendation.recommendation_plan_id is None
+    assert recommendation.prediction_id == prediction_id
+    assert recommendation.recommendation_type == "monitor_usage"
+    assert recommendation.recommendation_text == "Monitor your usage closely."
+    assert recommendation.confidence_score == Decimal("0.81")
+    assert recommendation.status == "new"

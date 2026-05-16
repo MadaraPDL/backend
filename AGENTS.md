@@ -1678,3 +1678,27 @@ Next recommended work:
 - Add downgrade/monitor recommendation tests if needed.
 - Consider subscription change request integration from recommendation rows.
 
+
+## Step 21D Completed
+
+Recommendation cleanup tests were added.
+
+Covered recommendation types:
+
+- `upgrade_plan`
+- `downgrade_plan`
+- `stay_current`
+- `monitor_usage`
+
+Step 21 is complete enough to move forward.
+
+Next recommended options:
+
+- Connect recommendation rows to subscription change request flow.
+- Or move to ISP Admin reporting/analytics/dashboard improvements.
+
+Important rules remain:
+
+- ISP Admin prediction/recommendation generation must stay scoped by `current_admin.isp_id`.
+- App User prediction/recommendation visibility must stay scoped by `current_user.id`.
+

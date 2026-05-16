@@ -1823,3 +1823,23 @@ Pending:
 - Monitor usage recommendation test.
 - Optional subscription-change integration.
 
+
+### Step 21D - Recommendation Cleanup Tests
+
+Completed:
+
+- Added downgrade recommendation path test.
+- Added monitor usage recommendation path test.
+- Recommendation test coverage now includes all MVP recommendation types:
+  - `upgrade_plan`
+  - `downgrade_plan`
+  - `stay_current`
+  - `monitor_usage`
+
+Step 21 is now complete enough to move forward.
+
+Pending optional work:
+
+- Connect recommendations to subscription change requests.
+- Add end-to-end API tests for prediction and recommendation generation.
+
