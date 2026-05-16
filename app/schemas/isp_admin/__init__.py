@@ -1,6 +1,9 @@
 from app.schemas.isp_admin.alerts import (
     ISPAdminAlertResponse,
 )
+from app.schemas.isp_admin.analytics import (
+    ISPAdminAnalyticsSummaryResponse,
+)
 from app.schemas.isp_admin.device_connection_logs import (
     ISPAdminDeviceConnectionLogResponse,
 )
@@ -72,6 +75,7 @@ __all__ = [
     "AppUserStatus",
     "AppUserUpdateRequest",
     "ISPAdminAlertResponse",
+    "ISPAdminAnalyticsSummaryResponse",
     "ISPAdminDeviceConnectionLogResponse",
     "ISPAdminPlanChangeRequestResponse",
     "ISPAdminPlanChangeRequestReviewRequest",

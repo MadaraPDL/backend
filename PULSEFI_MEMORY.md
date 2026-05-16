@@ -2456,3 +2456,63 @@ Next backend work:
 - Step 22 final cleanup/review, then continue to the next roadmap phase.
 - Likely next major backend phase: reports and analytics, unless we choose to do final backend quality cleanup first.
 
+
+---
+
+## Step 23 Progress - 2026-05-16
+
+### Step 23A - ISP Admin Analytics Summary Foundation
+
+Completed and tested:
+
+- Added ISP Admin analytics summary endpoint:
+  - `GET /api/v1/isp-admin/analytics/summary`
+- Added optional period filters:
+  - `period_start`
+  - `period_end`
+- Added ISP Admin analytics response schema.
+- Added ISP Admin analytics service logic.
+- Analytics summary returns:
+  - total users
+  - active users
+  - total subscriptions
+  - active subscriptions
+  - total routers
+  - active routers
+  - pending/approved/rejected plan change request counts
+  - total/unread/critical alert counts
+  - total/new/accepted recommendation counts
+  - total usage in MB and GB
+- Security/isolation:
+  - analytics data is scoped by `current_admin.isp_id`
+  - usage, alerts, recommendations, subscriptions, and plan change request counts are scoped through the linked App User ISP
+  - router counts are scoped by `Router.isp_id`
+- Added focused integration test for:
+  - analytics counts
+  - usage period filtering
+  - cross-ISP isolation
+- Endpoint smoke test passed through FastAPI route.
+
+Validation completed:
+
+- Import checks passed.
+- New integration test passed.
+- Full pytest suite passed.
+- Compile check passed.
+- Endpoint smoke test passed.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: read-only analytics endpoint, no migration or data rewrite.
+- GitHub: Step 23A endpoint, schema, service, and test changed.
+- SE diagrams: later update ISP Admin dashboard/reporting analytics flow.
+
+Next backend work:
+
+- Step 23B: report generation/list/detail using the existing `reports` table.
+- Likely endpoints:
+  - `POST /api/v1/isp-admin/reports`
+  - `GET /api/v1/isp-admin/reports`
+  - `GET /api/v1/isp-admin/reports/{report_id}`
+

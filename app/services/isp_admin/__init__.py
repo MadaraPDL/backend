@@ -2,6 +2,9 @@ from app.services.isp_admin.alert_service import (
     get_alert_for_isp,
     list_alerts_for_isp,
 )
+from app.services.isp_admin.analytics_service import (
+    get_isp_admin_analytics_summary,
+)
 from app.services.isp_admin.device_connection_log_service import (
     get_device_connection_log_for_isp,
     list_device_connection_logs_for_isp,
@@ -67,6 +70,7 @@ __all__ = [
     "get_app_user_for_subscription_assignment",
     "get_app_user_invitation_by_id",
     "get_device_connection_log_for_isp",
+    "get_isp_admin_analytics_summary",
     "get_isp_admin_summary",
     "get_pending_app_user_invitation",
     "get_plan_change_request_for_isp",

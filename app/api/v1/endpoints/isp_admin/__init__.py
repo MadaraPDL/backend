@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from . import (
     alerts,
+    analytics,
     device_connection_logs,
     plan_change_requests,
     plans,
@@ -25,6 +26,7 @@ router = APIRouter(
 
 router.include_router(summary.router)
 router.include_router(alerts.router)
+router.include_router(analytics.router)
 router.include_router(user_invitations.router)
 router.include_router(users.router)
 router.include_router(plans.router)
