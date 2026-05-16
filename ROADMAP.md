@@ -1724,3 +1724,21 @@ Pending:
 - ISP Admin alert visibility if needed.
 - Focused automated tests for alert generation and ownership isolation.
 
+
+### Step 20C - ISP Admin Alert Visibility
+
+Completed:
+
+- Added read-only ISP Admin alert visibility.
+- Added:
+  - `GET /api/v1/isp-admin/alerts`
+  - `GET /api/v1/isp-admin/alerts/{alert_id}`
+- ISP Admins can view App User alerts under their own ISP.
+- Queries are scoped through the App User ISP relationship.
+- Admin-owned personal alerts are not part of the MVP yet.
+
+Pending:
+
+- Focused tests for alert generation.
+- Ownership/isolation tests for App User and ISP Admin alert access.
+

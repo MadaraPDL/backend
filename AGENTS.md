@@ -1556,3 +1556,20 @@ Important next rule:
 - App User alert endpoints already exist and must stay scoped by `get_current_app_user`.
 - ISP Admin alert visibility, if added, must be scoped by `current_admin.isp_id`.
 
+
+## Step 20C Completed
+
+ISP Admins now have read-only visibility into App User alerts under their ISP.
+
+Important rules:
+
+- ISP Admin alert queries must use `get_current_isp_admin`.
+- Alert queries must be scoped by `current_admin.isp_id`.
+- Current alerts belong to App Users.
+- Do not treat current `alerts` rows as admin-owned notifications.
+- Admin-owned notifications would require a future separate design.
+
+Next recommended work:
+
+- Add focused alert tests and ownership/isolation tests.
+

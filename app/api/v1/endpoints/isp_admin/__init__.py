@@ -1,6 +1,7 @@
 ﻿from fastapi import APIRouter
 
 from app.api.v1.endpoints.isp_admin import (
+    alerts,
     device_connection_logs,
     plans,
     router_action_logs,
@@ -20,6 +21,7 @@ router = APIRouter(
 )
 
 router.include_router(summary.router)
+router.include_router(alerts.router)
 router.include_router(user_invitations.router)
 router.include_router(users.router)
 router.include_router(plans.router)

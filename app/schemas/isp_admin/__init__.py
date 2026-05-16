@@ -1,4 +1,7 @@
-﻿from app.schemas.isp_admin.device_connection_logs import (
+﻿from app.schemas.isp_admin.alerts import (
+    ISPAdminAlertResponse,
+)
+from app.schemas.isp_admin.device_connection_logs import (
     ISPAdminDeviceConnectionLogResponse,
 )
 from app.schemas.isp_admin.plans import (
@@ -54,6 +57,7 @@ __all__ = [
     "AppUserResponse",
     "AppUserStatus",
     "AppUserUpdateRequest",
+    "ISPAdminAlertResponse",
     "ISPAdminDeviceConnectionLogResponse",
     "ISPAdminSummaryResponse",
     "ISPAdminUsageRecordResponse",

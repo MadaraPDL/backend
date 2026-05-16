@@ -2038,3 +2038,43 @@ Current next Step 20 work:
 
 - Step 20C: Add ISP Admin alert visibility if needed for dashboard monitoring.
 - Step 20D: Add focused alert generation tests and ownership/isolation tests.
+
+---
+
+## Step 20 Progress - 2026-05-16
+
+### Step 20C - ISP Admin Alert Visibility
+
+Completed and tested:
+
+- Added ISP Admin alert schemas.
+- Added ISP Admin alert service.
+- Added ISP Admin alert endpoints.
+- Added endpoints:
+  - `GET /api/v1/isp-admin/alerts`
+  - `GET /api/v1/isp-admin/alerts/{alert_id}`
+- ISP Admins can view App User alerts under their own ISP.
+- Alert queries are scoped through `AppUser.isp_id == current_admin.isp_id`.
+- Added filters for:
+  - user
+  - subscription
+  - device
+  - alert type
+  - severity
+  - status
+  - created date range
+- Confirmed ISP Admin can list and view alerts for users under their ISP.
+- ISP Admin alert access is read-only for now.
+- Admins do not have personal alerts yet; current alerts belong to App Users.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: ISP Admin dashboard can now view user alerts.
+- Security: ISP Admin alert visibility is scoped by current_admin.isp_id.
+- SE diagrams: later update ISP Admin dashboard alert visibility flow.
+
+Current next Step 20 work:
+
+- Step 20D: Add focused alert tests and ownership/isolation tests.

@@ -1176,3 +1176,13 @@ Example:
 - A router action log is stored with status `failed`.
 - The App User receives a `policy_failed` alert.
 
+
+### Step 20C ISP Admin Alert Visibility
+
+ISP Admins can now view App User alerts under their own ISP through:
+
+- `GET /api/v1/isp-admin/alerts`
+- `GET /api/v1/isp-admin/alerts/{alert_id}`
+
+This is read-only dashboard visibility. Alerts still belong to App Users, not admins.
+

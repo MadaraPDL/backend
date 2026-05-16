@@ -1063,3 +1063,25 @@ Quality reminders:
 - Add tests that ISP Admin alert visibility, if added, is scoped by `current_admin.isp_id`.
 - Consider creating a migration/admin DB role so Alembic can apply schema changes without manual pgAdmin steps.
 
+
+---
+
+## Step 20C Quality Note - 2026-05-16
+
+Completed:
+
+- ISP Admin read-only alert visibility added.
+- ISP Admin alert list/detail queries are scoped by ISP.
+
+Quality reminders:
+
+- Add tests that ISP Admins cannot view alerts from another ISP.
+- Add tests that App Users cannot view another user's alerts.
+- Add tests for alert filters:
+  - status
+  - severity
+  - alert_type
+  - user_id
+  - device_id
+- Consider whether admin-owned notifications are needed later as a separate feature.
+
