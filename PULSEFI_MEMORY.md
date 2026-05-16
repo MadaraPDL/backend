@@ -2132,3 +2132,43 @@ Pending Step 20 test expansion:
 
 - New device alert generation test.
 - Unusual consumption alert generation test.
+
+---
+
+## Step 21 Progress - 2026-05-16
+
+### Step 21A - Prediction Foundation
+
+Completed and tested:
+
+- Added modular prediction service under `app/services/predictions/`.
+- Added rule-based usage prediction generation.
+- Added ISP Admin prediction generation endpoint:
+  - `POST /api/v1/isp-admin/predictions/subscriptions/{subscription_id}/generate`
+- Prediction logic calculates:
+  - observed usage in GB
+  - average daily usage in GB
+  - predicted full-cycle usage in GB
+  - confidence score
+  - risk level
+- Risk levels:
+  - `low`: predicted usage below 80% of plan limit
+  - `medium`: predicted usage from 80% to below 100%
+  - `high`: predicted usage at or above 100%
+- Prediction rows are stored in the existing `predictions` table.
+- App User can view generated predictions through existing:
+  - `GET /api/v1/me/predictions`
+  - `GET /api/v1/me/predictions/{prediction_id}`
+- ISP Admin prediction generation is scoped by `current_admin.isp_id`.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: prediction rows can be inserted when endpoint is used.
+- API behavior: ISP Admin can generate prediction records for subscriptions under their ISP.
+- App User/mobile: users can now see generated prediction records.
+- SE diagrams: later update prediction generation flow in DFD and sequence diagrams.
+
+Current next Step 21 work:
+
+- Step 21B: Recommendation foundation based on predictions and available plans.

@@ -8,7 +8,7 @@ The backend is a FastAPI + PostgreSQL service designed for a deployable Final Ye
 
 ## Current Backend Status
 
-Current phase: **Step 20 in progress - Alerts system**.
+Current phase: **Step 21 in progress - Prediction and recommendation logic**.
 
 Recently completed and tested:
 
@@ -1207,4 +1207,19 @@ They verify:
 - App User alert queries are scoped by the authenticated user.
 - ISP Admin alert queries are scoped through the App User ISP relationship.
 - Additional filters do not remove ISP scoping.
+
+
+
+### Step 21A Prediction Foundation
+
+The backend can now generate rule-based usage predictions for user subscriptions.
+
+ISP Admin endpoint:
+
+- `POST /api/v1/isp-admin/predictions/subscriptions/{subscription_id}/generate`
+
+The prediction estimates full-cycle usage from observed usage and average daily usage. Generated predictions are visible to App Users through:
+
+- `GET /api/v1/me/predictions`
+- `GET /api/v1/me/predictions/{prediction_id}`
 

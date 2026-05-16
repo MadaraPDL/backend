@@ -2,7 +2,7 @@
 
 ## Current Position
 
-Current phase: **Step 20 in progress - Alerts system**.
+Current phase: **Step 21 in progress - Prediction and recommendation logic**.
 
 Step 16 and Step 17 MVP work are complete and tested.
 
@@ -1771,4 +1771,22 @@ Pending:
 
 - New device alert generation test.
 - Unusual consumption alert generation test.
+
+
+
+### Step 21A - Prediction Foundation
+
+Completed:
+
+- Added rule-based usage prediction generation.
+- Added ISP Admin endpoint to generate predictions for subscriptions.
+- Stored predictions in the existing `predictions` table.
+- Prediction estimates full-cycle usage from observed usage and average daily usage.
+- App Users can view generated predictions through existing mobile prediction endpoints.
+
+Pending:
+
+- Step 21B: Generate recommendations from predictions.
+- Step 21C: Connect high-risk predictions to alerts if needed.
+- Step 21D: Add prediction/recommendation tests.
 

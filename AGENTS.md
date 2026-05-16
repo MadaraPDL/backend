@@ -1607,3 +1607,26 @@ Next recommended work:
 - Unusual consumption alert test.
 - Then close Step 20 and move to Step 21 prediction/recommendation logic.
 
+
+
+## Step 21A Completed
+
+Prediction foundation is complete.
+
+Completed:
+
+- Rule-based prediction generation service.
+- ISP Admin prediction generation endpoint.
+- Prediction rows stored in the existing `predictions` table.
+- App User can view generated predictions through existing `/me/predictions` endpoints.
+
+Important rules:
+
+- ISP Admin prediction generation must remain scoped by `current_admin.isp_id`.
+- App User prediction visibility must remain scoped by `current_user.id`.
+- This is rule-based/statistical prediction for MVP, not full ML yet.
+
+Next recommended work:
+
+- Step 21B: Generate recommendations based on predictions and available plans.
+

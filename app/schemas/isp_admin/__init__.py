@@ -4,6 +4,11 @@
 from app.schemas.isp_admin.device_connection_logs import (
     ISPAdminDeviceConnectionLogResponse,
 )
+from app.schemas.isp_admin.predictions import (
+    ISPAdminPredictionGenerateRequest,
+    ISPAdminPredictionGenerationResponse,
+    ISPAdminPredictionResponse,
+)
 from app.schemas.isp_admin.plans import (
     SubscriptionPlanCreateRequest,
     SubscriptionPlanResponse,
@@ -59,6 +64,9 @@ __all__ = [
     "AppUserUpdateRequest",
     "ISPAdminAlertResponse",
     "ISPAdminDeviceConnectionLogResponse",
+    "ISPAdminPredictionGenerateRequest",
+    "ISPAdminPredictionGenerationResponse",
+    "ISPAdminPredictionResponse",
     "ISPAdminSummaryResponse",
     "ISPAdminUsageRecordResponse",
     "RevokeAppUserInvitationResponse",

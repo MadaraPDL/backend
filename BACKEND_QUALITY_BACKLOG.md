@@ -1118,3 +1118,22 @@ Still needed:
 - New device alert generation test.
 - Unusual consumption alert generation test.
 
+
+---
+
+## Step 21A Quality Note - 2026-05-16
+
+Completed:
+
+- Rule-based prediction generation added.
+- ISP Admin prediction generation endpoint added.
+- Manual API test confirmed prediction generation and App User prediction visibility.
+
+Quality reminders:
+
+- Add focused tests for prediction generation.
+- Add tests that ISP Admin cannot generate predictions for another ISP's subscription.
+- Add tests that App Users cannot view another user's predictions.
+- Add recommendation generation tests after Step 21B.
+- Later, compare rule-based prediction against real collected usage data for better accuracy.
+
