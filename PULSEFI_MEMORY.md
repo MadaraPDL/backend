@@ -1422,3 +1422,46 @@ Current quality status:
 Next backend step:
 - Continue Step 18.
 
+
+---
+
+## Step 18 Progress — 2026-05-16
+
+### Step 18A/18B — Router Adapter Interface and Simulator Adapter
+
+Completed and tested:
+
+- Added router adapter package: `app/router_adapters/`.
+- Added router adapter interface contract in `app/router_adapters/base.py`.
+- Added standardized router capability model.
+- Added standardized router device snapshot model.
+- Added standardized router action result model.
+- Added simulator router adapter in `app/router_adapters/simulator.py`.
+- Added adapter registry in `app/router_adapters/registry.py`.
+- For now, every router uses the simulator adapter.
+- The simulator supports demo capabilities for:
+  - connected device listing
+  - total usage capability flag
+  - per-device usage capability flag
+  - bandwidth limit simulation
+  - device priority simulation
+- No real router credentials are accepted or stored.
+- No raw router passwords are stored.
+- Import checks passed.
+- App import check passed.
+- API router import check passed.
+- Compile check passed.
+- Pytest passed: 40 tests passed.
+- Integration tests confirmed they are using `TEST_DATABASE_URL` with database name `pulsefi_test`.
+
+Impact:
+
+- Database schema: no change.
+- Existing dev data: no change.
+- Test database: used safely by integration tests.
+- SE diagrams: later update architecture/DFD/sequence diagrams to include router adapter registry, simulator adapter, and capability-based router support.
+- Security: safe because this step does not touch router credentials.
+
+Next:
+
+- Step 18C — Add service layer that uses the router adapter registry to apply pending device network policies and create router action logs.
