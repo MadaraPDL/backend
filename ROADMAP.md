@@ -1806,3 +1806,20 @@ Pending:
 - Step 21C: Add prediction/recommendation tests and isolation tests.
 - Step 21D: Connect recommendations to subscription change request flow if needed.
 
+
+### Step 21C - Prediction and Recommendation Tests
+
+Completed:
+
+- Added prediction generation tests.
+- Added recommendation generation tests.
+- Added duplicate recommendation prevention test.
+- Added recommendation ISP-scope query test.
+- Added App User prediction/recommendation ownership query tests.
+
+Pending:
+
+- Downgrade recommendation test.
+- Monitor usage recommendation test.
+- Optional subscription-change integration.
+

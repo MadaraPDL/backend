@@ -1654,3 +1654,27 @@ Next recommended work:
 
 - Step 21C: Prediction/recommendation tests and isolation tests.
 
+
+## Step 21C Completed
+
+Prediction and recommendation service tests were added.
+
+Covered:
+
+- Prediction generation math.
+- `stay_current` recommendation generation.
+- `upgrade_plan` recommendation generation.
+- Duplicate new recommendation prevention.
+- ISP-scoped recommendation generation query.
+- App User prediction/recommendation ownership query filters.
+
+Important rules:
+
+- ISP Admin prediction/recommendation generation must remain scoped by `current_admin.isp_id`.
+- App User prediction/recommendation visibility must remain scoped by `current_user.id`.
+
+Next recommended work:
+
+- Add downgrade/monitor recommendation tests if needed.
+- Consider subscription change request integration from recommendation rows.
+

@@ -1244,3 +1244,14 @@ Recommendation types include:
 - `stay_current`
 - `monitor_usage`
 
+
+### Step 21C Prediction and Recommendation Tests
+
+Focused service tests were added for:
+
+- Prediction generation math.
+- Recommendation generation.
+- Duplicate recommendation prevention.
+- ISP-scoped recommendation generation.
+- App User prediction/recommendation ownership queries.
+

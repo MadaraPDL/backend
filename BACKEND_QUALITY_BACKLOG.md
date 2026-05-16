@@ -1157,3 +1157,21 @@ Quality reminders:
 - Add tests for duplicate new recommendation prevention.
 - Add tests for upgrade, downgrade, stay current, and monitor usage paths.
 
+
+---
+
+## Step 21C Quality Note - 2026-05-16
+
+Completed:
+
+- Added Step 21 prediction/recommendation service tests.
+- Added recommendation duplicate-prevention test.
+- Added ownership and ISP-scope query tests.
+
+Still useful later:
+
+- Downgrade recommendation path test.
+- Monitor usage path test.
+- End-to-end API tests for prediction and recommendation generation.
+- Subscription change request integration tests.
+

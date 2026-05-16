@@ -2219,3 +2219,38 @@ Impact:
 Current next Step 21 work:
 
 - Step 21C: Add prediction/recommendation tests and isolation tests.
+
+---
+
+## Step 21 Progress - 2026-05-16
+
+### Step 21C - Prediction and Recommendation Tests
+
+Completed:
+
+- Added focused service tests for prediction generation.
+- Tested prediction generation math:
+  - observed usage
+  - average daily usage
+  - predicted full-cycle usage
+  - confidence score
+  - risk level
+- Added focused service tests for recommendation generation.
+- Tested `stay_current` recommendation path.
+- Tested `upgrade_plan` recommendation path.
+- Tested duplicate new recommendation prevention.
+- Tested ISP Admin recommendation generation keeps ISP scope.
+- Tested App User prediction detail query includes `current_user.id`.
+- Tested App User recommendation detail query includes `current_user.id`.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: no new endpoint behavior.
+- Quality: improves confidence in Step 21 prediction/recommendation logic and ownership scoping.
+
+Pending Step 21 work:
+
+- Add downgrade and monitor usage path tests if needed.
+- Connect recommendations to subscription change request flow if needed.
