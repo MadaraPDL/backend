@@ -1,34 +1,4 @@
-@'
-
----
-
-## Step 18 Progress — 2026-05-16
-
-### Step 18C — Router Policy Execution Service
-
-Completed:
-
-- Added `app/services/router_actions/`.
-- Added router policy execution service.
-- Device network policies can now be executed through the router adapter registry.
-- Simulator adapter is used for current execution.
-- Router action logs are created for execution history.
-- Policy status is updated to `applied` or `failed`.
-- Non-pending policies are not executed again.
-
-Testing:
-
-- Router action service import check passed.
-- FastAPI app import check passed.
-- API router import check passed.
-- Compile check passed.
-- Pytest passed.
-- Integration tests used `pulsefi_test` through `TEST_DATABASE_URL`.
-
-Next:
-
-- Step 18D — API endpoint for safely triggering pending device policy execution.
-'@ | Add-Content ROADMAP.md# PulseFi Project Memory
+# PulseFi Project Memory
 
 This file is the grouped project context for PulseFi. It should be read before continuing major backend work, especially when starting a new step.
 

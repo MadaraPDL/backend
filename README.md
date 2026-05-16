@@ -8,7 +8,7 @@ The backend is a FastAPI + PostgreSQL service designed for a deployable Final Ye
 
 ## Current Backend Status
 
-Current phase: **Step 18 complete - Router adapter and simulator foundation**.
+Current phase: **Step 19 in progress - Usage data ingestion and simulator usage generation**.
 
 Recently completed and tested:
 
