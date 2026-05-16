@@ -1872,3 +1872,46 @@ Testing:
 Next step:
 
 - Step 19E - ISP Admin visibility for usage records and device connection logs.
+
+---
+
+## Step 19 Progress - 2026-05-16
+
+### Step 19E - ISP Admin Usage and Device Connection Log Visibility
+
+Completed and tested:
+
+- Added ISP Admin usage record schemas.
+- Added ISP Admin device connection log schemas.
+- Added ISP Admin usage record service.
+- Added ISP Admin device connection log service.
+- Added endpoints:
+  - GET /api/v1/isp-admin/usage-records
+  - GET /api/v1/isp-admin/usage-records/{usage_record_id}
+  - GET /api/v1/isp-admin/device-connection-logs
+  - GET /api/v1/isp-admin/device-connection-logs/{connection_log_id}
+- Usage records are scoped through Router.isp_id = current_admin.isp_id.
+- Device connection logs are scoped through Router.isp_id = current_admin.isp_id.
+- List endpoints support filters for router, device/user/subscription where relevant, source/event_type, time range, limit, and offset.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change; read-only visibility endpoints.
+- Security: ISP Admin cannot view usage records or connection logs outside their ISP.
+- SE diagrams: later update ISP Admin dashboard/reporting/data-flow diagrams to include usage and connection-log visibility.
+
+Testing:
+
+- ISP Admin schemas import check passed.
+- ISP Admin services import check passed.
+- ISP Admin endpoint import checks passed.
+- API router import check passed.
+- FastAPI app import check passed.
+- Compile check passed.
+- Pytest passed.
+- Manual list/detail endpoint tests passed.
+
+Next step:
+
+- Step 19F - integration tests and Step 19 cleanup/finalization.

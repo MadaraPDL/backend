@@ -994,3 +994,15 @@ Quality/security reminders:
 - Add integration tests for the combined endpoint.
 - Later add scheduler support after manual ingestion remains stable.
 - Later connect connection logs to alert generation.
+
+---
+
+## Step 19E Visibility Endpoint Quality Notes
+
+Quality/security reminders:
+
+- Keep usage record visibility scoped through Router.isp_id.
+- Keep device connection log visibility scoped through Router.isp_id.
+- Add integration tests for cross-ISP isolation.
+- Add pagination tests for usage records and connection logs.
+- Later connect these endpoints to ISP Admin dashboard tables.

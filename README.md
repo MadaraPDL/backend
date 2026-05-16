@@ -1115,3 +1115,24 @@ Behavior:
 - Creates device connection logs.
 - Creates simulator usage records.
 - Does not require real router credentials.
+
+---
+
+## ISP Admin Usage Visibility
+
+PulseFi supports ISP Admin read-only visibility for usage records and device connection logs.
+
+Endpoints:
+
+GET /api/v1/isp-admin/usage-records
+GET /api/v1/isp-admin/usage-records/{usage_record_id}
+GET /api/v1/isp-admin/device-connection-logs
+GET /api/v1/isp-admin/device-connection-logs/{connection_log_id}
+
+Behavior:
+
+- Requires ISP Admin authentication.
+- Usage records are scoped to the logged-in ISP Admin's ISP.
+- Device connection logs are scoped to the logged-in ISP Admin's ISP.
+- Supports filters for dashboard views and troubleshooting.
+- Does not modify usage/device data.

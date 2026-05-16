@@ -1,4 +1,7 @@
-﻿from app.schemas.isp_admin.plans import (
+﻿from app.schemas.isp_admin.device_connection_logs import (
+    ISPAdminDeviceConnectionLogResponse,
+)
+from app.schemas.isp_admin.plans import (
     SubscriptionPlanCreateRequest,
     SubscriptionPlanResponse,
     SubscriptionPlanUpdateRequest,
@@ -29,6 +32,9 @@ from app.schemas.isp_admin.usage_ingestion import (
     SimulatorUsageIngestionRequest,
     SimulatorUsageIngestionResponse,
 )
+from app.schemas.isp_admin.usage_records import (
+    ISPAdminUsageRecordResponse,
+)
 from app.schemas.isp_admin.user_invitations import (
     AppUserInvitationCreateRequest,
     AppUserInvitationResponse,
@@ -48,7 +54,9 @@ __all__ = [
     "AppUserResponse",
     "AppUserStatus",
     "AppUserUpdateRequest",
+    "ISPAdminDeviceConnectionLogResponse",
     "ISPAdminSummaryResponse",
+    "ISPAdminUsageRecordResponse",
     "RevokeAppUserInvitationResponse",
     "RouterActionLogResponse",
     "RouterActionLogStatus",

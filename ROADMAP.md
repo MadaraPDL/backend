@@ -1641,3 +1641,21 @@ Completed:
 Next:
 
 - Step 19E: ISP Admin visibility for usage records and device connection logs.
+
+---
+
+## Step 19 Progress - ISP Admin Usage Visibility
+
+### Step 19E - Completed
+
+Completed:
+
+- Added ISP Admin usage record visibility endpoints.
+- Added ISP Admin device connection log visibility endpoints.
+- Usage records are scoped through the router's ISP.
+- Device connection logs are scoped through the router's ISP.
+- These endpoints support the future ISP Admin dashboard.
+
+Next:
+
+- Step 19F: integration tests and Step 19 cleanup/finalization.
