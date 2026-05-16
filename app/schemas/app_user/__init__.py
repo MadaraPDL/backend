@@ -21,6 +21,7 @@ from app.schemas.app_user.usage import (
 from app.schemas.app_user.plan_change_requests import (
     MyPlanChangeRequestCreate,
     MyPlanChangeRequestResponse,
+    MyRecommendationPlanChangeRequestCreate,
 )
 
 from app.schemas.app_user.device_policies import (
@@ -46,6 +47,7 @@ __all__ = [
     "MyRecommendationResponse",
     "MyPlanChangeRequestCreate",
     "MyPlanChangeRequestResponse",
+    "MyRecommendationPlanChangeRequestCreate",
     "MyDevicePolicyCreate",
     "MyDevicePolicyExecutionResponse",
     "MyDevicePolicyResponse",

@@ -37,6 +37,7 @@ from app.services.app_user.recommendation_service import (
 
 from app.services.app_user.plan_change_request_service import (
     create_my_plan_change_request,
+    create_my_plan_change_request_from_recommendation,
     get_my_plan_change_request,
     list_my_plan_change_requests,
 )
@@ -68,6 +69,7 @@ __all__ = [
     "list_my_predictions",
     "list_my_recommendations",
     "create_my_plan_change_request",
+    "create_my_plan_change_request_from_recommendation",
     "get_my_plan_change_request",
     "list_my_plan_change_requests",
     "create_my_device_policy",

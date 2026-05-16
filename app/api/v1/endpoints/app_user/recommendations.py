@@ -8,8 +8,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.dependencies import get_current_app_user
 from app.db.session import get_db
 from app.models.app_user import AppUser
-from app.schemas.app_user import MyRecommendationResponse
-from app.services.app_user import get_my_recommendation, list_my_recommendations
+from app.schemas.app_user import (
+    MyPlanChangeRequestResponse,
+    MyRecommendationPlanChangeRequestCreate,
+    MyRecommendationResponse,
+)
+from app.services.app_user import (
+    create_my_plan_change_request_from_recommendation,
+    get_my_recommendation,
+    list_my_recommendations,
+)
 
 
 router = APIRouter(prefix="/me/recommendations", tags=["App User"])
@@ -55,3 +63,34 @@ async def get_my_recommendation_endpoint(
         )
 
     return recommendation
+
+
+@router.post(
+    "/{recommendation_id}/plan-change-request",
+    response_model=MyPlanChangeRequestResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def create_plan_change_request_from_recommendation_endpoint(
+    recommendation_id: UUID,
+    data: MyRecommendationPlanChangeRequestCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: AppUser = Depends(get_current_app_user),
+) -> MyPlanChangeRequestResponse:
+    change_request = await create_my_plan_change_request_from_recommendation(
+        db=db,
+        current_user=current_user,
+        recommendation_id=recommendation_id,
+        data=data,
+    )
+
+    if change_request is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "Recommendation cannot be converted into a plan change request. "
+                "It may be invalid, already accepted, missing a recommended plan, "
+                "not owned by the current user, or not an upgrade/downgrade recommendation."
+            ),
+        )
+
+    return change_request

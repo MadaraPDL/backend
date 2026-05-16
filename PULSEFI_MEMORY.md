@@ -2328,3 +2328,66 @@ Important rules:
 - Recommendation-linked requests must verify the recommendation belongs to the same App User.
 - Do not let ISP Admins act on requests from another ISP.
 
+
+---
+
+## Step 22 Progress - 2026-05-16
+
+### Step 22A/22B - Recommendation to Plan Change Request Integration
+
+Completed and tested:
+
+- Added App User ability to create a subscription change request from a recommendation.
+- Added endpoint:
+  - `POST /api/v1/me/recommendations/{recommendation_id}/plan-change-request`
+- Added request schema:
+  - `MyRecommendationPlanChangeRequestCreate`
+- Updated manual plan change request validation so `request_type` only accepts:
+  - `upgrade`
+  - `downgrade`
+- Recommendation types are mapped safely:
+  - `upgrade_plan` -> `upgrade`
+  - `downgrade_plan` -> `downgrade`
+- Non-plan recommendations are rejected:
+  - `stay_current`
+  - `monitor_usage`
+- The service verifies:
+  - recommendation belongs to the authenticated App User
+  - subscription belongs to the authenticated App User
+  - requested plan belongs to the user's ISP
+  - requested plan is active
+  - recommendation points to the same subscription
+  - recommendation points to the same requested plan
+  - current plan and requested plan are different
+  - duplicate pending requests for the same recommendation are blocked
+- Recommendation status is set to `accepted` after a successful plan change request.
+- No Alembic migration was needed because the database already allows recommendation status `accepted`.
+- Added integration tests for:
+  - successful upgrade recommendation -> plan change request
+  - duplicate pending recommendation request prevention
+  - rejecting non-plan recommendations
+- Updated old ownership integration test to use valid subscription change request types.
+
+Validation completed:
+
+- Import checks passed.
+- Pytest passed.
+- Compile check passed.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no direct migration or data rewrite.
+- GitHub: Step 22 files and tests changed.
+- SE diagrams: later update App User recommendation/plan-change request sequence and activity flow.
+
+Next backend work:
+
+- Step 22C: ISP Admin plan change request review endpoints.
+- Likely endpoints:
+  - `GET /api/v1/isp-admin/plan-change-requests`
+  - `GET /api/v1/isp-admin/plan-change-requests/{request_id}`
+  - `PATCH /api/v1/isp-admin/plan-change-requests/{request_id}/review`
+- Required rule:
+  - ISP Admin must only see and review requests for users under `current_admin.isp_id`.
+

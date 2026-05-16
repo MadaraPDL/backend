@@ -183,7 +183,7 @@ async def test_app_user_cannot_create_actions_using_other_users_resources(
             user_subscription_id=subscription_b.id,
             requested_plan_id=requested_plan.id,
             recommendation_id=None,
-            request_type="upgrade_plan",
+            request_type="upgrade",
             reason="Trying to use another user's subscription.",
         ),
     )
@@ -197,7 +197,7 @@ async def test_app_user_cannot_create_actions_using_other_users_resources(
             user_subscription_id=subscription_a.id,
             requested_plan_id=requested_plan.id,
             recommendation_id=recommendation_b.id,
-            request_type="upgrade_plan",
+            request_type="upgrade",
             reason="Trying to use another user's recommendation.",
         ),
     )
