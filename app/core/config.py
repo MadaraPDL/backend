@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str
 
     DATABASE_URL: str
+    TEST_DATABASE_URL: str | None = None
 
     EMAIL_DELIVERY_ENABLED: bool = False
     DATA_ENCRYPTION_KEY: str = ""
