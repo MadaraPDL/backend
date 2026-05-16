@@ -1341,3 +1341,68 @@ Next backend work:
 - Required rule:
   - ISP Admin must only see and review requests for users under `current_admin.isp_id`.
 
+
+---
+
+## Step 22 Progress - 2026-05-16
+
+### Step 22C - ISP Admin Plan Change Request Review
+
+Completed and tested:
+
+- Added ISP Admin plan change request review endpoints:
+  - `GET /api/v1/isp-admin/plan-change-requests`
+  - `GET /api/v1/isp-admin/plan-change-requests/{request_id}`
+  - `PATCH /api/v1/isp-admin/plan-change-requests/{request_id}/review`
+- Added ISP Admin schemas for:
+  - plan change request responses
+  - review request payloads
+  - review decision validation
+  - request status filtering
+- Added ISP Admin service logic for:
+  - listing plan change requests under the current ISP
+  - viewing one plan change request under the current ISP
+  - approving pending requests
+  - rejecting pending requests
+- Approval behavior:
+  - request must be pending
+  - requested plan must belong to the ISP
+  - requested plan must be active
+  - user subscription is updated to the requested plan
+  - request status becomes `approved`
+  - review admin, review time, and admin response are saved
+- Rejection behavior:
+  - request must be pending
+  - subscription plan is not changed
+  - request status becomes `rejected`
+  - review admin, review time, and admin response are saved
+- Security/isolation:
+  - all ISP Admin plan change request queries are scoped through `AppUser.isp_id`
+  - ISP Admins cannot list, view, or review requests from another ISP
+- Added integration tests for:
+  - approving own ISP request
+  - rejecting own ISP request
+  - preventing access to another ISP's request
+  - preventing double review of already-reviewed requests
+- Endpoint smoke test passed through FastAPI routes.
+
+Validation completed:
+
+- Import checks passed.
+- New integration tests passed.
+- Full pytest suite passed.
+- Compile check passed.
+- Endpoint smoke test passed.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no migration or data rewrite.
+- GitHub: Step 22C endpoint, schemas, services, and tests changed.
+- SE diagrams: later update ISP Admin plan change request review activity and sequence flow.
+
+Next backend work:
+
+- Step 22 final cleanup/review, then continue to the next roadmap phase.
+- Likely next major backend phase: reports and analytics, unless we choose to do final backend quality cleanup first.
+
