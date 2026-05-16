@@ -1,4 +1,4 @@
-# AGENTS.md ‚Äî PulseFi Backend Instructions
+# AGENTS.md √¢‚Ç¨‚Äù PulseFi Backend Instructions
 
 ## Project Name
 
@@ -16,18 +16,31 @@ This backend is being built step by step by the student/developer, so changes sh
 
 ## Current Backend Position
 
-Current phase: **Step 18 ‚Äî ISP Admin management endpoints**.
+Current phase: **Step 18 complete - Router adapter and simulator foundation**.
 
 Recently completed and tested:
 
 - Step 14: Protected current-account route system.
-- Step 15A: Platform Admin ISP management endpoints.
-- Step 15B: Platform Admin ISP Admin invitation endpoints.
-- Step 15C: Platform Admin ISP Admin account management endpoints.
-- Step 15D: Platform Admin dashboard summary endpoint.
-- Step 15E: Platform Admin pending ISP Admin invitation management.
+- Step 15: Platform Admin MVP endpoints.
+- Step 16: ISP Admin MVP endpoints.
+- Step 17: App User/mobile MVP endpoints.
+- Step 18A/18B: Router adapter interface and simulator adapter.
+- Step 18C: Router policy execution service.
+- Step 18D: App User device policy execution endpoint.
+- Step 18E: ISP Admin router action log visibility.
+- Step 18F: Router action integration tests.
+- Step 18G: App User router capability visibility endpoint.
 
-Step 16 and Step 17 MVP work are complete. Step 18 is next.
+Current next backend work:
+
+- Step 19: Usage data ingestion and simulator usage generation.
+
+Important Step 18 result:
+
+- Router execution currently uses the simulator adapter.
+- Router capabilities are exposed to App Users.
+- ISP Admins can view router action logs for their own ISP only.
+- No router passwords or credentials are accepted or stored.
 
 ---
 
@@ -51,23 +64,23 @@ Protected by `platform_admin` role only:
 
 ## Current Next Step
 
-Step 18: Router adapter and simulator layer.
+Step 19: Usage data ingestion and simulator usage generation.
 
 Core rule:
 
-- ISP Admins manage only data under their own `isp_id`.
-- ISP Admins cannot create ISPs.
-- ISP Admins cannot invite or manage ISP Admin accounts.
-- ISP Admins cannot access another ISP's users, plans, subscriptions, routers, reports, or analytics.
+- App User /me usage endpoints must only show data owned by the authenticated App User.
+- ISP Admin usage/analytics endpoints must be scoped by current_admin.isp_id.
+- Usage records created from simulator/router data must be tied to the correct router, subscription, user, and device when available.
+- Do not invent real-router support yet; continue using the simulator adapter for MVP/demo data.
 
-Expected Step 16 areas:
+Expected Step 19 areas:
 
-- App user invitations.
-- App user management.
-- Subscription plan management.
-- User subscription assignment.
-- Router management.
-- ISP-scoped dashboard/list endpoints.
+- Simulator usage generation.
+- Store total usage records.
+- Store per-device usage records when available.
+- Manual ingestion trigger for MVP/demo.
+- Later scheduled ingestion.
+- Tests for ownership and ISP isolation.
 
 ---
 
@@ -529,7 +542,7 @@ After editing:
 
 ---
 
-## Backend Quality State ó 2026-05-14
+## Backend Quality State ‚Äî 2026-05-14
 
 The backend has a limited PostgreSQL app role and an Alembic baseline.
 
@@ -574,29 +587,29 @@ Next recommended quality work:
 
 Known completed milestones:
 
-- 2026-05-10 ó PostgreSQL database schema phase completed for the main PulseFi tables.
-- 2026-05-10 ó Core SQLAlchemy models completed and import-tested.
-- 2026-05-11 ó Authentication database update completed.
-- 2026-05-11 ó Authentication SQLAlchemy models completed and import-tested.
-- 2026-05-11 ó Authentication schemas completed.
-- 2026-05-12 ó Authentication services split into focused modules and import-tested.
-- 2026-05-12 ó Authentication endpoint package completed and Swagger/OpenAPI confirmed working.
-- 2026-05-12 ó Step 14 protected current-account route system completed.
-- 2026-05-12 ó Step 15 Platform Admin endpoint work completed through ISP/Admin management and summary features.
-- 2026-05-13 ó Backend foundation hardened for Step 16, including safer `.env.example`, production config validation, old-JWT invalidation after password reset, `get_current_isp_admin`, typo fixes, and `pyotp`.
-- 2026-05-14 ó Documentation cleanup completed for `README.md`, `ROADMAP.md`, and `AGENTS.md`.
-- 2026-05-14 ó Backend quality backlog added.
-- 2026-05-14 ó Limited PostgreSQL role `pulsefi_app` created and tested.
-- 2026-05-14 ó Alembic initialized, empty baseline migration created, and existing database stamped to revision `c384b4d102bc`.
+- 2026-05-10 ‚Äî PostgreSQL database schema phase completed for the main PulseFi tables.
+- 2026-05-10 ‚Äî Core SQLAlchemy models completed and import-tested.
+- 2026-05-11 ‚Äî Authentication database update completed.
+- 2026-05-11 ‚Äî Authentication SQLAlchemy models completed and import-tested.
+- 2026-05-11 ‚Äî Authentication schemas completed.
+- 2026-05-12 ‚Äî Authentication services split into focused modules and import-tested.
+- 2026-05-12 ‚Äî Authentication endpoint package completed and Swagger/OpenAPI confirmed working.
+- 2026-05-12 ‚Äî Step 14 protected current-account route system completed.
+- 2026-05-12 ‚Äî Step 15 Platform Admin endpoint work completed through ISP/Admin management and summary features.
+- 2026-05-13 ‚Äî Backend foundation hardened for Step 16, including safer `.env.example`, production config validation, old-JWT invalidation after password reset, `get_current_isp_admin`, typo fixes, and `pyotp`.
+- 2026-05-14 ‚Äî Documentation cleanup completed for `README.md`, `ROADMAP.md`, and `AGENTS.md`.
+- 2026-05-14 ‚Äî Backend quality backlog added.
+- 2026-05-14 ‚Äî Limited PostgreSQL role `pulsefi_app` created and tested.
+- 2026-05-14 ‚Äî Alembic initialized, empty baseline migration created, and existing database stamped to revision `c384b4d102bc`.
 
 Notes:
 
-- Some earlier dates are ìcompleted by this dateî based on the project work log, not exact minute-by-minute timestamps.
+- Some earlier dates are ‚Äúcompleted by this date‚Äù based on the project work log, not exact minute-by-minute timestamps.
 - Future completed steps should be added here immediately after testing and before commit.
 
 ---
 
-## Testing Progress ó 2026-05-14
+## Testing Progress ‚Äî 2026-05-14
 
 Completed:
 
@@ -618,7 +631,7 @@ Recommended test command:
 
 ---
 
-## CI Progress ó 2026-05-14
+## CI Progress ‚Äî 2026-05-14
 
 Completed:
 
@@ -643,9 +656,9 @@ Important note:
 
 ---
 
-## Step 16 Progress ó 2026-05-14
+## Step 16 Progress ‚Äî 2026-05-14
 
-### Step 16A ó ISP Admin Router Foundation
+### Step 16A ‚Äî ISP Admin Router Foundation
 
 Completed:
 
@@ -673,9 +686,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress ó 2026-05-14
+## Step 16 Progress ‚Äî 2026-05-14
 
-### Step 16B ó ISP Admin App User Invitation Endpoints
+### Step 16B ‚Äî ISP Admin App User Invitation Endpoints
 
 Completed:
 
@@ -709,9 +722,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Testing Progress ó 2026-05-14
+## Step 16 Testing Progress ‚Äî 2026-05-14
 
-### Step 16B ó App User Invitation Endpoints Tested
+### Step 16B ‚Äî App User Invitation Endpoints Tested
 
 Tested successfully:
 
@@ -743,9 +756,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress ó 2026-05-14
+## Step 16 Progress ‚Äî 2026-05-14
 
-### Step 16C ó ISP Admin App User Management Endpoints
+### Step 16C ‚Äî ISP Admin App User Management Endpoints
 
 Completed and tested:
 
@@ -799,9 +812,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress ó 2026-05-14
+## Step 16 Progress ‚Äî 2026-05-14
 
-### Step 16D ó ISP Admin Subscription Plan Management Endpoints
+### Step 16D ‚Äî ISP Admin Subscription Plan Management Endpoints
 
 Completed and tested:
 
@@ -848,9 +861,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress ó 2026-05-14
+## Step 16 Progress ‚Äî 2026-05-14
 
-### Step 16E ó ISP Admin User Subscription Assignment and Management Endpoints
+### Step 16E ‚Äî ISP Admin User Subscription Assignment and Management Endpoints
 
 Completed and tested:
 
@@ -880,11 +893,11 @@ Completed and tested:
 
 Subscription status values:
 
-- `pending` ó assigned but not active yet
-- `active` ó currently active subscription
-- `suspended` ó temporarily stopped, such as unpaid bill/admin action
-- `expired` ó ended by date
-- `cancelled` ó permanently cancelled
+- `pending` ‚Äî assigned but not active yet
+- `active` ‚Äî currently active subscription
+- `suspended` ‚Äî temporarily stopped, such as unpaid bill/admin action
+- `expired` ‚Äî ended by date
+- `cancelled` ‚Äî permanently cancelled
 
 Database migration:
 
@@ -909,9 +922,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress ó 2026-05-14
+## Step 16 Progress ‚Äî 2026-05-14
 
-### Step 16F ó ISP Admin Router Management Endpoints
+### Step 16F ‚Äî ISP Admin Router Management Endpoints
 
 Completed and tested:
 
@@ -963,7 +976,7 @@ Next Step 16 work:
 
 ---
 
-## Current Backend State ó 2026-05-14
+## Current Backend State ‚Äî 2026-05-14
 
 Step 16A through Step 16F are complete and tested.
 
@@ -1107,9 +1120,9 @@ Current backend state:
 
 ---
 
-## Step 17 Progress ó 2026-05-14
+## Step 17 Progress ‚Äî 2026-05-14
 
-### Step 17A ó App User Mobile Endpoint Foundation
+### Step 17A ‚Äî App User Mobile Endpoint Foundation
 
 Completed and tested:
 
@@ -1166,9 +1179,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress ó 2026-05-14
+## Step 17 Progress ‚Äî 2026-05-14
 
-### Step 17B ó App User Subscription Endpoints
+### Step 17B ‚Äî App User Subscription Endpoints
 
 Completed and tested:
 
@@ -1219,9 +1232,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress ó 2026-05-14
+## Step 17 Progress ‚Äî 2026-05-14
 
-### Step 17C ó App User Router and Device View Endpoints
+### Step 17C ‚Äî App User Router and Device View Endpoints
 
 Completed and tested:
 
@@ -1280,7 +1293,7 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17D ó App User usage endpoints.
+- Step 17D ‚Äî App User usage endpoints.
 - Required usage behavior:
   - total usage for the logged-in user
   - download/upload/total usage
@@ -1504,7 +1517,7 @@ Rules confirmed:
 
 Next backend work:
 
-- Step 18 ó Router adapter and simulator layer.
+- Step 18 ‚Äî Router adapter and simulator layer.
 
 ---
 

@@ -8,23 +8,30 @@ These items are not all required before every small feature, but they should be 
 
 ## Current Context
 
-Current backend phase: **Step 18 â€” ISP Admin management endpoints**.
+Current backend phase: **Step 18 complete - Router adapter and simulator foundation**.
 
-Step 16 ISP Admin MVP and Step 17 App User MVP endpoints are complete.
+Step 16 ISP Admin MVP endpoints, Step 17 App User MVP endpoints, and Step 18 router adapter/simulator foundation are complete.
 
-Step 16 must be built using the ISP Admin guard:
+Step 18 completed:
 
-```python
-get_current_isp_admin
-```
+- Router adapter interface.
+- Simulator router adapter.
+- Router policy execution service.
+- App User device policy execution endpoint.
+- ISP Admin router action log visibility.
+- Router action integration tests.
+- App User router capability visibility endpoint.
 
-Every ISP Admin query must be scoped by the authenticated admin's ISP:
+Current next backend work:
 
-```python
-current_admin.isp_id
-```
+- Step 19: Usage data ingestion and simulator usage generation.
 
-This prevents one ISP Admin from accessing another ISP's data.
+Important security rules that remain active:
+
+- ISP Admin endpoints must use get_current_isp_admin.
+- Every ISP Admin query must be scoped by current_admin.isp_id.
+- App User /me routes must use the authenticated App User from the token and must not accept target user IDs from the request.
+- Router passwords or raw router credentials must not be accepted or stored until encrypted credential storage is intentionally implemented.
 
 ---
 
@@ -314,7 +321,7 @@ The main goal is to keep PulseFi deployable, secure, modular, and easy to explai
 
 ## Completed Quality Work
 
-### 2026-05-14 — Limited DB Role
+### 2026-05-14 â€” Limited DB Role
 
 Completed:
 
@@ -330,7 +337,7 @@ Important future reminder:
   - app/runtime role for FastAPI
   - separate migration role for Alembic
 
-### 2026-05-14 — Alembic Baseline
+### 2026-05-14 â€” Alembic Baseline
 
 Completed:
 
@@ -360,7 +367,7 @@ Next quality work:
 
 ## Completed Quality Work Log
 
-### 2026-05-14 — Limited PostgreSQL App Role
+### 2026-05-14 â€” Limited PostgreSQL App Role
 
 Completed:
 
@@ -376,7 +383,7 @@ Important future reminder:
   - app/runtime role for FastAPI
   - separate migration/admin role for Alembic
 
-### 2026-05-14 — Alembic Baseline
+### 2026-05-14 â€” Alembic Baseline
 
 Completed:
 
@@ -404,7 +411,7 @@ Next quality work:
 
 ---
 
-## Testing Progress — 2026-05-14
+## Testing Progress â€” 2026-05-14
 
 Completed:
 
@@ -426,7 +433,7 @@ Recommended test command:
 
 ---
 
-## CI Progress — 2026-05-14
+## CI Progress â€” 2026-05-14
 
 Completed:
 
@@ -451,7 +458,7 @@ Important note:
 
 ---
 
-## Step 16E/16F Quality Notes — 2026-05-14
+## Step 16E/16F Quality Notes â€” 2026-05-14
 
 ### Step 16E Migration Permission Note
 
@@ -488,7 +495,7 @@ Important security note:
 
 ---
 
-## Step 17A Quality Notes — 2026-05-14
+## Step 17A Quality Notes â€” 2026-05-14
 
 Completed:
 
@@ -516,7 +523,7 @@ Testing reminder:
 
 ---
 
-## Step 17B Quality Notes — 2026-05-14
+## Step 17B Quality Notes â€” 2026-05-14
 
 Completed:
 
@@ -543,7 +550,7 @@ Testing reminder:
 
 ---
 
-## Step 17C Quality Notes — 2026-05-14
+## Step 17C Quality Notes â€” 2026-05-14
 
 Completed:
 
@@ -586,7 +593,7 @@ Testing reminder:
 
 ---
 
-## Step 17D Quality Notes — 2026-05-14
+## Step 17D Quality Notes â€” 2026-05-14
 
 Completed:
 

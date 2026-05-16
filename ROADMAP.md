@@ -2,28 +2,28 @@
 
 ## Current Position
 
-Current phase: **Step 18 — ISP Admin management endpoints**.
+Current phase: **Step 18 complete - Router adapter and simulator foundation**.
 
 Step 16 and Step 17 MVP work are complete and tested.
 
-Recently completed:
+Step 18 is complete through Step 18G:
 
-- Step 14: Protected current-account route system.
-- Step 15A: Platform Admin ISP management.
-- Step 15B: Platform Admin ISP Admin invitations.
-- Step 15C: Platform Admin ISP Admin account management.
-- Step 15D: Platform Admin dashboard summary.
-- Step 15E: Platform Admin pending ISP Admin invitation management.
+- Step 18A/18B: Router adapter interface and simulator adapter.
+- Step 18C: Router policy execution service.
+- Step 18D: App User device policy execution endpoint.
+- Step 18E: ISP Admin router action log visibility.
+- Step 18F: Router action integration tests.
+- Step 18G: App User router capability visibility endpoint.
 
 Next step:
 
-- Step 18: Router adapter and simulator layer.
+- Step 19: Usage data ingestion and simulator usage generation.
 
 ---
 
 ## Completed Major Phases
 
-### Phase 1 — Software Engineering Diagrams
+### Phase 1 â€” Software Engineering Diagrams
 
 Completed for now:
 
@@ -39,7 +39,7 @@ The class diagram is skipped for now unless the developer decides to revisit it.
 
 Pending future SE updates are listed near the bottom of this file.
 
-### Phase 2 — Database Design
+### Phase 2 â€” Database Design
 
 PostgreSQL database design is completed for now.
 
@@ -80,7 +80,7 @@ Auth columns added to `admins` and `app_users`:
 - `mfa_secret`
 - `preferred_mfa_method`
 
-### Phase 3 — Backend Foundation
+### Phase 3 â€” Backend Foundation
 
 Completed:
 
@@ -94,7 +94,7 @@ Completed:
 - Swagger docs.
 - Modular backend folder structure.
 
-### Phase 4 — SQLAlchemy Models
+### Phase 4 â€” SQLAlchemy Models
 
 Completed and import-tested.
 
@@ -125,7 +125,7 @@ Auth models:
 - MFABackupCode
 - MFAChallenge
 
-### Phase 5 — Auth Schemas
+### Phase 5 â€” Auth Schemas
 
 Completed and split under `app/schemas/auth/`.
 
@@ -139,7 +139,7 @@ Modules:
 - `email_verification.py`
 - `current_user.py`
 
-### Phase 6 — Auth Services
+### Phase 6 â€” Auth Services
 
 Completed and split under `app/services/`.
 
@@ -154,7 +154,7 @@ Auth-related services:
 
 The project should continue using focused service modules instead of large mixed files.
 
-### Phase 7 — Auth Endpoints
+### Phase 7 â€” Auth Endpoints
 
 Completed under `app/api/v1/endpoints/auth/`.
 
@@ -167,7 +167,7 @@ Current auth endpoints:
 - `POST /api/v1/auth/password/reset`
 - `POST /api/v1/auth/email/verify`
 
-### Step 14 — Protected Route System
+### Step 14 â€” Protected Route System
 
 Completed:
 
@@ -179,32 +179,32 @@ Completed:
 - `GET /api/v1/auth/me`.
 - Token invalidation after `password_changed_at`.
 
-### Step 15 — Platform Admin Endpoints
+### Step 15 â€” Platform Admin Endpoints
 
 Completed and tested.
 
-#### Step 15A — Platform Admin ISP Management
+#### Step 15A â€” Platform Admin ISP Management
 
 - Create ISP.
 - List ISPs.
 - Get one ISP.
 - Update ISP information/status.
 
-#### Step 15B — Platform Admin ISP Admin Invitations
+#### Step 15B â€” Platform Admin ISP Admin Invitations
 
 - Create ISP Admin invitation.
 - Return development invitation token only while `DEBUG=True`.
 - Invited ISP Admin accepts invitation through the auth invitation endpoint.
 - ISP Admin account is created and linked to the correct ISP.
 
-#### Step 15C — Platform Admin ISP Admin Account Management
+#### Step 15C â€” Platform Admin ISP Admin Account Management
 
 - View one ISP Admin.
 - Update ISP Admin full name, phone number, and status.
 - Deactivate/reactivate ISP Admin.
 - Protected by `platform_admin` role only.
 
-#### Step 15D — Platform Admin Dashboard Summary
+#### Step 15D â€” Platform Admin Dashboard Summary
 
 Endpoint:
 
@@ -212,7 +212,7 @@ Endpoint:
 
 Returns counts for ISPs, ISP Admins, and App Users by status.
 
-#### Step 15E — Platform Admin Pending Invitation Management
+#### Step 15E â€” Platform Admin Pending Invitation Management
 
 Endpoints:
 
@@ -229,7 +229,7 @@ Behavior:
 
 ---
 
-## Step 16 — ISP Admin Management Endpoints
+## Step 16 â€” ISP Admin Management Endpoints
 
 Goal:
 
@@ -279,7 +279,7 @@ This affects ISP Admin use cases and activity diagrams.
 
 ---
 
-## Step 17 — User Mobile App Endpoints
+## Step 17 â€” User Mobile App Endpoints
 
 Goal:
 
@@ -319,7 +319,7 @@ This affects user activity diagrams, sequence diagrams, and DFD flows.
 
 ---
 
-## Step 18 — Router Adapter and Simulator Layer
+## Step 18 â€” Router Adapter and Simulator Layer
 
 Goal:
 
@@ -354,7 +354,7 @@ This affects system architecture, DFD wording, sequence diagrams, ERD attributes
 
 ---
 
-## Step 19 — Usage Data Ingestion
+## Step 19 â€” Usage Data Ingestion
 
 Goal:
 
@@ -379,7 +379,7 @@ This affects DFD data flows and sequence diagrams.
 
 ---
 
-## Step 20 — Alerts System
+## Step 20 â€” Alerts System
 
 Goal:
 
@@ -409,7 +409,7 @@ This affects alert flows in DFD, activity diagrams, and sequence diagrams.
 
 ---
 
-## Step 21 — Prediction and Recommendation Logic
+## Step 21 â€” Prediction and Recommendation Logic
 
 Goal:
 
@@ -441,7 +441,7 @@ This affects smart features, DFD, sequence diagrams, and documentation.
 
 ---
 
-## Step 22 — Reports and Analytics
+## Step 22 â€” Reports and Analytics
 
 Goal:
 
@@ -471,7 +471,7 @@ This affects ISP Admin flow and report generation sequence diagram.
 
 ---
 
-## Step 23 — Frontend Integration
+## Step 23 â€” Frontend Integration
 
 Goal:
 
@@ -505,7 +505,7 @@ Frontend should show/hide features depending on router capabilities.
 
 ---
 
-## Step 24 — Deployment Preparation
+## Step 24 â€” Deployment Preparation
 
 Goal:
 
@@ -590,7 +590,7 @@ Avoid:
 
 ## Backend Quality Progress Log
 
-### 2026-05-14 � Limited DB Role and Alembic Baseline
+### 2026-05-14 ï¿½ Limited DB Role and Alembic Baseline
 
 Completed:
 
@@ -635,29 +635,29 @@ Next quality improvements after this:
 
 Known completed milestones:
 
-- 2026-05-10 � PostgreSQL database schema phase completed for the main PulseFi tables.
-- 2026-05-10 � Core SQLAlchemy models completed and import-tested.
-- 2026-05-11 � Authentication database update completed.
-- 2026-05-11 � Authentication SQLAlchemy models completed and import-tested.
-- 2026-05-11 � Authentication schemas completed.
-- 2026-05-12 � Authentication services split into focused modules and import-tested.
-- 2026-05-12 � Authentication endpoint package completed and Swagger/OpenAPI confirmed working.
-- 2026-05-12 � Step 14 protected current-account route system completed.
-- 2026-05-12 � Step 15 Platform Admin endpoint work completed through ISP/Admin management and summary features.
-- 2026-05-13 � Backend foundation hardened for Step 16, including safer `.env.example`, production config validation, old-JWT invalidation after password reset, `get_current_isp_admin`, typo fixes, and `pyotp`.
-- 2026-05-14 � Documentation cleanup completed for `README.md`, `ROADMAP.md`, and `AGENTS.md`.
-- 2026-05-14 � Backend quality backlog added.
-- 2026-05-14 � Limited PostgreSQL role `pulsefi_app` created and tested.
-- 2026-05-14 � Alembic initialized, empty baseline migration created, and existing database stamped to revision `c384b4d102bc`.
+- 2026-05-10 ï¿½ PostgreSQL database schema phase completed for the main PulseFi tables.
+- 2026-05-10 ï¿½ Core SQLAlchemy models completed and import-tested.
+- 2026-05-11 ï¿½ Authentication database update completed.
+- 2026-05-11 ï¿½ Authentication SQLAlchemy models completed and import-tested.
+- 2026-05-11 ï¿½ Authentication schemas completed.
+- 2026-05-12 ï¿½ Authentication services split into focused modules and import-tested.
+- 2026-05-12 ï¿½ Authentication endpoint package completed and Swagger/OpenAPI confirmed working.
+- 2026-05-12 ï¿½ Step 14 protected current-account route system completed.
+- 2026-05-12 ï¿½ Step 15 Platform Admin endpoint work completed through ISP/Admin management and summary features.
+- 2026-05-13 ï¿½ Backend foundation hardened for Step 16, including safer `.env.example`, production config validation, old-JWT invalidation after password reset, `get_current_isp_admin`, typo fixes, and `pyotp`.
+- 2026-05-14 ï¿½ Documentation cleanup completed for `README.md`, `ROADMAP.md`, and `AGENTS.md`.
+- 2026-05-14 ï¿½ Backend quality backlog added.
+- 2026-05-14 ï¿½ Limited PostgreSQL role `pulsefi_app` created and tested.
+- 2026-05-14 ï¿½ Alembic initialized, empty baseline migration created, and existing database stamped to revision `c384b4d102bc`.
 
 Notes:
 
-- Some earlier dates are �completed by this date� based on the project work log, not exact minute-by-minute timestamps.
+- Some earlier dates are ï¿½completed by this dateï¿½ based on the project work log, not exact minute-by-minute timestamps.
 - Future completed steps should be added here immediately after testing and before commit.
 
 ---
 
-## Testing Progress � 2026-05-14
+## Testing Progress ï¿½ 2026-05-14
 
 Completed:
 
@@ -679,7 +679,7 @@ Recommended test command:
 
 ---
 
-## CI Progress � 2026-05-14
+## CI Progress ï¿½ 2026-05-14
 
 Completed:
 
@@ -704,9 +704,9 @@ Important note:
 
 ---
 
-## Step 16 Progress � 2026-05-14
+## Step 16 Progress ï¿½ 2026-05-14
 
-### Step 16A � ISP Admin Router Foundation
+### Step 16A ï¿½ ISP Admin Router Foundation
 
 Completed:
 
@@ -734,9 +734,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress � 2026-05-14
+## Step 16 Progress ï¿½ 2026-05-14
 
-### Step 16B � ISP Admin App User Invitation Endpoints
+### Step 16B ï¿½ ISP Admin App User Invitation Endpoints
 
 Completed:
 
@@ -770,9 +770,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Testing Progress � 2026-05-14
+## Step 16 Testing Progress ï¿½ 2026-05-14
 
-### Step 16B � App User Invitation Endpoints Tested
+### Step 16B ï¿½ App User Invitation Endpoints Tested
 
 Tested successfully:
 
@@ -804,9 +804,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress � 2026-05-14
+## Step 16 Progress ï¿½ 2026-05-14
 
-### Step 16C � ISP Admin App User Management Endpoints
+### Step 16C ï¿½ ISP Admin App User Management Endpoints
 
 Completed and tested:
 
@@ -860,9 +860,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress � 2026-05-14
+## Step 16 Progress ï¿½ 2026-05-14
 
-### Step 16D � ISP Admin Subscription Plan Management Endpoints
+### Step 16D ï¿½ ISP Admin Subscription Plan Management Endpoints
 
 Completed and tested:
 
@@ -909,9 +909,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress � 2026-05-14
+## Step 16 Progress ï¿½ 2026-05-14
 
-### Step 16E � ISP Admin User Subscription Assignment and Management Endpoints
+### Step 16E ï¿½ ISP Admin User Subscription Assignment and Management Endpoints
 
 Completed and tested:
 
@@ -941,11 +941,11 @@ Completed and tested:
 
 Subscription status values:
 
-- `pending` � assigned but not active yet
-- `active` � currently active subscription
-- `suspended` � temporarily stopped, such as unpaid bill/admin action
-- `expired` � ended by date
-- `cancelled` � permanently cancelled
+- `pending` ï¿½ assigned but not active yet
+- `active` ï¿½ currently active subscription
+- `suspended` ï¿½ temporarily stopped, such as unpaid bill/admin action
+- `expired` ï¿½ ended by date
+- `cancelled` ï¿½ permanently cancelled
 
 Database migration:
 
@@ -970,9 +970,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress � 2026-05-14
+## Step 16 Progress ï¿½ 2026-05-14
 
-### Step 16F � ISP Admin Router Management Endpoints
+### Step 16F ï¿½ ISP Admin Router Management Endpoints
 
 Completed and tested:
 
@@ -1024,7 +1024,7 @@ Next Step 16 work:
 
 ---
 
-## Current Backend State � 2026-05-14
+## Current Backend State ï¿½ 2026-05-14
 
 Step 16A through Step 16F are complete and tested.
 
@@ -1055,7 +1055,7 @@ Important reminders:
 
 ---
 
-## Step 16G � ISP Admin Dashboard Summary
+## Step 16G ï¿½ ISP Admin Dashboard Summary
 
 Completed:
 
@@ -1072,9 +1072,9 @@ Step 16 status:
 
 ---
 
-## Step 17 Progress � 2026-05-14
+## Step 17 Progress ï¿½ 2026-05-14
 
-### Step 17A � App User Mobile Endpoint Foundation
+### Step 17A ï¿½ App User Mobile Endpoint Foundation
 
 Completed and tested:
 
@@ -1131,9 +1131,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress � 2026-05-14
+## Step 17 Progress ï¿½ 2026-05-14
 
-### Step 17B � App User Subscription Endpoints
+### Step 17B ï¿½ App User Subscription Endpoints
 
 Completed and tested:
 
@@ -1184,9 +1184,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress � 2026-05-14
+## Step 17 Progress ï¿½ 2026-05-14
 
-### Step 17C � App User Router and Device View Endpoints
+### Step 17C ï¿½ App User Router and Device View Endpoints
 
 Completed and tested:
 
@@ -1245,7 +1245,7 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17D � App User usage endpoints.
+- Step 17D ï¿½ App User usage endpoints.
 - Required usage behavior:
   - total usage for the logged-in user
   - download/upload/total usage
@@ -1255,7 +1255,7 @@ Next Step 17 work:
 
 ---
 
-### Step 17E � App User Alert Endpoints
+### Step 17E ï¿½ App User Alert Endpoints
 
 Completed on 2026-05-15.
 
@@ -1275,11 +1275,11 @@ Behavior:
 
 Next:
 
-- Step 17F � App User predictions/recommendations endpoints or plan change request endpoints.
+- Step 17F ï¿½ App User predictions/recommendations endpoints or plan change request endpoints.
 
 ---
 
-### Step 17F � App User Prediction and Recommendation Endpoints
+### Step 17F ï¿½ App User Prediction and Recommendation Endpoints
 
 Completed on 2026-05-15.
 
@@ -1301,11 +1301,11 @@ Behavior:
 
 Next:
 
-- Step 17G � App User subscription plan change request endpoints.
+- Step 17G ï¿½ App User subscription plan change request endpoints.
 
 ---
 
-### Step 17G � App User Plan Change Request Endpoints
+### Step 17G ï¿½ App User Plan Change Request Endpoints
 
 Completed on 2026-05-15.
 
@@ -1326,11 +1326,11 @@ Behavior:
 
 Next:
 
-- Step 17H � App User device policy endpoints.
+- Step 17H ï¿½ App User device policy endpoints.
 
 ---
 
-### Step 17H � App User Device Policy Endpoints
+### Step 17H ï¿½ App User Device Policy Endpoints
 
 Completed on 2026-05-15.
 
@@ -1351,7 +1351,7 @@ Behavior:
 
 Next:
 
-- Step 18 � Router adapter and simulator layer.
+- Step 18 ï¿½ Router adapter and simulator layer.
 
 ---
 
@@ -1377,9 +1377,9 @@ Next:
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18A/18B � Router Adapter Interface and Simulator Adapter
+### Step 18A/18B ï¿½ Router Adapter Interface and Simulator Adapter
 
 Completed:
 
@@ -1404,13 +1404,13 @@ Testing:
 
 Next:
 
-- Step 18C � Router adapter service layer for applying device policies and writing router action logs.
+- Step 18C ï¿½ Router adapter service layer for applying device policies and writing router action logs.
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress — 2026-05-16
 
-### Step 18C � Router Policy Execution Service
+### Step 18C — Router Policy Execution Service
 
 Completed:
 
@@ -1433,13 +1433,13 @@ Testing:
 
 Next:
 
-- Step 18D � API endpoint for safely triggering pending device policy execution.
+- Step 18D — API endpoint for safely triggering pending device policy execution.
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress — 2026-05-16
 
-### Step 18D � App User Device Policy Execution Endpoint
+### Step 18D — App User Device Policy Execution Endpoint
 
 Completed:
 
@@ -1465,13 +1465,13 @@ Testing:
 
 Next:
 
-- Step 18E � Add visibility for router action logs, likely ISP Admin first, or add focused integration tests for policy execution.
+- Step 18E — Add visibility for router action logs, likely ISP Admin first, or add focused integration tests for policy execution.
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress — 2026-05-16
 
-### Step 18E � ISP Admin Router Action Log Visibility
+### Step 18E — ISP Admin Router Action Log Visibility
 
 Completed:
 
@@ -1501,13 +1501,13 @@ Testing:
 
 Next:
 
-- Step 18F � Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.
+- Step 18F — Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress — 2026-05-16
 
-### Step 18F � Router Policy Execution and Router Action Log Integration Tests
+### Step 18F — Router Policy Execution and Router Action Log Integration Tests
 
 Completed:
 
@@ -1527,13 +1527,13 @@ Testing:
 
 Next:
 
-- Step 18G � Add router capability visibility endpoint or Step 18 cleanup before Step 19 usage ingestion.
+- Step 18G — Add router capability visibility endpoint or Step 18 cleanup before Step 19 usage ingestion.
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress — 2026-05-16
 
-### Step 18G � App User Router Capability Visibility Endpoint
+### Step 18G — App User Router Capability Visibility Endpoint
 
 Completed:
 
@@ -1559,4 +1559,4 @@ Testing:
 
 Next:
 
-- Step 18 cleanup/docs, then Step 19 � usage data ingestion and simulator usage generation.
+- Step 18 cleanup/docs, then Step 19 — usage data ingestion and simulator usage generation.
