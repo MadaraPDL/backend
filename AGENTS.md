@@ -2194,3 +2194,65 @@ Next backend work:
 - Step 24C: demo seed/readiness helper.
 - Step 24D: final backend review package before Codex review.
 
+
+---
+
+## Step 24 Progress - 2026-05-16
+
+### Step 24C - Demo Seed and Readiness Helper
+
+Completed:
+
+- Added local demo seed helper:
+  - `scripts/seed_demo_data.py`
+- The helper refuses to run when `DEBUG=False`.
+- The helper supports:
+  - dry run by default
+  - actual write only with `--apply`
+- Demo data includes:
+  - Platform Admin demo account
+  - ISP Admin demo account
+  - App User demo account
+  - Demo ISP
+  - demo subscription plans
+  - active user subscription
+  - demo router
+  - demo devices
+  - demo usage records
+  - demo alerts
+  - demo recommendation
+  - demo pending plan change request
+- Demo accounts use `mfa_required=False` and `mfa_enabled=False` so frontend/demo login returns a normal JWT without requiring MFA setup.
+- Fixed script import path so the script can run directly from the `scripts/` folder.
+- Corrected demo alert values to match database constraints:
+  - `new_device_connected`
+  - `critical`
+- Corrected demo email domain from `.local` to `pulsefi-demo.com` because the response email validator rejects `.local`.
+- Demo credentials:
+  - Platform Admin: `platform.demo@pulsefi-demo.com`
+  - ISP Admin: `isp.demo@pulsefi-demo.com`
+  - App User: `user.demo@pulsefi-demo.com`
+  - password: `PulseFiDemo123!`
+
+Validation completed:
+
+- Script compile check passed.
+- Dry run passed.
+- Demo seed apply passed.
+- Demo App User login passed.
+- Demo ISP Admin login passed.
+- Demo Platform Admin login passed.
+- Full pytest suite passed.
+- Compile check passed.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: demo data is created/updated only when the script is run with `--apply`.
+- GitHub: added demo seed helper.
+- SE diagrams: no direct change.
+
+Next backend work:
+
+- Step 24D: final backend review package before Codex review.
+
