@@ -1,4 +1,4 @@
-# PulseFi Backend Quality Improvement Backlog
+﻿# PulseFi Backend Quality Improvement Backlog
 
 This file records the improvement items that should make PulseFi more professional, safer, easier to maintain, and more deployable.
 
@@ -8,7 +8,7 @@ These items are not all required before every small feature, but they should be 
 
 ## Current Context
 
-Current backend phase: **Step 18 complete - Router adapter and simulator foundation**.
+Current backend phase: **Step 24 in final readiness phase - Backend/demo readiness before frontend integration**.
 
 Step 16 ISP Admin MVP endpoints, Step 17 App User MVP endpoints, and Step 18 router adapter/simulator foundation are complete.
 
@@ -24,7 +24,13 @@ Step 18 completed:
 
 Current next backend work:
 
-- Step 19: Usage data ingestion and simulator usage generation.
+- Run Codex backend improvement review.
+- Fix P0/P1 issues before frontend integration.
+- Then begin frontend integration.
+- Fix P0/P1 issues before frontend integration.
+- Then begin frontend integration.
+- Fix P0/P1 issues before frontend integration.
+- Then begin frontend integration.
 
 Important security rules that remain active:
 
@@ -321,7 +327,7 @@ The main goal is to keep PulseFi deployable, secure, modular, and easy to explai
 
 ## Completed Quality Work
 
-### 2026-05-14 — Limited DB Role
+### 2026-05-14 â€” Limited DB Role
 
 Completed:
 
@@ -337,7 +343,7 @@ Important future reminder:
   - app/runtime role for FastAPI
   - separate migration role for Alembic
 
-### 2026-05-14 — Alembic Baseline
+### 2026-05-14 â€” Alembic Baseline
 
 Completed:
 
@@ -367,7 +373,7 @@ Next quality work:
 
 ## Completed Quality Work Log
 
-### 2026-05-14 — Limited PostgreSQL App Role
+### 2026-05-14 â€” Limited PostgreSQL App Role
 
 Completed:
 
@@ -383,7 +389,7 @@ Important future reminder:
   - app/runtime role for FastAPI
   - separate migration/admin role for Alembic
 
-### 2026-05-14 — Alembic Baseline
+### 2026-05-14 â€” Alembic Baseline
 
 Completed:
 
@@ -411,7 +417,7 @@ Next quality work:
 
 ---
 
-## Testing Progress — 2026-05-14
+## Testing Progress â€” 2026-05-14
 
 Completed:
 
@@ -433,7 +439,7 @@ Recommended test command:
 
 ---
 
-## CI Progress — 2026-05-14
+## CI Progress â€” 2026-05-14
 
 Completed:
 
@@ -458,7 +464,7 @@ Important note:
 
 ---
 
-## Step 16E/16F Quality Notes — 2026-05-14
+## Step 16E/16F Quality Notes â€” 2026-05-14
 
 ### Step 16E Migration Permission Note
 
@@ -495,7 +501,7 @@ Important security note:
 
 ---
 
-## Step 17A Quality Notes — 2026-05-14
+## Step 17A Quality Notes â€” 2026-05-14
 
 Completed:
 
@@ -523,7 +529,7 @@ Testing reminder:
 
 ---
 
-## Step 17B Quality Notes — 2026-05-14
+## Step 17B Quality Notes â€” 2026-05-14
 
 Completed:
 
@@ -550,7 +556,7 @@ Testing reminder:
 
 ---
 
-## Step 17C Quality Notes — 2026-05-14
+## Step 17C Quality Notes â€” 2026-05-14
 
 Completed:
 
@@ -593,7 +599,7 @@ Testing reminder:
 
 ---
 
-## Step 17D Quality Notes — 2026-05-14
+## Step 17D Quality Notes â€” 2026-05-14
 
 Completed:
 
@@ -680,7 +686,7 @@ Testing reminder:
 
 ## Latest Current Context Update ? 2026-05-15
 
-Current backend phase: **Step 18 ? Router adapter and simulator layer**.
+Current backend phase: **Step 24 in final readiness phase - Backend/demo readiness before frontend integration**.
 
 Recent quality work completed:
 - MFA-required login bypass fixed.
@@ -1725,4 +1731,43 @@ Impact:
 Next backend work:
 
 - Step 24D: final backend review package before Codex review.
+
+
+
+
+
+---
+
+## Step 24 Progress - 2026-05-16
+
+### Step 24D - Final Backend Review Package Before Codex
+
+Completed:
+
+- Added final backend review package:
+  - docs/BACKEND_REVIEW_PACKAGE.md
+- Added standalone Codex review prompt:
+  - docs/CODEX_REVIEW_PROMPT.md
+- Review package summarizes:
+  - current backend status
+  - completed Step 22/23/24 readiness work
+  - active security rules
+  - known risks
+  - validation commands
+  - recommended Codex review prompt
+  - suggested next work after Codex
+- Codex review should happen after Step 24D is committed and pushed, before frontend integration.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- GitHub: review docs updated.
+- SE diagrams: no direct change.
+
+Next work:
+
+- Run Codex backend improvement review.
+- Fix P0/P1 issues from Codex.
+- Then begin frontend integration.
 

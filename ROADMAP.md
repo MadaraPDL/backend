@@ -2,7 +2,7 @@
 
 ## Current Position
 
-Current phase: **Step 24 in progress - Backend/demo readiness before frontend integration**.
+Current phase: **Step 24 final readiness phase before Codex review and frontend integration**.
 
 Step 16 and Step 17 MVP work are complete and tested.
 
@@ -15,7 +15,7 @@ Step 18 is complete through Step 18G:
 - Step 18F: Router action integration tests.
 - Step 18G: App User router capability visibility endpoint.
 
-Next step: Step 24D - Final backend review package before Codex review.
+Next step: Run Codex backend improvement review before frontend integration.
 
 ---
 
@@ -2453,5 +2453,6 @@ Impact:
 Next backend work:
 
 - Step 24D: final backend review package before Codex review.
+
 
 
