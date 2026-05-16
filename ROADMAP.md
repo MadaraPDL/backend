@@ -2,7 +2,7 @@
 
 ## Current Position
 
-Current phase: **Step 23 in progress - Reports and analytics foundation**.
+Current phase: **Step 24 in progress - Backend/demo readiness before frontend integration**.
 
 Step 16 and Step 17 MVP work are complete and tested.
 
@@ -15,7 +15,7 @@ Step 18 is complete through Step 18G:
 - Step 18F: Router action integration tests.
 - Step 18G: App User router capability visibility endpoint.
 
-Next step: Step 23D - Reports and analytics final cleanup/review.
+Next step: Step 24B - API contract snapshot for frontend integration.
 
 ---
 
@@ -2305,5 +2305,44 @@ Next backend work:
 
 - Step 23D: Reports and analytics final cleanup/review.
 - Then Step 24: backend/demo readiness before frontend integration.
+
+
+
+---
+
+## Step 24 Progress - 2026-05-16
+
+### Step 24A - Backend Readiness Checklist and Stale Docs Cleanup
+
+Completed:
+
+- Confirmed Step 23 is complete:
+  - Step 23A ISP Admin analytics summary
+  - Step 23B stored reports
+  - Step 23C expanded report types
+  - Step 23D final cleanup/review
+- Started Step 24 backend/demo readiness phase.
+- Verified production settings guardrails:
+  - strong non-placeholder SECRET_KEY required when DEBUG=False
+  - wildcard CORS blocked when DEBUG=False
+  - DATA_ENCRYPTION_KEY required when DEBUG=False
+- Verified CORS middleware is wired through BACKEND_CORS_ORIGINS.
+- Verified API router and FastAPI app imports.
+- Checked for accidental Step 24 temp files.
+- Checked for accidental Step 24 migrations.
+- Ran tests and compile checks.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- GitHub: docs/readiness status update only.
+- SE diagrams: no change yet.
+
+Next backend work:
+
+- Step 24B: create API contract snapshot for frontend integration.
+- Step 24C: create demo seed/readiness helper.
+- Step 24D: final backend review package before Codex review.
 
 
