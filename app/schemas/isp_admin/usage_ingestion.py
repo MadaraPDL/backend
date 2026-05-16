@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
@@ -22,4 +22,15 @@ class SimulatorUsageIngestionResponse(BaseModel):
     upload_mb: Decimal
     download_mb: Decimal
     total_mb: Decimal
+    source: str = "simulator"
+
+
+class SimulatorDeviceIngestionResponse(BaseModel):
+    router_id: UUID
+    user_id: UUID
+    user_subscription_id: UUID
+    devices_seen: int
+    devices_created: int
+    devices_updated: int
+    connection_logs_created: int
     source: str = "simulator"

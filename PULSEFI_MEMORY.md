@@ -1738,3 +1738,48 @@ Testing:
 Next step:
 
 - Step 19C � connected device ingestion/update from simulator data, including device connection logs for new/seen devices.
+
+---
+
+## Step 19 Progress — 2026-05-16
+
+### Step 19C — Simulator Connected Device Ingestion
+
+Completed and tested:
+
+- Added simulator connected-device ingestion service.
+- Added endpoint:
+  - POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator/devices
+- Endpoint uses get_current_isp_admin.
+- Router lookup is scoped by current_admin.isp_id.
+- Device ingestion only works for active routers.
+- Router must be linked to an active user subscription.
+- Router subscription must be active.
+- Simulator creates deterministic demo devices per router:
+  - Simulator Phone
+  - Simulator Laptop
+  - Simulator Smart TV
+- Existing simulator devices are updated instead of duplicated.
+- Device connection logs are created for connected, seen, or reconnected events.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: adds/updates simulator device rows and device connection logs only when endpoint is triggered.
+- Security: ISP Admin cannot ingest devices for routers outside their ISP.
+- SE diagrams: later update DFD and sequence diagrams to show connected-device ingestion and connection logs.
+
+Testing:
+
+- Device ingestion service import check passed.
+- ISP Admin schema import check passed.
+- ISP Admin endpoint import check passed.
+- API router import check passed.
+- FastAPI app import check passed.
+- Compile check passed.
+- Pytest passed.
+- Manual endpoint test passed.
+
+Next step:
+
+- Step 19D — combine simulator device ingestion and usage ingestion into a single demo ingestion flow, or add ISP Admin visibility for device connection logs.

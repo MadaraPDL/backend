@@ -1052,3 +1052,24 @@ Behavior:
 - Uses source = simulator.
 
 This is demo-safe and does not require storing router passwords or logging into real routers.
+
+---
+
+## Simulator Device Ingestion
+
+PulseFi supports simulator-based connected-device ingestion for demo/testing.
+
+ISP Admin endpoint:
+
+POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator/devices
+
+Behavior:
+
+- Requires ISP Admin authentication.
+- Router must belong to the logged-in ISP Admin's ISP.
+- Router must be active.
+- Router must be linked to an active user subscription.
+- Creates deterministic simulator devices for the router.
+- Updates existing simulator devices instead of duplicating them.
+- Creates device connection logs for connected, seen, or reconnected events.
+- Does not require real router credentials.

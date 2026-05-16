@@ -1,4 +1,4 @@
-from app.schemas.isp_admin.plans import (
+﻿from app.schemas.isp_admin.plans import (
     SubscriptionPlanCreateRequest,
     SubscriptionPlanResponse,
     SubscriptionPlanUpdateRequest,
@@ -24,6 +24,7 @@ from app.schemas.isp_admin.summary import (
     StatusCounts,
 )
 from app.schemas.isp_admin.usage_ingestion import (
+    SimulatorDeviceIngestionResponse,
     SimulatorUsageIngestionRequest,
     SimulatorUsageIngestionResponse,
 )
@@ -54,6 +55,7 @@ __all__ = [
     "RouterResponse",
     "RouterStatus",
     "RouterUpdateRequest",
+    "SimulatorDeviceIngestionResponse",
     "SimulatorUsageIngestionRequest",
     "SimulatorUsageIngestionResponse",
     "StatusCounts",

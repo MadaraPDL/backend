@@ -1583,3 +1583,22 @@ Completed:
 Next:
 
 - Step 19C: simulator connected-device ingestion/update and connection logs.
+
+---
+
+## Step 19 Progress — Connected Device Ingestion
+
+### Step 19C — Completed
+
+Completed:
+
+- Added simulator connected-device ingestion service.
+- Added ISP Admin manual endpoint:
+  - POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator/devices
+- Simulator creates or updates demo devices for a router.
+- Simulator creates device connection logs.
+- Endpoint is scoped to the authenticated ISP Admin's ISP.
+
+Next:
+
+- Step 19D: combined simulator ingestion flow or ISP Admin device connection log visibility.
