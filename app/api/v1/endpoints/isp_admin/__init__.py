@@ -6,6 +6,7 @@ from app.api.v1.endpoints.isp_admin import (
     routers,
     subscriptions,
     summary,
+    usage_ingestion,
     user_invitations,
     users,
 )
@@ -23,3 +24,4 @@ router.include_router(plans.router)
 router.include_router(subscriptions.router)
 router.include_router(routers.router)
 router.include_router(router_action_logs.router)
+router.include_router(usage_ingestion.router)

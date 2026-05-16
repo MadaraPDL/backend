@@ -1560,3 +1560,26 @@ Testing:
 Next:
 
 - Step 18 cleanup/docs, then Step 19 â€” usage data ingestion and simulator usage generation.
+
+---
+
+## Step 19 Progress — Usage Data Ingestion
+
+### Step 19A/19B — Completed
+
+Completed:
+
+- Added simulator usage ingestion service.
+- Added ISP Admin manual ingestion trigger endpoint:
+  - `POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator`
+- Usage records are tied to:
+  - App User
+  - User Subscription
+  - Router
+  - Device when available
+- Endpoint is ISP-scoped through the authenticated ISP Admin.
+- App User usage endpoints can read the generated simulator usage.
+
+Next:
+
+- Step 19C: simulator connected-device ingestion/update and connection logs.

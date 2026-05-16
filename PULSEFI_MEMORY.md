@@ -1717,3 +1717,54 @@ Impact:
 Next:
 
 - Step 18 cleanup/docs, then Step 19 — usage data ingestion and simulator usage generation.
+
+---
+
+## Step 19 Progress — 2026-05-16
+
+### Step 19A/19B — Simulator Usage Ingestion Service and ISP Admin Trigger Endpoint
+
+Completed and tested:
+
+- Added usage ingestion service package:
+  - `app/services/usage_ingestion/`
+- Added simulator usage ingestion service.
+- Added ISP Admin manual simulator ingestion endpoint:
+  - `POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator`
+- Endpoint uses `get_current_isp_admin`.
+- Router lookup is scoped by `current_admin.isp_id`.
+- Simulator ingestion only works for active routers.
+- Router must be linked to an active user subscription.
+- If connected devices exist, ingestion creates per-device usage records.
+- If no connected devices exist, ingestion creates one router-level usage record with `device_id = null`.
+- Usage records are stored with `source = "simulator"`.
+- App User usage summary can read the generated usage through existing `/api/v1/me/usage/summary`.
+
+Important design decision:
+
+- The simulator does not create both router-total and per-device records for the same time window.
+- This avoids double-counting in App User usage totals.
+- Real router integration is still deferred.
+- No router passwords or credentials are accepted or stored.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: new simulator usage records are added only when the endpoint is triggered.
+- Security: ISP Admin ingestion is scoped to the logged-in admin's ISP.
+- SE diagrams: later update DFD and sequence diagrams to show simulator/router usage ingestion.
+
+Testing:
+
+- Usage ingestion service import check passed.
+- ISP Admin usage ingestion endpoint import check passed.
+- API router import check passed.
+- FastAPI app import check passed.
+- Compile check passed.
+- Pytest passed.
+- Manual endpoint test passed with ISP Admin token.
+- Generated usage appeared through the existing App User usage API.
+
+Next step:
+
+- Step 19C — connected device ingestion/update from simulator data, including device connection logs for new/seen devices.

@@ -941,3 +941,19 @@ Next priority:
    - "meduim" -> "medium"
    - "downgrade_pan" -> "downgrade_plan"
 
+
+
+---
+
+## Step 19 Usage Ingestion Quality Notes
+
+Step 19A/19B added simulator usage ingestion.
+
+Quality/security reminders:
+
+- Keep ingestion endpoints ISP-scoped.
+- Do not allow ISP Admins to ingest usage for routers outside their ISP.
+- Avoid double-counting usage by not storing router-total and per-device records for the same time window unless a future aggregation model separates them clearly.
+- Keep real-router credentials deferred until encrypted credential storage is intentionally implemented.
+- Add integration tests for usage ingestion ownership/isolation.
+- Add scheduled ingestion later after manual ingestion is stable.

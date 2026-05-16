@@ -1028,3 +1028,27 @@ Completed:
 Next backend focus:
 - Build a router adapter architecture starting with a simulator adapter.
 - Real router integrations come later after safe credential encryption and router-specific capability handling are designed.
+
+
+---
+
+## Usage Ingestion MVP
+
+PulseFi now supports simulator-based usage ingestion for demo/testing.
+
+ISP Admin endpoint:
+
+POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator
+
+Behavior:
+
+- Requires ISP Admin authentication.
+- Router must belong to the logged-in ISP Admin ISP scope.
+- Router must be active.
+- Router must be linked to an active user subscription.
+- Creates simulator usage records in usage_records.
+- Creates per-device records when connected devices exist.
+- Creates one router-level record when no connected devices exist.
+- Uses source = simulator.
+
+This is demo-safe and does not require storing router passwords or logging into real routers.
