@@ -1538,3 +1538,48 @@ Impact:
 Next:
 
 - Step 18D ï¿½ Add safe API endpoint for executing a pending device policy through the router execution service.
+
+---
+
+## Step 18 Progress — 2026-05-16
+
+### Step 18D — App User Device Policy Execution Endpoint
+
+Completed and tested:
+
+- Added safe App User endpoint:
+  - `PATCH /api/v1/me/device-policies/{policy_id}/execute`
+- Endpoint uses `get_current_app_user`.
+- Endpoint checks ownership before execution by loading the policy through `get_my_device_policy`.
+- App Users can only execute their own device policies.
+- Only pending device policies can be executed.
+- Execution uses the Step 18C router policy execution service.
+- Execution goes through the router adapter registry.
+- Current execution uses the simulator adapter.
+- Successful execution updates policy status to `applied`.
+- Failed execution updates policy status to `failed` and saves `failure_reason`.
+- A `RouterActionLog` is created for execution history.
+- Response returns:
+  - updated device policy
+  - router action log
+  - execution message
+- Added App User response schemas for router action logs and policy execution responses.
+- Import checks passed.
+- App import check passed.
+- API router import check passed.
+- Compile check passed.
+- Pytest passed.
+- Integration tests continue using `TEST_DATABASE_URL` with database name `pulsefi_test`.
+
+Impact:
+
+- Database schema: no change.
+- Existing dev data: changes only when the endpoint is called; it updates policy status and creates a router action log.
+- Test database: safe; tests use `pulsefi_test`.
+- SE diagrams: later update App User device policy flow to show policy request -> execute endpoint -> execution service -> adapter registry -> simulator adapter -> router action log.
+- Security: ownership check is enforced before router execution.
+- Router credentials: no router passwords or credentials are accepted or stored.
+
+Next:
+
+- Step 18E — Add ISP Admin/router action log visibility or add tests for policy execution endpoint.

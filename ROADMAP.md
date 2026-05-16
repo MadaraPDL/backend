@@ -1434,3 +1434,35 @@ Testing:
 Next:
 
 - Step 18D — API endpoint for safely triggering pending device policy execution.
+
+---
+
+## Step 18 Progress — 2026-05-16
+
+### Step 18D — App User Device Policy Execution Endpoint
+
+Completed:
+
+- Added endpoint:
+  - `PATCH /api/v1/me/device-policies/{policy_id}/execute`
+- Endpoint is protected by App User authentication.
+- Endpoint verifies the policy belongs to the authenticated App User before execution.
+- Endpoint only executes pending policies.
+- Execution uses the router policy execution service.
+- Current execution uses the simulator router adapter.
+- Router action logs are created during execution.
+- Execution response includes the updated policy and action log.
+
+Testing:
+
+- Device policy execution schema import check passed.
+- Device policy endpoint import check passed.
+- FastAPI app import check passed.
+- API router import check passed.
+- Compile check passed.
+- Pytest passed.
+- Integration tests used `pulsefi_test` through `TEST_DATABASE_URL`.
+
+Next:
+
+- Step 18E — Add visibility for router action logs, likely ISP Admin first, or add focused integration tests for policy execution.

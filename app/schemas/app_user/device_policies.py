@@ -29,3 +29,23 @@ class MyDevicePolicyResponse(BaseModel):
     failure_reason: str | None
     is_active: bool
     updated_at: datetime
+
+
+class MyRouterActionLogResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    router_id: UUID
+    policy_id: UUID | None
+    action_type: str
+    command_payload: dict | None
+    response_payload: dict | None
+    status: str
+    error_message: str | None
+    executed_at: datetime
+
+
+class MyDevicePolicyExecutionResponse(BaseModel):
+    policy: MyDevicePolicyResponse
+    action_log: MyRouterActionLogResponse | None
+    message: str

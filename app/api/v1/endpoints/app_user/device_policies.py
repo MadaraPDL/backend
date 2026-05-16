@@ -10,6 +10,7 @@ from app.db.session import get_db
 from app.models.app_user import AppUser
 from app.schemas.app_user import (
     MyDevicePolicyCreate,
+    MyDevicePolicyExecutionResponse,
     MyDevicePolicyResponse,
 )
 from app.services.app_user import (
@@ -17,6 +18,7 @@ from app.services.app_user import (
     get_my_device_policy,
     list_my_device_policies,
 )
+from app.services.router_actions import execute_device_network_policy
 
 
 router = APIRouter(prefix="/me/device-policies", tags=["App User"])
@@ -87,3 +89,54 @@ async def get_my_device_policy_endpoint(
         )
 
     return policy
+
+
+@router.patch(
+    "/{policy_id}/execute",
+    response_model=MyDevicePolicyExecutionResponse,
+)
+async def execute_my_device_policy_endpoint(
+    policy_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: AppUser = Depends(get_current_app_user),
+) -> MyDevicePolicyExecutionResponse:
+    policy = await get_my_device_policy(
+        db=db,
+        current_user=current_user,
+        policy_id=policy_id,
+    )
+
+    if policy is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Device policy not found",
+        )
+
+    if policy.status != "pending":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Only pending device policies can be executed",
+        )
+
+    executed_policy, action_log = await execute_device_network_policy(
+        db=db,
+        policy_id=policy_id,
+    )
+
+    if executed_policy is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Device policy not found",
+        )
+
+    if action_log is None:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Device policy was not executed",
+        )
+
+    return MyDevicePolicyExecutionResponse(
+        policy=executed_policy,
+        action_log=action_log,
+        message="Device policy execution completed",
+    )
