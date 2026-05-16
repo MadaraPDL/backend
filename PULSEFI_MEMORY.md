@@ -1828,3 +1828,47 @@ Testing:
 Next step:
 
 - Step 19D - combined simulator ingestion flow or ISP Admin device connection log visibility.
+
+---
+
+## Step 19 Progress - 2026-05-16
+
+### Step 19D - Combined Simulator Ingestion Flow
+
+Completed and tested:
+
+- Added combined simulator ingestion service.
+- Added endpoint:
+  - POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator/run
+- Combined flow runs device ingestion first.
+- Combined flow runs usage ingestion second.
+- Existing standalone endpoints remain available:
+  - POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator/devices
+  - POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator
+- Endpoint uses get_current_isp_admin.
+- Router lookup remains scoped by current_admin.isp_id.
+- One demo request can now update devices, device connection logs, and usage records.
+- Fixed simulator device logs to use allowed event_type values.
+- Repeated simulator device sightings now use connected instead of seen.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: adds/updates simulator device rows, connection logs, and usage records only when endpoint is triggered.
+- Security: ISP Admin cannot run ingestion for routers outside their ISP.
+- SE diagrams: later update sequence diagrams to show the combined simulator ingestion flow.
+
+Testing:
+
+- Full ingestion service import check passed.
+- Full ingestion schema import check passed.
+- ISP Admin endpoint import check passed.
+- API router import check passed.
+- FastAPI app import check passed.
+- Compile check passed.
+- Pytest passed.
+- Manual combined endpoint test passed.
+
+Next step:
+
+- Step 19E - ISP Admin visibility for usage records and device connection logs.

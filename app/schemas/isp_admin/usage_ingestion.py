@@ -34,3 +34,12 @@ class SimulatorDeviceIngestionResponse(BaseModel):
     devices_updated: int
     connection_logs_created: int
     source: str = "simulator"
+
+
+class SimulatorFullIngestionResponse(BaseModel):
+    router_id: UUID
+    user_id: UUID
+    user_subscription_id: UUID
+    device_ingestion: SimulatorDeviceIngestionResponse
+    usage_ingestion: SimulatorUsageIngestionResponse
+    source: str = "simulator"

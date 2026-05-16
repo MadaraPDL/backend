@@ -25,6 +25,7 @@ from app.schemas.isp_admin.summary import (
 )
 from app.schemas.isp_admin.usage_ingestion import (
     SimulatorDeviceIngestionResponse,
+    SimulatorFullIngestionResponse,
     SimulatorUsageIngestionRequest,
     SimulatorUsageIngestionResponse,
 )
@@ -56,6 +57,7 @@ __all__ = [
     "RouterStatus",
     "RouterUpdateRequest",
     "SimulatorDeviceIngestionResponse",
+    "SimulatorFullIngestionResponse",
     "SimulatorUsageIngestionRequest",
     "SimulatorUsageIngestionResponse",
     "StatusCounts",

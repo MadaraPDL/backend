@@ -981,3 +981,16 @@ Quality/security reminders:
 - Keep connection logs useful for future alert generation.
 - Add integration tests for cross-ISP router/device ingestion isolation.
 - Later connect new-device connection logs to alert generation.
+
+---
+
+## Step 19D Combined Ingestion Quality Notes
+
+Quality/security reminders:
+
+- Keep combined simulator ingestion scoped by current_admin.isp_id.
+- Device ingestion should run before usage ingestion so per-device usage can be generated.
+- Keep simulator event_type values aligned with database constraints.
+- Add integration tests for the combined endpoint.
+- Later add scheduler support after manual ingestion remains stable.
+- Later connect connection logs to alert generation.

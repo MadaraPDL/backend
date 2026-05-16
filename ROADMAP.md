@@ -1621,3 +1621,23 @@ Completed:
 Next:
 
 - Step 19D: combined simulator ingestion flow or ISP Admin device connection log visibility.
+
+---
+
+## Step 19 Progress - Combined Simulator Ingestion
+
+### Step 19D - Completed
+
+Completed:
+
+- Added combined simulator ingestion service.
+- Added ISP Admin manual endpoint:
+  - POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator/run
+- The combined endpoint runs connected-device ingestion first.
+- The combined endpoint runs usage ingestion second.
+- This gives a one-click demo flow for router/device/usage simulator data.
+- Simulator device connection logs use allowed event_type values.
+
+Next:
+
+- Step 19E: ISP Admin visibility for usage records and device connection logs.

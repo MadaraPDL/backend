@@ -165,7 +165,7 @@ async def run_simulator_device_ingestion_for_router(
             DeviceConnectionLog(
                 device_id=device.id,
                 router_id=router.id,
-                event_type="seen" if previous_status == "connected" else "reconnected",
+                event_type="connected" if previous_status == "connected" else "reconnected",
                 ip_address=ip_address(payload.ip_address),
                 details="Simulator confirmed device is connected.",
                 event_time=now,
@@ -186,3 +186,4 @@ async def run_simulator_device_ingestion_for_router(
         devices_updated=devices_updated,
         connection_logs_created=connection_logs_created,
     )
+

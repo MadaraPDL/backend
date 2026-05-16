@@ -1094,3 +1094,24 @@ Behavior:
 - Updates existing simulator devices instead of duplicating them.
 - Creates device connection logs for connected, seen, or reconnected events.
 - Does not require real router credentials.
+
+---
+
+## Combined Simulator Ingestion
+
+PulseFi supports a combined simulator ingestion endpoint for demo/testing.
+
+ISP Admin endpoint:
+
+POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator/run
+
+Behavior:
+
+- Requires ISP Admin authentication.
+- Router must belong to the logged-in ISP Admin's ISP.
+- Runs simulator connected-device ingestion.
+- Runs simulator usage ingestion.
+- Creates or updates simulator devices.
+- Creates device connection logs.
+- Creates simulator usage records.
+- Does not require real router credentials.

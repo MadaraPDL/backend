@@ -10,12 +10,14 @@ from app.db.session import get_db
 from app.models.admin import Admin
 from app.schemas.isp_admin import (
     SimulatorDeviceIngestionResponse,
+    SimulatorFullIngestionResponse,
     SimulatorUsageIngestionRequest,
     SimulatorUsageIngestionResponse,
 )
 from app.services.usage_ingestion import (
     RouterNotFoundForIngestionError,
     RouterNotReadyForIngestionError,
+    run_full_simulator_ingestion_for_router,
     run_simulator_device_ingestion_for_router,
     run_simulator_usage_ingestion_for_router,
 )
@@ -120,4 +122,78 @@ async def run_simulator_device_ingestion_endpoint(
         devices_created=result.devices_created,
         devices_updated=result.devices_updated,
         connection_logs_created=result.connection_logs_created,
+    )
+
+
+@router.post(
+    "/routers/{router_id}/simulator/run",
+    response_model=SimulatorFullIngestionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def run_full_simulator_ingestion_endpoint(
+    router_id: UUID,
+    request: SimulatorUsageIngestionRequest | None = Body(default=None),
+    db: AsyncSession = Depends(get_db),
+    current_admin: Admin = Depends(get_current_isp_admin),
+) -> SimulatorFullIngestionResponse:
+    if current_admin.isp_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="ISP Admin account is not linked to an ISP",
+        )
+
+    request_data = request or SimulatorUsageIngestionRequest()
+
+    try:
+        result = await run_full_simulator_ingestion_for_router(
+            db=db,
+            router_id=router_id,
+            isp_id=current_admin.isp_id,
+            record_start=request_data.record_start,
+            record_end=request_data.record_end,
+        )
+    except RouterNotFoundForIngestionError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Router not found",
+        ) from None
+    except RouterNotReadyForIngestionError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=str(exc),
+        ) from None
+
+    await db.commit()
+
+    device_result = result.device_ingestion
+    usage_result = result.usage_ingestion
+
+    device_response = SimulatorDeviceIngestionResponse(
+        router_id=device_result.router_id,
+        user_id=device_result.user_id,
+        user_subscription_id=device_result.user_subscription_id,
+        devices_seen=device_result.devices_seen,
+        devices_created=device_result.devices_created,
+        devices_updated=device_result.devices_updated,
+        connection_logs_created=device_result.connection_logs_created,
+    )
+
+    usage_response = SimulatorUsageIngestionResponse(
+        router_id=usage_result.router_id,
+        user_id=usage_result.user_id,
+        user_subscription_id=usage_result.user_subscription_id,
+        record_start=usage_result.record_start,
+        record_end=usage_result.record_end,
+        records_created=usage_result.records_created,
+        upload_mb=usage_result.upload_mb,
+        download_mb=usage_result.download_mb,
+        total_mb=usage_result.total_mb,
+    )
+
+    return SimulatorFullIngestionResponse(
+        router_id=usage_result.router_id,
+        user_id=usage_result.user_id,
+        user_subscription_id=usage_result.user_subscription_id,
+        device_ingestion=device_response,
+        usage_ingestion=usage_response,
     )
