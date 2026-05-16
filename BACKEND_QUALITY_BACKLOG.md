@@ -1619,3 +1619,48 @@ Next backend work:
 - Step 24C: create demo seed/readiness helper.
 - Step 24D: final backend review package before Codex review.
 
+
+---
+
+## Step 24 Progress - 2026-05-16
+
+### Step 24B - API Contract Snapshot for Frontend Integration
+
+Completed:
+
+- Generated `docs/API_CONTRACT.md` from FastAPI OpenAPI.
+- The contract groups backend routes by OpenAPI tags.
+- The contract includes:
+  - HTTP method
+  - path
+  - intended frontend area
+  - auth guidance
+  - request body schema summary
+  - response status codes
+  - endpoint summary
+- Added frontend integration notes for:
+  - shared auth
+  - Platform Admin dashboard
+  - ISP Admin dashboard
+  - Mobile App
+  - deployment/CORS
+- This gives the future frontend/mobile work a stable backend API reference.
+
+Validation completed:
+
+- Generated API contract successfully.
+- Full pytest suite passed.
+- Compile check passed.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- GitHub: added API contract documentation.
+- SE diagrams: no direct change.
+
+Next backend work:
+
+- Step 24C: demo seed/readiness helper.
+- Step 24D: final backend review package before Codex review.
+
