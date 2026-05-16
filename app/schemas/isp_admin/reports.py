@@ -9,6 +9,10 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 ISPAdminReportType = Literal[
     "usage_report",
+    "device_report",
+    "alert_report",
+    "recommendation_report",
+    "network_performance_report",
 ]
 
 

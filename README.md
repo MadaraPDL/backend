@@ -1530,3 +1530,139 @@ Next backend work:
   - `recommendation_report`
   - `network_performance_report`
 
+
+---
+
+## Step 23 Progress - 2026-05-16
+
+### Step 23C - Expanded Stored Report Types
+
+Completed and tested:
+
+- Expanded ISP Admin stored report generation to support all existing database-allowed report types:
+  - `usage_report`
+  - `device_report`
+  - `alert_report`
+  - `recommendation_report`
+  - `network_performance_report`
+- No Alembic migration was needed because these report types already exist in the `reports` table constraint.
+- `usage_report` continues to store usage analytics summary data.
+- `alert_report` stores:
+  - total alerts
+  - unread alerts
+  - critical alerts
+  - counts by alert type
+  - counts by severity
+- `recommendation_report` stores:
+  - total recommendations
+  - counts by recommendation status
+  - counts by recommendation type
+- `device_report` stores:
+  - total devices
+  - connected devices
+  - trusted devices
+  - untrusted devices
+  - counts by device status
+  - counts by device type
+- `network_performance_report` stores:
+  - total routers
+  - active routers
+  - inactive routers
+  - total usage MB/GB
+  - router action counts by status
+  - router action counts by action type
+- Security/isolation:
+  - all report data remains scoped by `current_admin.isp_id`
+  - device reports scope through App User ISP ownership
+  - router/network reports scope through Router ISP ownership
+- Added integration tests for expanded report types.
+- Endpoint smoke test passed through FastAPI routes for all report types.
+
+Validation completed:
+
+- Import checks passed.
+- Expanded report type integration test passed.
+- Full pytest suite passed.
+- Compile check passed.
+- Endpoint smoke test passed.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no migration or rewrite.
+- GitHub: report schema, report service, and expanded report test changed.
+- SE diagrams: later update ISP Admin report generation flow to mention multiple report types.
+
+Next backend work:
+
+- Step 23D: Reports and analytics final cleanup/review.
+- Then Step 24: backend/demo readiness before frontend integration.
+
+
+---
+
+## Step 23 Progress - 2026-05-16
+
+### Step 23C - Expanded Stored Report Types
+
+Completed and tested:
+
+- Expanded ISP Admin stored report generation to support all existing database-allowed report types:
+  - `usage_report`
+  - `device_report`
+  - `alert_report`
+  - `recommendation_report`
+  - `network_performance_report`
+- No Alembic migration was needed because these report types already exist in the `reports` table constraint.
+- `usage_report` continues to store usage analytics summary data.
+- `alert_report` stores:
+  - total alerts
+  - unread alerts
+  - critical alerts
+  - counts by alert type
+  - counts by severity
+- `recommendation_report` stores:
+  - total recommendations
+  - counts by recommendation status
+  - counts by recommendation type
+- `device_report` stores:
+  - total devices
+  - connected devices
+  - trusted devices
+  - untrusted devices
+  - counts by device status
+  - counts by device type
+- `network_performance_report` stores:
+  - total routers
+  - active routers
+  - inactive routers
+  - total usage MB/GB
+  - router action counts by status
+  - router action counts by action type
+- Security/isolation:
+  - all report data remains scoped by `current_admin.isp_id`
+  - device reports scope through App User ISP ownership
+  - router/network reports scope through Router ISP ownership
+- Added integration tests for expanded report types.
+- Endpoint smoke test passed through FastAPI routes for all report types.
+
+Validation completed:
+
+- Import checks passed.
+- Expanded report type integration test passed.
+- Full pytest suite passed.
+- Compile check passed.
+- Endpoint smoke test passed.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no migration or rewrite.
+- GitHub: report schema, report service, and expanded report test changed.
+- SE diagrams: later update ISP Admin report generation flow to mention multiple report types.
+
+Next backend work:
+
+- Step 23D: Reports and analytics final cleanup/review.
+- Then Step 24: backend/demo readiness before frontend integration.
+
