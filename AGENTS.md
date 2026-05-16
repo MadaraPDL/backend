@@ -1702,3 +1702,24 @@ Important rules remain:
 - ISP Admin prediction/recommendation generation must stay scoped by `current_admin.isp_id`.
 - App User prediction/recommendation visibility must stay scoped by `current_user.id`.
 
+
+
+## Step 22 Planned
+
+Next phase:
+
+Recommendation to plan change request integration.
+
+Planned work:
+
+- Review existing App User plan change request flow.
+- Add ISP Admin subscription change request visibility.
+- Add ISP Admin approve/reject handling.
+- Add tests and docs.
+
+Important rules:
+
+- App User requests must stay scoped by `current_user.id`.
+- ISP Admin queries/actions must stay scoped by `current_admin.isp_id`.
+- Recommendation-linked requests must verify ownership.
+

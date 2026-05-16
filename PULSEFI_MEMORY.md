@@ -2292,3 +2292,39 @@ Recommended next backend work:
 
 - Connect recommendations to subscription change request flow if needed.
 - Or move to reporting/analytics/dashboard improvements.
+
+---
+
+## Step 22 Planning - 2026-05-16
+
+Step 21 is complete enough to move forward.
+
+Completed Step 21 items:
+
+- Step 21A: Prediction generation foundation.
+- Step 21B: Recommendation generation foundation.
+- Step 21C: Prediction and recommendation service tests.
+- Step 21D: Recommendation cleanup path tests.
+
+Next backend step:
+
+### Step 22 - Recommendation to Plan Change Request Integration
+
+Goal:
+
+Connect generated recommendations to the existing subscription change request flow.
+
+Planned work:
+
+- Step 22A: Review existing App User plan change request flow.
+- Step 22B: Add ISP Admin plan change request list/detail visibility.
+- Step 22C: Add ISP Admin approve/reject behavior.
+- Step 22D: Add tests and docs.
+
+Important rules:
+
+- App User plan change requests must stay scoped by `current_user.id`.
+- ISP Admin plan change request queries must stay scoped by `current_admin.isp_id`.
+- Recommendation-linked requests must verify the recommendation belongs to the same App User.
+- Do not let ISP Admins act on requests from another ISP.
+

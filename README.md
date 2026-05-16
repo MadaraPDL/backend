@@ -8,7 +8,7 @@ The backend is a FastAPI + PostgreSQL service designed for a deployable Final Ye
 
 ## Current Backend Status
 
-Current phase: **Step 21 in progress - Prediction and recommendation logic**.
+Current phase: **Step 22 in progress - Recommendation to plan change request integration**.
 
 Recently completed and tested:
 
@@ -1266,4 +1266,15 @@ Recommendation service tests now cover all MVP recommendation types:
 - `monitor_usage`
 
 Step 21 prediction and recommendation foundation is complete enough to support the next backend phase.
+
+
+
+### Step 22 Planned Work
+
+Next backend phase:
+
+- Connect recommendations to subscription change requests.
+- Add ISP Admin visibility for plan change requests.
+- Add ISP Admin approve/reject flow.
+- Keep all ISP Admin actions scoped by `current_admin.isp_id`.
 

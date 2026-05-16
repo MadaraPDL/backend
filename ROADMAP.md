@@ -2,7 +2,7 @@
 
 ## Current Position
 
-Current phase: **Step 21 in progress - Prediction and recommendation logic**.
+Current phase: **Step 22 in progress - Recommendation to plan change request integration**.
 
 Step 16 and Step 17 MVP work are complete and tested.
 
@@ -15,7 +15,7 @@ Step 18 is complete through Step 18G:
 - Step 18F: Router action integration tests.
 - Step 18G: App User router capability visibility endpoint.
 
-Next step:`r`n`r`n- Step 20B: Generate policy failed alerts from failed router/device policy execution.
+Next step:`r`n`r`n- Step 22A: Review existing plan change request endpoints and services.
 
 ---
 
@@ -1842,4 +1842,77 @@ Pending optional work:
 
 - Connect recommendations to subscription change requests.
 - Add end-to-end API tests for prediction and recommendation generation.
+
+
+
+---
+
+## Step 21 Completion - 2026-05-16
+
+Step 21 is complete enough to move forward.
+
+Completed:
+
+- Step 21A: Prediction generation foundation.
+- Step 21B: Recommendation generation foundation.
+- Step 21C: Prediction and recommendation service tests.
+- Step 21D: Recommendation cleanup path tests.
+
+Step 21 delivered:
+
+- Rule-based usage prediction generation.
+- Rule-based recommendation generation.
+- App User visibility through existing prediction and recommendation endpoints.
+- ISP Admin generation endpoints for predictions and recommendations.
+- Focused tests for prediction math, recommendation paths, duplicate prevention, ownership scoping, and ISP scoping.
+
+---
+
+## Step 22 - Recommendation to Plan Change Request Integration
+
+Goal:
+
+Connect recommendation rows to the subscription change request flow.
+
+Why:
+
+- Step 21 generates recommendations.
+- App Users can already create subscription change requests.
+- The existing plan change request service already supports `recommendation_id`.
+- Step 22 should make the flow complete:
+  - user receives recommendation
+  - user requests plan change based on recommendation
+  - ISP Admin reviews the request
+  - ISP Admin approves or rejects the request
+
+Planned breakdown:
+
+### Step 22A - Review existing plan change request flow
+
+- Review App User plan change request endpoint.
+- Review schema validation.
+- Review ownership checks.
+- Confirm recommendation-linked request behavior.
+
+### Step 22B - ISP Admin plan change request visibility
+
+- Add ISP Admin list/detail endpoints for subscription change requests.
+- Scope all queries by `current_admin.isp_id`.
+
+### Step 22C - ISP Admin approve/reject flow
+
+- Add approve/reject endpoint.
+- Approval should update the request status.
+- Approval may update the user subscription plan if safe.
+- Rejection should store/reuse a clear status and optional reason if supported by schema.
+
+### Step 22D - Tests and docs
+
+- Add service tests for ISP scoping.
+- Add tests for approve/reject behavior.
+- Update docs/memory after completion.
+
+Important security rule:
+
+- ISP Admins must only view or act on subscription change requests belonging to users under their own ISP.
 
