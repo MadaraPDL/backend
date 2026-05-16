@@ -42,6 +42,13 @@ def _router_mac_prefix(router_id: UUID) -> str:
     return f"02:{raw[0:2]}:{raw[2:4]}:{raw[4:6]}"
 
 
+def _connection_event_type(previous_status: str | None) -> str:
+    if previous_status == "connected":
+        return "connected"
+
+    return "reconnected"
+
+
 def _build_simulator_devices(router_id: UUID) -> list[SimulatorDevicePayload]:
     prefix = _router_mac_prefix(router_id)
 
@@ -165,7 +172,7 @@ async def run_simulator_device_ingestion_for_router(
             DeviceConnectionLog(
                 device_id=device.id,
                 router_id=router.id,
-                event_type="connected" if previous_status == "connected" else "reconnected",
+                event_type=_connection_event_type(previous_status),
                 ip_address=ip_address(payload.ip_address),
                 details="Simulator confirmed device is connected.",
                 event_time=now,
@@ -186,4 +193,5 @@ async def run_simulator_device_ingestion_for_router(
         devices_updated=devices_updated,
         connection_logs_created=connection_logs_created,
     )
+
 

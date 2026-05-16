@@ -1915,3 +1915,45 @@ Testing:
 Next step:
 
 - Step 19F - integration tests and Step 19 cleanup/finalization.
+
+---
+
+## Step 19 Progress - 2026-05-16
+
+### Step 19F - Simulator Ingestion Tests and Step 19 Cleanup
+
+Completed and tested:
+
+- Added focused simulator ingestion service tests.
+- Added regression coverage for simulator device event types.
+- Confirmed simulator device payloads are deterministic per router.
+- Confirmed simulator-generated MAC addresses are unique.
+- Confirmed the invalid event_type value seen does not return.
+- Confirmed combined simulator ingestion runs device ingestion before usage ingestion.
+- Refactored simulator device event type selection into a helper function.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- Security: no token, credential, or router password changes.
+- Quality: Step 19 now has regression coverage for the event_type constraint issue found during manual testing.
+
+Testing:
+
+- New Step 19F test file passed.
+- Full pytest passed.
+- Compile check passed.
+
+Step 19 status:
+
+- Step 19A: simulator usage ingestion service - complete.
+- Step 19B: ISP Admin manual usage ingestion endpoint - complete.
+- Step 19C: simulator connected-device ingestion and connection logs - complete.
+- Step 19D: combined simulator ingestion endpoint - complete.
+- Step 19E: ISP Admin usage and connection-log visibility - complete.
+- Step 19F: tests and cleanup - complete.
+
+Next step:
+
+- Step 20 - Alerts system.

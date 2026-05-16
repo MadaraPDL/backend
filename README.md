@@ -1136,3 +1136,20 @@ Behavior:
 - Device connection logs are scoped to the logged-in ISP Admin's ISP.
 - Supports filters for dashboard views and troubleshooting.
 - Does not modify usage/device data.
+
+---
+
+## Step 19 Usage Ingestion Status
+
+Step 19 is complete for the MVP/demo backend.
+
+PulseFi now supports:
+
+- Simulator usage generation.
+- Simulator connected-device generation.
+- Device connection logs.
+- Combined simulator ingestion for one-click demo updates.
+- ISP Admin read-only visibility for usage records.
+- ISP Admin read-only visibility for device connection logs.
+
+The simulator flow remains demo-safe and does not require real router passwords or real router login.

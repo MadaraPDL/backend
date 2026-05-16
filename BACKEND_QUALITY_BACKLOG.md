@@ -1006,3 +1006,17 @@ Quality/security reminders:
 - Add integration tests for cross-ISP isolation.
 - Add pagination tests for usage records and connection logs.
 - Later connect these endpoints to ISP Admin dashboard tables.
+
+---
+
+## Step 19 Final Quality Notes
+
+Step 19 is complete for the MVP/demo backend.
+
+Remaining future improvements:
+
+- Add deeper integration tests using the test database for cross-ISP isolation.
+- Add scheduler support after manual ingestion remains stable.
+- Add alert generation from high usage and new device connection logs.
+- Add production-grade logging around ingestion success/failure.
+- Keep real-router credential support deferred until encrypted credential storage is intentionally designed.
