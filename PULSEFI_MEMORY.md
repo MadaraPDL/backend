@@ -2105,3 +2105,30 @@ Pending test expansion:
 - ISP Admin alert ISP isolation.
 - New device alert generation.
 - Unusual consumption alert generation.
+
+---
+
+## Step 20 Progress - 2026-05-16
+
+### Step 20E - Alert Ownership and ISP Isolation Tests
+
+Completed:
+
+- Added service-level alert isolation tests.
+- Tested App User alert list queries include `current_user.id`.
+- Tested App User alert detail queries require both `alert_id` and `current_user.id`.
+- Tested ISP Admin alert list queries join through App User and filter by `AppUser.isp_id`.
+- Tested ISP Admin alert detail queries require both `alert_id` and `AppUser.isp_id`.
+- Tested ISP Admin alert filters do not remove ISP scoping.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: no new endpoint behavior.
+- Security: improves confidence that alert access is scoped correctly.
+
+Pending Step 20 test expansion:
+
+- New device alert generation test.
+- Unusual consumption alert generation test.

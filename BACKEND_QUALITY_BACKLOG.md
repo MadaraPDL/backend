@@ -1102,3 +1102,19 @@ Still needed:
 - New device alert tests.
 - Unusual consumption alert tests.
 
+
+---
+
+## Step 20E Quality Note - 2026-05-16
+
+Completed:
+
+- Added App User alert ownership query tests.
+- Added ISP Admin alert ISP-scope query tests.
+- Added test that extra ISP Admin alert filters keep ISP scoping.
+
+Still needed:
+
+- New device alert generation test.
+- Unusual consumption alert generation test.
+

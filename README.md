@@ -1197,3 +1197,14 @@ Focused alert generation tests were added for:
 
 More isolation tests are still planned.
 
+
+### Step 20E Alert Isolation Tests
+
+Alert ownership and ISP isolation tests were added.
+
+They verify:
+
+- App User alert queries are scoped by the authenticated user.
+- ISP Admin alert queries are scoped through the App User ISP relationship.
+- Additional filters do not remove ISP scoping.
+

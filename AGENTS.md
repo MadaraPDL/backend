@@ -1590,3 +1590,20 @@ Next recommended work:
 - ISP Admin alert ISP isolation tests.
 - New device and unusual consumption alert tests.
 
+
+## Step 20E Completed
+
+Alert ownership and ISP isolation tests were added.
+
+Important rules:
+
+- App User alert access must stay scoped by `current_user.id`.
+- ISP Admin alert access must stay scoped by `current_admin.isp_id`.
+- ISP Admin alert visibility is read-only and shows App User alerts, not admin-owned notifications.
+
+Next recommended work:
+
+- New device alert test.
+- Unusual consumption alert test.
+- Then close Step 20 and move to Step 21 prediction/recommendation logic.
+

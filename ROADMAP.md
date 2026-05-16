@@ -1757,3 +1757,18 @@ Pending:
 - ISP Admin alert ISP isolation tests.
 - New device and unusual consumption alert tests.
 
+
+### Step 20E - Alert Ownership and ISP Isolation Tests
+
+Completed:
+
+- Added alert ownership/isolation tests.
+- App User alert queries must include current user scope.
+- ISP Admin alert queries must include ISP scope through App User.
+- Extra filters keep ISP scoping intact.
+
+Pending:
+
+- New device alert generation test.
+- Unusual consumption alert generation test.
+
