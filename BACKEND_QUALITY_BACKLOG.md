@@ -1827,3 +1827,18 @@ Impact:
 - Frontend readiness improved.
 - No database or runtime code changes.
 
+
+---
+
+## Step 26A Quality Note - 2026-05-17
+
+Completed:
+
+- Fixed P1 Codex finding: App User router responses exposed admin/management fields.
+- App User router schema now excludes router IP, MAC address, API endpoint, username, ISP ID, assignment admin ID, and password_encrypted.
+- Added regression test for safe App User router response shape.
+
+Impact:
+
+- Frontend blocker reduced.
+- No database change.

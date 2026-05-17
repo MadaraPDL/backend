@@ -3114,3 +3114,34 @@ Impact:
 Codex review item addressed:
 
 - P1 router management fields leak to app-user responses.
+
+---
+
+## Step 26A Progress - 2026-05-17
+
+### Removed Admin-Only Router Fields from App User Router Responses
+
+Completed and tested:
+
+- Reduced App User router response schema to safe mobile-facing fields only.
+- Removed admin/management fields from /api/v1/me/routers responses:
+  - isp_id
+  - assigned_by_admin_id
+  - router_ip
+  - mac_address
+  - api_endpoint
+  - username
+- Confirmed password_encrypted is not exposed.
+- Added regression test confirming App User router response excludes admin-only fields.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: App User router response is now safer and smaller.
+- Frontend integration: mobile app should use router id, subscription id, name, model, status, and timestamps only.
+- Security: reduces exposure of router management/credential-adjacent information.
+
+Codex review item addressed:
+
+- P1 router management fields leak to app-user responses.
