@@ -3215,3 +3215,34 @@ Impact:
 Codex review item addressed:
 
 - P1 some ISP ownership paths depend on partial joins.
+
+---
+
+## Step 26D Progress - 2026-05-17
+
+### Validated App User Device Policy Request Types and Action Fields
+
+Completed and tested:
+
+- Tightened App User device policy request validation.
+- Changed policy_type from a free string to supported values only:
+  - bandwidth_limit
+  - device_priority
+- Added validation that bandwidth_limit policies require bandwidth_limit_mbps.
+- Added validation that bandwidth_limit policies reject priority_level.
+- Added validation that device_priority policies require priority_level.
+- Added validation that device_priority policies reject bandwidth_limit_mbps.
+- Added tests for invalid policy types and missing/incorrect action fields.
+- Added tests for valid bandwidth_limit and device_priority policy requests.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: invalid device policy requests are now rejected before they can be saved.
+- Frontend integration: mobile app now gets immediate validation errors for unsupported or malformed policy requests.
+- Security/quality: prevents unsupported pending policies from being created and failing later during execution.
+
+Codex review item addressed:
+
+- P1 device policy creation accepts invalid policy types.

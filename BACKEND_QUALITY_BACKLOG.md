@@ -1874,3 +1874,20 @@ Impact:
 - Frontend blocker reduced.
 - No database change.
 - Cross-ISP leakage risk from malformed linked records is reduced.
+
+---
+
+## Step 26D Quality Note - 2026-05-17
+
+Completed:
+
+- Fixed P1 Codex finding: Device policy creation accepted invalid policy types.
+- App User device policy request schema now allows only bandwidth_limit and device_priority.
+- Action-specific fields are now validated before saving.
+- Added focused schema validation tests.
+
+Impact:
+
+- Frontend blocker reduced.
+- No database change.
+- Unsupported device policies are rejected at request validation time.

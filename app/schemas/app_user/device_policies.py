@@ -1,17 +1,37 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
+from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+
+DevicePolicyType = Literal["bandwidth_limit", "device_priority"]
 
 
 class MyDevicePolicyCreate(BaseModel):
     device_id: UUID
-    policy_type: str = Field(min_length=1, max_length=50)
-    bandwidth_limit_mbps: Decimal | None = None
+    policy_type: DevicePolicyType
+    bandwidth_limit_mbps: Decimal | None = Field(default=None, gt=0)
     priority_level: int | None = Field(default=None, ge=1, le=10)
+
+    @model_validator(mode="after")
+    def validate_action_fields(self) -> "MyDevicePolicyCreate":
+        if self.policy_type == "bandwidth_limit":
+            if self.bandwidth_limit_mbps is None:
+                raise ValueError("bandwidth_limit policies require bandwidth_limit_mbps.")
+            if self.priority_level is not None:
+                raise ValueError("bandwidth_limit policies must not include priority_level.")
+
+        if self.policy_type == "device_priority":
+            if self.priority_level is None:
+                raise ValueError("device_priority policies require priority_level.")
+            if self.bandwidth_limit_mbps is not None:
+                raise ValueError("device_priority policies must not include bandwidth_limit_mbps.")
+
+        return self
 
 
 class MyDevicePolicyResponse(BaseModel):
