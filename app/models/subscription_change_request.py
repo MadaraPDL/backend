@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, text
+from sqlalchemy import DateTime, ForeignKey, Index, String, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,6 +21,13 @@ if TYPE_CHECKING:
 class SubscriptionChangeRequest(Base):
     __tablename__ = "subscription_change_requests"
 
+    __table_args__ = (
+        Index("idx_subscription_change_requests_reviewed_by_admin_id", "reviewed_by_admin_id"),
+        Index("idx_subscription_change_requests_status", "status"),
+        Index("idx_subscription_change_requests_user_id", "user_id"),
+        Index("idx_subscription_change_requests_user_subscription_id", "user_subscription_id"),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -29,31 +36,31 @@ class SubscriptionChangeRequest(Base):
 
     user_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("app_users.id"),
+        ForeignKey("app_users.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     user_subscription_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("user_subscriptions.id"),
+        ForeignKey("user_subscriptions.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     current_plan_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("subscription_plans.id"),
+        ForeignKey("subscription_plans.id", ondelete="RESTRICT"),
         nullable=False,
     )
 
     requested_plan_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("subscription_plans.id"),
+        ForeignKey("subscription_plans.id", ondelete="RESTRICT"),
         nullable=False,
     )
 
     recommendation_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("recommendations.id"),
+        ForeignKey("recommendations.id", ondelete="SET NULL"),
         nullable=True,
     )
 
@@ -74,7 +81,7 @@ class SubscriptionChangeRequest(Base):
 
     reviewed_by_admin_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("admins.id"),
+        ForeignKey("admins.id", ondelete="SET NULL"),
         nullable=True,
     )
 

@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Date, DateTime, ForeignKey, String, Text, text
+from sqlalchemy import Date, DateTime, ForeignKey, Index, String, Text, text
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -18,6 +18,10 @@ if TYPE_CHECKING:
 class Report(Base):
     __tablename__ = "reports"
 
+    __table_args__ = (
+        Index("idx_reports_isp_id", "isp_id"),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -26,13 +30,13 @@ class Report(Base):
 
     isp_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("isps.id"),
+        ForeignKey("isps.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     generated_by_admin_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("admins.id"),
+        ForeignKey("admins.id", ondelete="SET NULL"),
         nullable=True,
     )
 

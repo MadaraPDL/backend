@@ -5,7 +5,7 @@ from ipaddress import IPv4Address, IPv6Address
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, UniqueConstraint, text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, String, text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import INET, UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -24,6 +24,8 @@ class Device(Base):
 
     __table_args__ = (
         UniqueConstraint("router_id", "mac_address"),
+        Index("idx_devices_router_id", "router_id"),
+        Index("idx_devices_user_id", "user_id"),
     )
 
     id: Mapped[UUID] = mapped_column(
@@ -34,13 +36,13 @@ class Device(Base):
 
     router_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("routers.id"),
+        ForeignKey("routers.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     user_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("app_users.id"),
+        ForeignKey("app_users.id", ondelete="CASCADE"),
         nullable=False,
     )
 

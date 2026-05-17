@@ -5,7 +5,7 @@ from ipaddress import IPv4Address, IPv6Address
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, text
+from sqlalchemy import DateTime, ForeignKey, Index, String, Text, text
 from sqlalchemy.dialects.postgresql import INET, UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -27,6 +27,11 @@ if TYPE_CHECKING:
 class Router(Base):
     __tablename__ = "routers"
 
+    __table_args__ = (
+        Index("idx_routers_isp_id", "isp_id"),
+        Index("idx_routers_user_subscription_id", "user_subscription_id"),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -35,19 +40,19 @@ class Router(Base):
 
     isp_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("isps.id"),
+        ForeignKey("isps.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     user_subscription_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("user_subscriptions.id"),
+        ForeignKey("user_subscriptions.id", ondelete="SET NULL"),
         nullable=True,
     )
 
     assigned_by_admin_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("admins.id"),
+        ForeignKey("admins.id", ondelete="SET NULL"),
         nullable=True,
     )
 

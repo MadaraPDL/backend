@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, String, text
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Index, String, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -25,6 +25,11 @@ if TYPE_CHECKING:
 class UserSubscription(Base):
     __tablename__ = "user_subscriptions"
 
+    __table_args__ = (
+        Index("idx_user_subscriptions_plan_id", "plan_id"),
+        Index("idx_user_subscriptions_user_id", "user_id"),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -33,13 +38,13 @@ class UserSubscription(Base):
 
     user_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("app_users.id"),
+        ForeignKey("app_users.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     plan_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("subscription_plans.id"),
+        ForeignKey("subscription_plans.id", ondelete="RESTRICT"),
         nullable=False,
     )
 
@@ -47,7 +52,7 @@ class UserSubscription(Base):
 
     assigned_by_admin_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("admins.id"),
+        ForeignKey("admins.id", ondelete="SET NULL"),
         nullable=True,
     )
 

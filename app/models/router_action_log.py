@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, text
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, String, Text, text
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -18,6 +18,15 @@ if TYPE_CHECKING:
 class RouterActionLog(Base):
     __tablename__ = "router_action_logs"
 
+    __table_args__ = (
+        CheckConstraint(
+            "action_type IN ('bandwidth_limit', 'device_priority')",
+            name="chk_router_action_type",
+        ),
+        Index("idx_router_action_logs_policy_id", "policy_id"),
+        Index("idx_router_action_logs_router_id", "router_id"),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -26,13 +35,13 @@ class RouterActionLog(Base):
 
     router_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("routers.id"),
+        ForeignKey("routers.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     policy_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("device_network_policies.id"),
+        ForeignKey("device_network_policies.id", ondelete="SET NULL"),
         nullable=True,
     )
 

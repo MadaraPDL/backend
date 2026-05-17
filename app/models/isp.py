@@ -38,7 +38,7 @@ class ISP(Base):
 
     created_by_admin_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("admins.id"),
+        ForeignKey("admins.id", ondelete="SET NULL"),
         nullable=True,
     )
 

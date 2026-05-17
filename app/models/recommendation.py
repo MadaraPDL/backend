@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, Numeric, String, Text, text
+from sqlalchemy import DateTime, ForeignKey, Index, Numeric, String, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -22,6 +22,11 @@ if TYPE_CHECKING:
 class Recommendation(Base):
     __tablename__ = "recommendations"
 
+    __table_args__ = (
+        Index("idx_recommendations_user_id", "user_id"),
+        Index("idx_recommendations_user_subscription_id", "user_subscription_id"),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -30,31 +35,31 @@ class Recommendation(Base):
 
     user_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("app_users.id"),
+        ForeignKey("app_users.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     user_subscription_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("user_subscriptions.id"),
+        ForeignKey("user_subscriptions.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     current_plan_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("subscription_plans.id"),
+        ForeignKey("subscription_plans.id", ondelete="SET NULL"),
         nullable=True,
     )
 
     recommendation_plan_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("subscription_plans.id"),
+        ForeignKey("subscription_plans.id", ondelete="SET NULL"),
         nullable=True,
     )
 
     prediction_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("predictions.id"),
+        ForeignKey("predictions.id", ondelete="SET NULL"),
         nullable=True,
     )
 

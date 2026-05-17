@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text, text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, Numeric, String, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,6 +21,11 @@ if TYPE_CHECKING:
 class DeviceNetworkPolicy(Base):
     __tablename__ = "device_network_policies"
 
+    __table_args__ = (
+        Index("idx_device_network_policies_device_id", "device_id"),
+        Index("idx_device_network_policies_router_id", "router_id"),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -29,19 +34,19 @@ class DeviceNetworkPolicy(Base):
 
     device_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("devices.id"),
+        ForeignKey("devices.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     router_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("routers.id"),
+        ForeignKey("routers.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     requested_by_user_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("app_users.id"),
+        ForeignKey("app_users.id", ondelete="CASCADE"),
         nullable=False,
     )
 

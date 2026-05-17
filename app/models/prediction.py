@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Date, DateTime, ForeignKey, Numeric, String, text
+from sqlalchemy import Date, DateTime, ForeignKey, Index, Numeric, String, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,6 +21,11 @@ if TYPE_CHECKING:
 class Prediction(Base):
     __tablename__ = "predictions"
 
+    __table_args__ = (
+        Index("idx_predictions_user_id", "user_id"),
+        Index("idx_predictions_user_subscription_id", "user_subscription_id"),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -29,19 +34,19 @@ class Prediction(Base):
 
     user_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("app_users.id"),
+        ForeignKey("app_users.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     user_subscription_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("user_subscriptions.id"),
+        ForeignKey("user_subscriptions.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     plan_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("subscription_plans.id"),
+        ForeignKey("subscription_plans.id", ondelete="SET NULL"),
         nullable=True,
     )
 

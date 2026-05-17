@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Numeric, String, Text, UniqueConstraint, text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Numeric, String, Text, text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -26,6 +26,7 @@ class SubscriptionPlan(Base):
 
     __table_args__ = (
         UniqueConstraint("isp_id", "plan_name"),
+        Index("idx_subscription_plans_isp_id", "isp_id"),
     )
 
     id: Mapped[UUID] = mapped_column(
@@ -36,7 +37,7 @@ class SubscriptionPlan(Base):
 
     isp_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("isps.id"),
+        ForeignKey("isps.id", ondelete="CASCADE"),
         nullable=False,
     )
 
@@ -68,7 +69,7 @@ class SubscriptionPlan(Base):
 
     created_by_admin_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("admins.id"),
+        ForeignKey("admins.id", ondelete="SET NULL"),
         nullable=True,
     )
 

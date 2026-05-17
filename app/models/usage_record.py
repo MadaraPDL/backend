@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Computed, DateTime, ForeignKey, Numeric, String, text
+from sqlalchemy import Computed, DateTime, ForeignKey, Index, Numeric, String, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -23,6 +23,14 @@ if TYPE_CHECKING:
 class UsageRecord(Base):
     __tablename__ = "usage_records"
 
+    __table_args__ = (
+        Index("idx_usage_records_device_id", "device_id"),
+        Index("idx_usage_records_record_start", "record_start"),
+        Index("idx_usage_records_router_id", "router_id"),
+        Index("idx_usage_records_user_id", "user_id"),
+        Index("idx_usage_records_user_subscription_id", "user_subscription_id"),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -31,25 +39,25 @@ class UsageRecord(Base):
 
     user_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("app_users.id"),
+        ForeignKey("app_users.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     user_subscription_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("user_subscriptions.id"),
+        ForeignKey("user_subscriptions.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     router_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("routers.id"),
+        ForeignKey("routers.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     device_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("devices.id"),
+        ForeignKey("devices.id", ondelete="SET NULL"),
         nullable=True,
     )
 

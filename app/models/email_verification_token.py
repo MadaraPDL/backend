@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, text
+from sqlalchemy import DateTime, ForeignKey, Index, String, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -18,6 +18,12 @@ if TYPE_CHECKING:
 
 class EmailVerificationToken(Base):
     __tablename__ = "email_verification_tokens"
+
+    __table_args__ = (
+        Index("ix_email_verification_tokens_admin_id", "admin_id"),
+        Index("ix_email_verification_tokens_app_user_id", "app_user_id"),
+        Index("ix_email_verification_tokens_token_hash", "token_hash"),
+    )
 
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),

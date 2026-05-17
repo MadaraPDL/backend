@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, String, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -31,6 +31,16 @@ if TYPE_CHECKING:
 class AppUser(Base):
     __tablename__ = "app_users"
 
+    __table_args__ = (
+        Index("idx_app_users_isp_id", "isp_id"),
+        Index(
+            "ux_app_users_username_lower",
+            text("lower(username)"),
+            unique=True,
+            postgresql_where=text("username IS NOT NULL"),
+        ),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -39,7 +49,7 @@ class AppUser(Base):
 
     isp_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("isps.id"),
+        ForeignKey("isps.id", ondelete="CASCADE"),
         nullable=False,
     )
 
@@ -56,7 +66,7 @@ class AppUser(Base):
 
     created_by_admin_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("admins.id"),
+        ForeignKey("admins.id", ondelete="SET NULL"),
         nullable=True,
     )
 

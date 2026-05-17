@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, text
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, String, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -21,6 +21,22 @@ if TYPE_CHECKING:
 class Alert(Base):
     __tablename__ = "alerts"
 
+    __table_args__ = (
+        CheckConstraint(
+            "alert_type IN ("
+            "'high_usage', "
+            "'plan_exceed_risk', "
+            "'unusual_consumption', "
+            "'new_device_connected', "
+            "'policy_failed'"
+            ")",
+            name="chk_alert_type",
+        ),
+        Index("idx_alerts_status", "status"),
+        Index("idx_alerts_user_id", "user_id"),
+        Index("idx_alerts_user_subscription_id", "user_subscription_id"),
+    )
+
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
         primary_key=True,
@@ -29,37 +45,37 @@ class Alert(Base):
 
     user_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("app_users.id"),
+        ForeignKey("app_users.id", ondelete="CASCADE"),
         nullable=False,
     )
 
     user_subscription_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("user_subscriptions.id"),
+        ForeignKey("user_subscriptions.id", ondelete="SET NULL"),
         nullable=False,
     )
 
     device_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("devices.id"),
+        ForeignKey("devices.id", ondelete="SET NULL"),
         nullable=True,
     )
 
     connection_log_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("device_connection_logs.id"),
+        ForeignKey("device_connection_logs.id", ondelete="SET NULL"),
         nullable=True,
     )
 
     usage_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("usage_records.id"),
+        ForeignKey("usage_records.id", ondelete="SET NULL"),
         nullable=True,
     )
 
     prediction_id: Mapped[UUID | None] = mapped_column(
         PG_UUID(as_uuid=True),
-        ForeignKey("predictions.id"),
+        ForeignKey("predictions.id", ondelete="SET NULL"),
         nullable=True,
     )
 

@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, text
+from sqlalchemy import DateTime, ForeignKey, Index, String, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -17,6 +17,21 @@ if TYPE_CHECKING:
 
 class MFABackupCode(Base):
     __tablename__ = "mfa_backup_codes"
+
+    __table_args__ = (
+        Index("ix_mfa_backup_codes_admin_id", "admin_id"),
+        Index("ix_mfa_backup_codes_app_user_id", "app_user_id"),
+        Index(
+            "ix_mfa_backup_codes_active_admin",
+            "admin_id",
+            postgresql_where=text("admin_id IS NOT NULL AND used_at IS NULL AND revoked_at IS NULL"),
+        ),
+        Index(
+            "ix_mfa_backup_codes_active_app_user",
+            "app_user_id",
+            postgresql_where=text("app_user_id IS NOT NULL AND used_at IS NULL AND revoked_at IS NULL"),
+        ),
+    )
 
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True),
