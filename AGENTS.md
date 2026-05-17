@@ -1,4 +1,4 @@
-﻿# AGENTS.md Ã¢â‚¬â€ PulseFi Backend Instructions
+﻿# AGENTS.md - PulseFi Backend Instructions
 
 ## Project Name
 
@@ -16,7 +16,7 @@ This backend is being built step by step by the student/developer, so changes sh
 
 ## Current Backend Position
 
-Current phase: **Step 18 complete - Router adapter and simulator foundation**.
+Current phase: **Step 25 complete - final backend readiness before frontend integration**.
 
 Recently completed and tested:
 
@@ -24,21 +24,31 @@ Recently completed and tested:
 - Step 15: Platform Admin MVP endpoints.
 - Step 16: ISP Admin MVP endpoints.
 - Step 17: App User/mobile MVP endpoints.
-- Step 18A/18B: Router adapter interface and simulator adapter.
-- Step 18C: Router policy execution service.
-- Step 18D: App User device policy execution endpoint.
-- Step 18E: ISP Admin router action log visibility.
-- Step 18F: Router action integration tests.
-- Step 18G: App User router capability visibility endpoint.
+- Step 18: Router adapter and simulator foundation.
+- Step 19: Usage ingestion and simulator demo data flow.
+- Step 20: Alerts system.
+- Step 21: Predictions and recommendations.
+- Step 22: Recommendation to plan change request integration and ISP Admin review.
+- Step 23: ISP Admin analytics and reports.
+- Step 24: Backend/demo readiness, API contract snapshot, demo seed helper, and review package.
+- Step 25A: Migration integrity hardening.
+- Step 25B: Standard API error response foundation.
+- Step 25C: Auth-sensitive rate limits tightened to 5 attempts per 15 minutes.
+- Step 25D: API contract refreshed for standard errors and rate limits.
+- Step 25E: Final docs/status alignment.
 
-Current next backend work:`r`n`r`n- Step 20B: Generate policy failed alerts from failed router/device policy execution.
+Current next backend work:
 
-Important Step 18 result:
+- Support frontend integration and fix only necessary P0/P1 backend issues.
+- Do not start large new backend feature expansions until frontend integration confirms the API needs.
 
-- Router execution currently uses the simulator adapter.
-- Router capabilities are exposed to App Users.
-- ISP Admins can view router action logs for their own ISP only.
-- No router passwords or credentials are accepted or stored.
+Important active rules:
+
+- ISP Admin endpoints must use get_current_isp_admin.
+- Every ISP Admin query must be scoped by current_admin.isp_id.
+- App User /me endpoints must use get_current_app_user and must not accept arbitrary target user IDs.
+- Router credentials must not be accepted or stored until encrypted credential storage is intentionally implemented.
+- Keep files modular and avoid large mixed-responsibility files.
 
 ---
 
@@ -2291,4 +2301,6 @@ Next work:
 - Run Codex backend improvement review.
 - Fix P0/P1 issues from Codex.
 - Then begin frontend integration.
+
+
 

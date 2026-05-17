@@ -8,22 +8,31 @@ The backend is a FastAPI + PostgreSQL service designed for a deployable Final Ye
 
 ## Current Backend Status
 
-Current phase: **Step 22 in progress - Recommendation to plan change request integration**.
+Current phase: **Step 25 complete - final backend readiness before frontend integration**.
 
 Recently completed and tested:
 
-- Step 16: ISP Admin management endpoints.
-- Step 17: App User/mobile MVP endpoints.
-- Step 18A/18B: Router adapter interface and simulator adapter.
-- Step 18C: Router policy execution service.
-- Step 18D: App User device policy execution endpoint.
-- Step 18E: ISP Admin router action log visibility.
-- Step 18F: Router action integration tests.
-- Step 18G: App User router capability visibility endpoint.
+- Step 22: Recommendation to plan change request integration plus ISP Admin review.
+- Step 23: ISP Admin analytics summary and stored reports.
+- Step 24: Backend/demo readiness, API contract snapshot, demo seed helper, and review package.
+- Step 25A: Migration integrity hardening.
+- Step 25B: Standard API error response foundation.
+- Step 25C: Auth-sensitive rate limits tightened to 5 attempts per 15 minutes.
+- Step 25D: API contract refreshed for standard errors and rate limits.
+- Step 25E: Final docs/status alignment.
 
-Current next backend work:`r`n`r`n- Step 20B: Generate policy failed alerts from failed router/device policy execution.
+Current next work:
 
-Step 18 added the router integration foundation without storing router passwords or credentials. Router execution currently uses the simulator adapter for safe demo/testing.
+- Begin frontend integration for the web dashboards and mobile app.
+- Keep backend fixes limited to P0/P1 bugs discovered during frontend integration.
+
+Important active reminders:
+
+- ISP Admin endpoints must stay scoped by current_admin.isp_id.
+- App User /me endpoints must use the authenticated App User from the JWT.
+- Router raw passwords must not be accepted or stored until encrypted credential storage is intentionally implemented.
+- Current auth rate limiter is in-memory and should later be replaced with Redis/shared-store limiting for production multi-worker deployment.
+- The backend is frontend-ready for MVP/demo work, but final production hardening is still required before real deployment.
 
 ---
 
@@ -1846,4 +1855,5 @@ Next work:
 - Run Codex backend improvement review.
 - Fix P0/P1 issues from Codex.
 - Then begin frontend integration.
+
 

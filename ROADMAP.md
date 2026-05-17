@@ -2,20 +2,31 @@
 
 ## Current Position
 
-Current phase: **Step 24 final readiness phase before Codex review and frontend integration**.
+Current phase: **Step 25 complete - final backend readiness before frontend integration**.
 
-Step 16 and Step 17 MVP work are complete and tested.
+Step 16 through Step 25 are complete and tested for the MVP/demo backend.
 
-Step 18 is complete through Step 18G:
+Completed latest readiness work:
 
-- Step 18A/18B: Router adapter interface and simulator adapter.
-- Step 18C: Router policy execution service.
-- Step 18D: App User device policy execution endpoint.
-- Step 18E: ISP Admin router action log visibility.
-- Step 18F: Router action integration tests.
-- Step 18G: App User router capability visibility endpoint.
+- Step 24A: Backend readiness checklist and stale docs cleanup.
+- Step 24B: API contract snapshot for frontend integration.
+- Step 24C: Demo seed and readiness helper.
+- Step 24D: Final backend review package before Codex/frontend work.
+- Step 25A: Migration integrity hardening.
+- Step 25B: Standard API error response foundation.
+- Step 25C: Auth rate limits tightened to 5 attempts per 15 minutes.
+- Step 25D: API contract refreshed for standard errors and rate limits.
+- Step 25E: Final docs/status alignment.
 
-Next step: Run Codex backend improvement review before frontend integration.
+Next step:
+
+- Start frontend integration for Platform Admin dashboard, ISP Admin dashboard, and App User mobile app.
+
+Backend rule during frontend integration:
+
+- Fix P0/P1 backend issues if discovered.
+- Regenerate or update docs/API_CONTRACT.md when endpoint behavior changes.
+- Avoid large new backend feature expansion until the MVP frontend is connected.
 
 ---
 
@@ -2453,6 +2464,7 @@ Impact:
 Next backend work:
 
 - Step 24D: final backend review package before Codex review.
+
 
 
 

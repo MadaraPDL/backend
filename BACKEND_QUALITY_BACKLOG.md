@@ -8,29 +8,31 @@ These items are not all required before every small feature, but they should be 
 
 ## Current Context
 
-Current backend phase: **Step 24 in final readiness phase - Backend/demo readiness before frontend integration**.
+Current backend phase: **Step 25 complete - final backend readiness before frontend integration**.
 
-Step 16 ISP Admin MVP endpoints, Step 17 App User MVP endpoints, and Step 18 router adapter/simulator foundation are complete.
+The backend MVP/demo foundation is complete through:
 
-Step 18 completed:
+- Platform Admin flows.
+- ISP Admin user, plan, subscription, router, analytics, alert, report, and review flows.
+- App User /me mobile flows.
+- Router simulator and policy execution.
+- Usage ingestion.
+- Alerts.
+- Predictions.
+- Recommendations.
+- Plan change request integration.
+- Demo seed helper.
+- API contract documentation.
+- Migration integrity hardening.
+- Standard API error responses.
+- Stricter auth rate limits: 5 attempts per 15 minutes.
+- Final docs/status alignment.
 
-- Router adapter interface.
-- Simulator router adapter.
-- Router policy execution service.
-- App User device policy execution endpoint.
-- ISP Admin router action log visibility.
-- Router action integration tests.
-- App User router capability visibility endpoint.
+Current next work:
 
-Current next backend work:
-
-- Run Codex backend improvement review.
-- Fix P0/P1 issues before frontend integration.
-- Then begin frontend integration.
-- Fix P0/P1 issues before frontend integration.
-- Then begin frontend integration.
-- Fix P0/P1 issues before frontend integration.
-- Then begin frontend integration.
+- Begin frontend integration.
+- Fix only necessary P0/P1 backend issues discovered during frontend integration.
+- Keep the API contract updated when backend behavior changes.
 
 Important security rules that remain active:
 
@@ -38,6 +40,7 @@ Important security rules that remain active:
 - Every ISP Admin query must be scoped by current_admin.isp_id.
 - App User /me routes must use the authenticated App User from the token and must not accept target user IDs from the request.
 - Router passwords or raw router credentials must not be accepted or stored until encrypted credential storage is intentionally implemented.
+- The current auth rate limiter is in-memory and IP-based; replace it with Redis/shared-store rate limiting before production multi-worker deployment.
 
 ---
 
@@ -1823,3 +1826,4 @@ Impact:
 
 - Frontend readiness improved.
 - No database or runtime code changes.
+
