@@ -1,8 +1,8 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import generate_secure_token, hash_password, hash_token
@@ -11,6 +11,41 @@ from app.models.app_user import AppUser
 from app.models.password_reset_token import PasswordResetToken
 from app.schemas.auth import AccountType
 from app.services.account_service import Account, get_account_by_identifier
+
+
+def _account_token_filter(
+    *,
+    account_type: AccountType,
+    account: Account,
+):
+    if account_type == "admin":
+        return PasswordResetToken.admin_id == account.id
+
+    return PasswordResetToken.app_user_id == account.id
+
+
+async def mark_active_password_reset_tokens_used_for_account(
+    *,
+    db: AsyncSession,
+    account_type: AccountType,
+    account: Account,
+    used_at: datetime,
+) -> None:
+    stmt = (
+        update(PasswordResetToken)
+        .where(
+            PasswordResetToken.account_type == account_type,
+            _account_token_filter(
+                account_type=account_type,
+                account=account,
+            ),
+            PasswordResetToken.used_at.is_(None),
+            PasswordResetToken.expires_at > used_at,
+        )
+        .values(used_at=used_at)
+    )
+
+    await db.execute(stmt)
 
 
 async def create_password_reset_token(
@@ -27,6 +62,15 @@ async def create_password_reset_token(
     if account is None:
         return None
 
+    now = datetime.now(timezone.utc)
+
+    await mark_active_password_reset_tokens_used_for_account(
+        db=db,
+        account_type=account_type,
+        account=account,
+        used_at=now,
+    )
+
     raw_token = generate_secure_token()
     token_hash = hash_token(raw_token)
 
@@ -36,7 +80,7 @@ async def create_password_reset_token(
             admin_id=account.id,
             app_user_id=None,
             token_hash=token_hash,
-            expires_at=datetime.now(timezone.utc) + timedelta(minutes=30),
+            expires_at=now + timedelta(minutes=30),
         )
     else:
         reset_token = PasswordResetToken(
@@ -44,7 +88,7 @@ async def create_password_reset_token(
             admin_id=None,
             app_user_id=account.id,
             token_hash=token_hash,
-            expires_at=datetime.now(timezone.utc) + timedelta(minutes=30),
+            expires_at=now + timedelta(minutes=30),
         )
 
     db.add(reset_token)
@@ -113,6 +157,14 @@ async def reset_password_with_token(
 
     account.password_hash = hash_password(new_password)
     account.password_changed_at = now
+
+    await mark_active_password_reset_tokens_used_for_account(
+        db=db,
+        account_type=reset_token.account_type,
+        account=account,
+        used_at=now,
+    )
+
     reset_token.used_at = now
 
     await db.flush()

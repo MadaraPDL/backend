@@ -3246,3 +3246,31 @@ Impact:
 Codex review item addressed:
 
 - P1 device policy creation accepts invalid policy types.
+
+---
+
+## Step 26E Progress - 2026-05-17
+
+### Invalidated Old Password Reset Tokens Account-Wide
+
+Completed and tested:
+
+- Added helper to mark active password reset tokens as used for one account.
+- New password reset token creation now invalidates existing active reset tokens for the same account.
+- Successful password reset now invalidates all active reset tokens for the same account.
+- Kept reset token lookup based on token hash.
+- Added focused service tests for:
+  - invalidating existing tokens when creating a new reset token
+  - invalidating all active account tokens after successful password reset
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no migration or rewrite.
+- API behavior: old password reset links for the same account become unusable after a newer reset token is created or after a password reset succeeds.
+- Security: reduces risk from older leaked reset links remaining valid until expiry.
+- Frontend integration: no UI change needed; reset failures already return the normal invalid/expired token response.
+
+Codex review item addressed:
+
+- P1 password reset tokens are not invalidated account-wide.

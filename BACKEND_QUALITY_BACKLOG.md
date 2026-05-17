@@ -1891,3 +1891,20 @@ Impact:
 - Frontend blocker reduced.
 - No database change.
 - Unsupported device policies are rejected at request validation time.
+
+---
+
+## Step 26E Quality Note - 2026-05-17
+
+Completed:
+
+- Fixed P1 Codex finding: password reset tokens were not invalidated account-wide.
+- Creating a new reset token now marks existing active reset tokens for the same account as used.
+- Successful password reset now marks active reset tokens for the same account as used.
+- Added focused password reset service tests.
+
+Impact:
+
+- Final Codex P1 issue addressed.
+- No database change.
+- Password reset flow is safer before frontend integration.
