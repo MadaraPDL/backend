@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from typing import Union
 
@@ -29,8 +29,8 @@ router = APIRouter()
         Depends(
             rate_limit(
                 "auth_login",
-                max_attempts=10,
-                window_seconds=60,
+                max_attempts=5,
+                window_seconds=900,
             )
         ),
     ],
@@ -72,3 +72,5 @@ async def login(
 
     await db.commit()
     return response_data
+
+

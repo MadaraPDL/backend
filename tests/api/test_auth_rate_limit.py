@@ -17,7 +17,7 @@ def test_login_endpoint_rate_limits_after_too_many_attempts(api_client, monkeypa
 
     monkeypatch.setattr(login_endpoint, "start_login", fake_start_login)
 
-    for _ in range(10):
+    for _ in range(5):
         response = api_client.post(
             "/api/v1/auth/login",
             json=valid_login_payload(),
@@ -32,4 +32,5 @@ def test_login_endpoint_rate_limits_after_too_many_attempts(api_client, monkeypa
 
     assert blocked_response.status_code == 429
     assert "Too many attempts" in blocked_response.json()["message"]
+
 

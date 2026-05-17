@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
@@ -21,8 +21,8 @@ router = APIRouter(prefix="/invitations")
         Depends(
             rate_limit(
                 "auth_invitation_accept",
-                max_attempts=10,
-                window_seconds=300,
+                max_attempts=5,
+                window_seconds=900,
             )
         ),
     ],
@@ -65,3 +65,5 @@ async def accept_account_invitation(
         "account_id": account.id,
         "email": account.email,
     }
+
+

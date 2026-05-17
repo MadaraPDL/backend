@@ -2936,3 +2936,31 @@ Impact:
 Next work:
 
 - Continue Step 25 quality hardening before frontend integration.
+
+---
+
+## Step 25C Progress - 2026-05-17
+
+### Tightened Auth Rate Limits
+
+Completed and tested:
+
+- Updated auth-sensitive endpoint rate limits to 5 attempts per 15 minutes.
+- Updated login rate-limit regression test from 10 allowed attempts to 5 allowed attempts.
+
+Affected endpoints:
+
+- POST /api/v1/auth/login
+- POST /api/v1/auth/mfa/verify
+- POST /api/v1/auth/mfa/setup/confirm
+- POST /api/v1/auth/password/forgot
+- POST /api/v1/auth/password/reset
+- POST /api/v1/auth/invitations/accept
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: stricter 429 rate limiting for auth-sensitive endpoints.
+- Security: improves protection against brute-force login, MFA, reset-token, and invitation-token guessing.
+- Production note: current limiter is still in-memory and should later be replaced with Redis/shared-store rate limiting for multi-worker deployment.

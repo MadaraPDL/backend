@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -23,7 +23,7 @@ router = APIRouter(prefix="/password")
 @router.post(
     "/forgot",
     response_model=ForgotPasswordResponse,
-    dependencies=[Depends(rate_limit("auth_password_forgot", max_attempts=5, window_seconds=300))],
+    dependencies=[Depends(rate_limit("auth_password_forgot", max_attempts=5, window_seconds=900))],
 )
 
 async def forgot_password(
@@ -63,7 +63,7 @@ async def forgot_password(
 @router.post(
     "/reset",
     response_model=ResetPasswordResponse,
-    dependencies=[Depends(rate_limit("auth_password_reset", max_attempts=10, window_seconds=300))],
+    dependencies=[Depends(rate_limit("auth_password_reset", max_attempts=5, window_seconds=900))],
 )
 
 async def reset_password(
@@ -88,3 +88,4 @@ async def reset_password(
     return {
         "message": "Password has been reset successfully. You can now log in with your new password.",
     }
+

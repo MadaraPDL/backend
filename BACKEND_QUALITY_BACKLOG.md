@@ -1794,3 +1794,17 @@ Impact:
 - Existing data: no change.
 - Frontend readiness: improved.
 - Security: internal exception details are not exposed in standard 500 responses.
+
+---
+
+## Step 25C Quality Note - 2026-05-17
+
+Completed:
+
+- Tightened auth-sensitive endpoint rate limits to 5 attempts per 15 minutes.
+- Updated login rate-limit API test to match the stricter threshold.
+
+Security note:
+
+- This improves MVP/demo protection.
+- The limiter is still in-memory, so Redis/shared-store rate limiting remains needed before production multi-worker deployment.
