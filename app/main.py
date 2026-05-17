@@ -9,6 +9,7 @@ from app.core.api_errors import (
     validation_exception_handler,
 )
 from app.core.config import settings
+from app.core.openapi import configure_openapi
 
 
 def create_application() -> FastAPI:
@@ -34,6 +35,8 @@ def create_application() -> FastAPI:
         api_router,
         prefix=settings.API_V1_PREFIX,
     )
+
+    configure_openapi(app)
 
     @app.get("/")
     async def root():

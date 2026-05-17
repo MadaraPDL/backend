@@ -246,3 +246,35 @@ When the limit is exceeded, the API returns:
 Frontend apps should show a friendly message and avoid retrying immediately.
 
 Production note: the current limiter is in-memory and IP-based. Before multi-worker production deployment, replace it with Redis/shared-store rate limiting.
+
+---
+
+## OpenAPI Error Schema Contract
+
+Swagger/OpenAPI now documents the same standard error response shape used at runtime.
+
+Standard error responses use:
+
+```json
+{
+  "error": "not_found",
+  "message": "Resource not found"
+}
+```
+
+Validation errors use:
+
+```json
+{
+  "error": "validation_error",
+  "message": "Request validation failed",
+  "details": []
+}
+```
+
+OpenAPI components added:
+
+- APIErrorResponse
+- APIValidationErrorResponse
+
+Frontend-generated clients should use these schemas instead of FastAPI default detail-based validation errors.

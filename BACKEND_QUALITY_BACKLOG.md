@@ -1842,3 +1842,18 @@ Impact:
 
 - Frontend blocker reduced.
 - No database change.
+
+---
+
+## Step 26B Quality Note - 2026-05-17
+
+Completed:
+
+- Fixed P1 Codex finding: OpenAPI documented FastAPI default detail-based validation errors while runtime used standard error/message/details responses.
+- Added custom OpenAPI error schemas and response documentation.
+- Added tests verifying OpenAPI uses APIErrorResponse and APIValidationErrorResponse.
+
+Impact:
+
+- Frontend-generated clients should now see the correct standard error shape.
+- No database change.

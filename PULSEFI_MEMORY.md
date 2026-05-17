@@ -3145,3 +3145,36 @@ Impact:
 Codex review item addressed:
 
 - P1 router management fields leak to app-user responses.
+
+---
+
+## Step 26B Progress - 2026-05-17
+
+### Fixed OpenAPI Error Schema Documentation Mismatch
+
+Completed and tested:
+
+- Added custom OpenAPI helper: app/core/openapi.py.
+- Connected custom OpenAPI generation in app/main.py.
+- Added standard OpenAPI schemas:
+  - APIErrorResponse
+  - APIValidationErrorResponse
+- Replaced default FastAPI 422 documentation with the standard validation error shape.
+- Added documented 429 responses for auth-sensitive rate-limited endpoints.
+- Added documented 401/403 responses for protected endpoints.
+- Added documented 404 responses for path-parameter endpoints.
+- Added documented 500 response shape.
+- Added OpenAPI regression tests.
+- Updated docs/API_CONTRACT.md with the OpenAPI error schema contract.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- Runtime API behavior: no change.
+- OpenAPI/Swagger behavior: changed to better match standard runtime error responses.
+- Frontend integration: improved because generated clients and docs now understand error/message/details responses.
+
+Codex review item addressed:
+
+- P1 OpenAPI still documents default FastAPI validation errors.
