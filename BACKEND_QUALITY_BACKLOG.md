@@ -1857,3 +1857,20 @@ Impact:
 
 - Frontend-generated clients should now see the correct standard error shape.
 - No database change.
+
+---
+
+## Step 26C Quality Note - 2026-05-17
+
+Completed:
+
+- Fixed P1 Codex finding: some ISP usage, ingestion, and analytics ownership paths depended on partial joins.
+- Added shared ownership-scope helpers for router and usage-record ISP scoping.
+- Updated usage visibility, simulator ingestion, and analytics usage aggregation to require fuller ownership chains.
+- Added regression tests for ownership-scope query construction.
+
+Impact:
+
+- Frontend blocker reduced.
+- No database change.
+- Cross-ISP leakage risk from malformed linked records is reduced.

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -13,6 +13,7 @@ from sqlalchemy.orm import selectinload
 from app.models.device import Device
 from app.models.router import Router
 from app.models.usage_record import UsageRecord
+from app.services.isp_admin.ownership_scope import apply_router_isp_ownership_scope
 
 
 @dataclass(frozen=True)
@@ -74,7 +75,7 @@ async def run_simulator_usage_ingestion_for_router(
     )
 
     if isp_id is not None:
-        stmt = stmt.where(Router.isp_id == isp_id)
+        stmt = apply_router_isp_ownership_scope(stmt, isp_id=isp_id)
 
     result = await db.execute(stmt)
     router = result.scalar_one_or_none()
@@ -171,3 +172,4 @@ async def run_simulator_usage_ingestion_for_router(
         download_mb=total_download_mb,
         total_mb=total_upload_mb + total_download_mb,
     )
+

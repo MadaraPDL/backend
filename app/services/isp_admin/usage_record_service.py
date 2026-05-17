@@ -6,8 +6,10 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.router import Router
 from app.models.usage_record import UsageRecord
+from app.services.isp_admin.ownership_scope import (
+    apply_usage_record_isp_ownership_scope,
+)
 
 
 async def list_usage_records_for_isp(
@@ -24,13 +26,9 @@ async def list_usage_records_for_isp(
     limit: int = 100,
     offset: int = 0,
 ) -> list[UsageRecord]:
-    stmt = (
-        select(UsageRecord)
-        .join(Router, UsageRecord.router_id == Router.id)
-        .where(Router.isp_id == isp_id)
-        .order_by(UsageRecord.record_start.desc())
-        .limit(limit)
-        .offset(offset)
+    stmt = apply_usage_record_isp_ownership_scope(
+        select(UsageRecord),
+        isp_id=isp_id,
     )
 
     if router_id is not None:
@@ -54,6 +52,12 @@ async def list_usage_records_for_isp(
     if end_at is not None:
         stmt = stmt.where(UsageRecord.record_end <= end_at)
 
+    stmt = (
+        stmt.order_by(UsageRecord.record_start.desc())
+        .limit(limit)
+        .offset(offset)
+    )
+
     result = await db.execute(stmt)
     return list(result.scalars().all())
 
@@ -64,14 +68,11 @@ async def get_usage_record_for_isp(
     isp_id: UUID,
     usage_record_id: UUID,
 ) -> UsageRecord | None:
-    stmt = (
-        select(UsageRecord)
-        .join(Router, UsageRecord.router_id == Router.id)
-        .where(
-            UsageRecord.id == usage_record_id,
-            Router.isp_id == isp_id,
-        )
-    )
+    stmt = apply_usage_record_isp_ownership_scope(
+        select(UsageRecord),
+        isp_id=isp_id,
+    ).where(UsageRecord.id == usage_record_id)
 
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
+

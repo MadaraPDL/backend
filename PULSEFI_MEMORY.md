@@ -3178,3 +3178,40 @@ Impact:
 Codex review item addressed:
 
 - P1 OpenAPI still documents default FastAPI validation errors.
+
+---
+
+## Step 26C Progress - 2026-05-17
+
+### Hardened ISP Ownership Paths for Usage, Ingestion, and Analytics
+
+Completed and tested:
+
+- Added shared ISP Admin ownership-scope helpers:
+  - apply_router_isp_ownership_scope
+  - apply_usage_record_isp_ownership_scope
+- Hardened ISP Admin usage record list/detail queries to require the full ownership chain.
+- Hardened simulator usage ingestion router lookup to require the full router -> subscription -> user -> ISP chain when ISP scope is provided.
+- Hardened simulator device ingestion router lookup to require the full router -> subscription -> user -> ISP chain when ISP scope is provided.
+- Hardened analytics usage aggregation to require consistent router, subscription, user, and ISP ownership.
+- Added regression tests confirming ownership-scope SQL includes the required joins and ISP filters.
+
+Ownership rule now enforced more strictly for affected services:
+
+- Router -> UserSubscription -> AppUser -> ISP
+- UsageRecord -> Router
+- UsageRecord -> UserSubscription
+- UsageRecord -> AppUser
+- Router/UserSubscription/AppUser must agree on ownership before usage is read or aggregated.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no migration or rewrite.
+- API behavior: malformed cross-ISP-linked records are less likely to appear in ISP Admin usage/analytics results.
+- Security: reduces cross-ISP leakage risk from inconsistent or malformed linked rows.
+- Frontend integration: safer dashboard usage/analytics data.
+
+Codex review item addressed:
+
+- P1 some ISP ownership paths depend on partial joins.

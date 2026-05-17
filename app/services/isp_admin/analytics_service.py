@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -15,6 +15,7 @@ from app.models.subscription_change_request import SubscriptionChangeRequest
 from app.models.usage_record import UsageRecord
 from app.models.user_subscription import UserSubscription
 from app.schemas.isp_admin import ISPAdminAnalyticsSummaryResponse
+from app.services.isp_admin.ownership_scope import apply_usage_record_isp_ownership_scope
 
 
 async def _count(db: AsyncSession, stmt) -> int:
@@ -158,11 +159,9 @@ async def get_isp_admin_analytics_summary(
         ),
     )
 
-    usage_stmt = (
-        select(func.coalesce(func.sum(UsageRecord.total_mb), 0))
-        .select_from(UsageRecord)
-        .join(AppUser, UsageRecord.user_id == AppUser.id)
-        .where(AppUser.isp_id == isp_id)
+    usage_stmt = apply_usage_record_isp_ownership_scope(
+        select(func.coalesce(func.sum(UsageRecord.total_mb), 0)).select_from(UsageRecord),
+        isp_id=isp_id,
     )
 
     if period_start is not None:
@@ -198,3 +197,7 @@ async def get_isp_admin_analytics_summary(
         total_usage_mb=total_usage_mb,
         total_usage_gb=total_usage_gb,
     )
+
+
+
+

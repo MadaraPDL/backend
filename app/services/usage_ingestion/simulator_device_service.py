@@ -12,6 +12,7 @@ from sqlalchemy.orm import selectinload
 from app.models.device import Device
 from app.models.device_connection_log import DeviceConnectionLog
 from app.models.router import Router
+from app.services.isp_admin.ownership_scope import apply_router_isp_ownership_scope
 from app.services.usage_ingestion.simulator_usage_service import (
     RouterNotFoundForIngestionError,
     RouterNotReadyForIngestionError,
@@ -88,7 +89,7 @@ async def run_simulator_device_ingestion_for_router(
     )
 
     if isp_id is not None:
-        stmt = stmt.where(Router.isp_id == isp_id)
+        stmt = apply_router_isp_ownership_scope(stmt, isp_id=isp_id)
 
     result = await db.execute(stmt)
     router = result.scalar_one_or_none()
@@ -193,5 +194,8 @@ async def run_simulator_device_ingestion_for_router(
         devices_updated=devices_updated,
         connection_logs_created=connection_logs_created,
     )
+
+
+
 
 
