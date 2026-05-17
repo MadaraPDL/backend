@@ -2897,3 +2897,42 @@ Next work:
 - Fix P0/P1 issues from Codex.
 - Then begin frontend integration.
 
+
+---
+
+## Step 25B Progress - 2026-05-17
+
+### Standard API Error Response Foundation
+
+Completed and tested:
+
+- Added shared API error response helpers:
+  - `app/core/api_errors.py`
+- Registered FastAPI exception handlers in:
+  - `app/main.py`
+- Standardized HTTP error responses into this shape:
+  - `error`
+  - `message`
+  - optional `details`
+- Standardized validation errors with:
+  - `error = validation_error`
+  - `message = Request validation failed`
+  - `details = validation error list`
+- Standardized unexpected server errors so internal exception details are not leaked.
+- Updated existing API tests that still expected the old FastAPI `detail` response key.
+- Added API tests for:
+  - normal HTTPException response shape
+  - validation error response shape
+  - internal server error redaction
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: error response format changed from `detail` to `error/message`.
+- Frontend integration: easier because web/mobile clients can handle errors consistently.
+- SE diagrams: no direct update needed.
+
+Next work:
+
+- Continue Step 25 quality hardening before frontend integration.

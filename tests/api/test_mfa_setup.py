@@ -1,4 +1,4 @@
-from types import SimpleNamespace
+﻿from types import SimpleNamespace
 from uuid import uuid4
 
 import app.api.v1.endpoints.auth.mfa as mfa_endpoint
@@ -75,4 +75,5 @@ def test_mfa_setup_confirm_rejects_invalid_setup(api_client, monkeypatch):
     )
 
     assert response.status_code == 400
-    assert "Invalid or expired MFA setup token or code" in response.json()["detail"]
+    assert "Invalid or expired MFA setup token or code" in response.json()["message"]
+

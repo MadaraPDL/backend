@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+﻿from fastapi import HTTPException
 
 import app.api.v1.endpoints.auth.login as login_endpoint
 
@@ -31,4 +31,5 @@ def test_login_endpoint_rate_limits_after_too_many_attempts(api_client, monkeypa
     )
 
     assert blocked_response.status_code == 429
-    assert "Too many attempts" in blocked_response.json()["detail"]
+    assert "Too many attempts" in blocked_response.json()["message"]
+

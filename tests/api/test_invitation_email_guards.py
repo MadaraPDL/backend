@@ -1,4 +1,4 @@
-from types import SimpleNamespace
+﻿from types import SimpleNamespace
 from uuid import uuid4
 
 from fastapi import HTTPException, status
@@ -96,7 +96,7 @@ def test_platform_admin_invitation_blocks_without_email_delivery(api_client, mon
     )
 
     assert response.status_code == 503
-    assert "Email delivery is not configured" in response.json()["detail"]
+    assert "Email delivery is not configured" in response.json()["message"]
 
 
 def test_isp_admin_user_invitation_blocks_without_email_delivery(api_client, monkeypatch):
@@ -141,4 +141,5 @@ def test_isp_admin_user_invitation_blocks_without_email_delivery(api_client, mon
     )
 
     assert response.status_code == 503
-    assert "Email delivery is not configured" in response.json()["detail"]
+    assert "Email delivery is not configured" in response.json()["message"]
+

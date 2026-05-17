@@ -1,4 +1,4 @@
-from uuid import uuid4
+﻿from uuid import uuid4
 
 import app.api.v1.endpoints.auth.login as login_endpoint
 from app.services.auth_service import EmailDeliveryRequiredError
@@ -21,7 +21,7 @@ def test_login_returns_401_for_invalid_credentials(api_client, monkeypatch):
     response = api_client.post("/api/v1/auth/login", json=valid_login_payload())
 
     assert response.status_code == 401
-    assert response.json()["detail"] == "Invalid credentials"
+    assert response.json()["message"] == "Invalid credentials"
 
 
 def test_login_returns_mfa_setup_required_response(api_client, monkeypatch):
@@ -69,4 +69,5 @@ def test_login_returns_503_when_email_mfa_needs_email_delivery(api_client, monke
     response = api_client.post("/api/v1/auth/login", json=valid_login_payload())
 
     assert response.status_code == 503
-    assert "Email delivery is not configured" in response.json()["detail"]
+    assert "Email delivery is not configured" in response.json()["message"]
+

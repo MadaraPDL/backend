@@ -1,4 +1,4 @@
-import app.api.v1.endpoints.auth.password_reset as password_reset_endpoint
+﻿import app.api.v1.endpoints.auth.password_reset as password_reset_endpoint
 
 
 def valid_forgot_password_payload():
@@ -76,4 +76,5 @@ def test_forgot_password_blocks_when_email_delivery_guard_blocks(api_client, mon
     )
 
     assert response.status_code == 503
-    assert "Email delivery is not configured" in response.json()["detail"]
+    assert "Email delivery is not configured" in response.json()["message"]
+

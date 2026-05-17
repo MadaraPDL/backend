@@ -1771,3 +1771,26 @@ Next work:
 - Fix P0/P1 issues from Codex.
 - Then begin frontend integration.
 
+
+---
+
+## Step 25B Quality Note - 2026-05-17
+
+Completed:
+
+- Added standard API error response handlers.
+- HTTP errors now return a consistent frontend-friendly response shape:
+  - `error`
+  - `message`
+  - optional `details`
+- Validation errors now return `validation_error` with validation details.
+- Unexpected server errors return a safe generic message.
+- Updated old tests from `detail` expectations to `message`.
+- Added focused API error response tests.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- Frontend readiness: improved.
+- Security: internal exception details are not exposed in standard 500 responses.
