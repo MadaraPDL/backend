@@ -1,8 +1,8 @@
-from pydantic import model_validator
+﻿from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    APP_NAME: str
+    APP_NAME: str = Field(default="PulseFi API", validation_alias=AliasChoices("APP_NAME", "app_name"))
     APP_VERSION: str
     DEBUG: bool
 
@@ -12,6 +12,16 @@ class Settings(BaseSettings):
     TEST_DATABASE_URL: str | None = None
 
     EMAIL_DELIVERY_ENABLED: bool = False
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM_EMAIL: str = ""
+    SMTP_FROM_NAME: str = "PulseFi"
+    SMTP_USE_TLS: bool = True
+    SMTP_USE_SSL: bool = False
+    FRONTEND_ADMIN_URL: str = "http://localhost:5173"
+
     DATA_ENCRYPTION_KEY: str = ""
     TRUSTED_PROXY_IPS: list[str] = []
 
@@ -23,6 +33,22 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_settings(self) -> "Settings":
+        if self.EMAIL_DELIVERY_ENABLED:
+            missing_email_settings = [
+                name
+                for name, value in {
+                    "SMTP_HOST": self.SMTP_HOST,
+                    "SMTP_FROM_EMAIL": self.SMTP_FROM_EMAIL,
+                }.items()
+                if not value
+            ]
+
+            if missing_email_settings:
+                joined = ", ".join(missing_email_settings)
+                raise ValueError(
+                    f"Email delivery is enabled but missing settings: {joined}."
+                )
+
         if self.DEBUG:
             return self
 
@@ -48,7 +74,10 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_file=".env",
-        env_file_encoding="utf-8"
+        env_file_encoding="utf-8",
+        extra="ignore"
     )
     
 settings = Settings()
+
+

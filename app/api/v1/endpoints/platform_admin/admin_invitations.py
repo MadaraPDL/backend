@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from uuid import UUID
 
@@ -20,6 +20,7 @@ from app.schemas.platform_admin import (
     RevokeISPAdminInvitationResponse,
 )
 from app.services.account_service import get_account_by_identifier
+from app.services.email import EmailDeliveryError, send_isp_admin_invitation_email
 from app.services.platform_admin import (
     can_revoke_invitation,
     create_isp_admin_invitation,
@@ -94,6 +95,21 @@ async def create_isp_admin_invitation_endpoint(
         isp=isp,
         platform_admin=platform_admin,
     )
+
+    try:
+        await send_isp_admin_invitation_email(
+            to_email=invitation.email,
+            full_name=invitation.full_name,
+            isp_name=isp.name,
+            raw_token=raw_token,
+            expires_in_days=request.expires_in_days,
+        )
+    except EmailDeliveryError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Invitation was created but email delivery failed. Check SMTP settings.",
+        ) from exc
 
     await db.commit()
 
@@ -233,3 +249,4 @@ async def list_isp_admins_endpoint(
     )
 
     return [ISPAdminResponse.model_validate(admin) for admin in admins]
+
