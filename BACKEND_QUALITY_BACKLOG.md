@@ -8,7 +8,7 @@ These items are not all required before every small feature, but they should be 
 
 ## Current Context
 
-Current backend phase: **Step 25 complete - final backend readiness before frontend integration**.
+Current backend phase: **Step 26 complete - final backend hardening before frontend integration**.
 
 The backend MVP/demo foundation is complete through:
 
@@ -27,11 +27,13 @@ The backend MVP/demo foundation is complete through:
 - Standard API error responses.
 - Stricter auth rate limits: 5 attempts per 15 minutes.
 - Final docs/status alignment.
+- Codex P1 fixes for router response safety, OpenAPI errors, ISP ownership joins, device policy validation, and password reset token invalidation.
+- Remaining P2/P3 hardening for fresh setup, auth rate limiting, stale plan-change review, database constraints, simulator capability honesty, and API tests.
 
 Current next work:
 
 - Begin frontend integration.
-- Fix only necessary P0/P1 backend issues discovered during frontend integration.
+- Fix discovered blockers, contract mismatches, or small safety issues during frontend integration.
 - Keep the API contract updated when backend behavior changes.
 
 Important security rules that remain active:
@@ -40,7 +42,8 @@ Important security rules that remain active:
 - Every ISP Admin query must be scoped by current_admin.isp_id.
 - App User /me routes must use the authenticated App User from the token and must not accept target user IDs from the request.
 - Router passwords or raw router credentials must not be accepted or stored until encrypted credential storage is intentionally implemented.
-- The current auth rate limiter is in-memory and IP-based; replace it with Redis/shared-store rate limiting before production multi-worker deployment.
+- The current auth rate limiter is in-memory; replace it with Redis/shared-store rate limiting before production multi-worker deployment.
+- X-Forwarded-For is trusted only from configured trusted proxy IPs.
 
 ---
 
@@ -330,7 +333,7 @@ The main goal is to keep PulseFi deployable, secure, modular, and easy to explai
 
 ## Completed Quality Work
 
-### 2026-05-14 â€” Limited DB Role
+### 2026-05-14 - Limited DB Role
 
 Completed:
 
@@ -346,7 +349,7 @@ Important future reminder:
   - app/runtime role for FastAPI
   - separate migration role for Alembic
 
-### 2026-05-14 â€” Alembic Baseline
+### 2026-05-14 - Alembic Baseline
 
 Completed:
 
@@ -376,7 +379,7 @@ Next quality work:
 
 ## Completed Quality Work Log
 
-### 2026-05-14 â€” Limited PostgreSQL App Role
+### 2026-05-14 - Limited PostgreSQL App Role
 
 Completed:
 
@@ -392,7 +395,7 @@ Important future reminder:
   - app/runtime role for FastAPI
   - separate migration/admin role for Alembic
 
-### 2026-05-14 â€” Alembic Baseline
+### 2026-05-14 - Alembic Baseline
 
 Completed:
 
@@ -420,7 +423,7 @@ Next quality work:
 
 ---
 
-## Testing Progress â€” 2026-05-14
+## Testing Progress - 2026-05-14
 
 Completed:
 
@@ -442,7 +445,7 @@ Recommended test command:
 
 ---
 
-## CI Progress â€” 2026-05-14
+## CI Progress - 2026-05-14
 
 Completed:
 
@@ -467,7 +470,7 @@ Important note:
 
 ---
 
-## Step 16E/16F Quality Notes â€” 2026-05-14
+## Step 16E/16F Quality Notes - 2026-05-14
 
 ### Step 16E Migration Permission Note
 
@@ -504,7 +507,7 @@ Important security note:
 
 ---
 
-## Step 17A Quality Notes â€” 2026-05-14
+## Step 17A Quality Notes - 2026-05-14
 
 Completed:
 
@@ -532,7 +535,7 @@ Testing reminder:
 
 ---
 
-## Step 17B Quality Notes â€” 2026-05-14
+## Step 17B Quality Notes - 2026-05-14
 
 Completed:
 
@@ -559,7 +562,7 @@ Testing reminder:
 
 ---
 
-## Step 17C Quality Notes â€” 2026-05-14
+## Step 17C Quality Notes - 2026-05-14
 
 Completed:
 
@@ -602,7 +605,7 @@ Testing reminder:
 
 ---
 
-## Step 17D Quality Notes â€” 2026-05-14
+## Step 17D Quality Notes - 2026-05-14
 
 Completed:
 
@@ -687,7 +690,7 @@ Testing reminder:
 
 ---
 
-## Latest Current Context Update ? 2026-05-15
+## Historical Current Context Update - 2026-05-15
 
 Current backend phase: **Step 24 in final readiness phase - Backend/demo readiness before frontend integration**.
 

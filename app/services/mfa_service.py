@@ -21,7 +21,7 @@ from app.models.mfa_challenge import MFAChallenge
 from app.schemas.auth import AccountType, MFAMethod
 
 Account = Admin | AppUser
-MAX_MFA_ATTEMPTS = 10
+MAX_MFA_ATTEMPTS = 5
 
 
 def generate_authenticator_secret() -> str:

@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Index, String, text
+from sqlalchemy import Boolean, CheckConstraint, Date, DateTime, ForeignKey, Index, String, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -26,6 +26,10 @@ class UserSubscription(Base):
     __tablename__ = "user_subscriptions"
 
     __table_args__ = (
+        CheckConstraint(
+            "status IN ('pending', 'active', 'suspended', 'expired', 'cancelled')",
+            name="chk_user_subscription_status",
+        ),
         Index("idx_user_subscriptions_plan_id", "plan_id"),
         Index("idx_user_subscriptions_user_id", "user_id"),
     )

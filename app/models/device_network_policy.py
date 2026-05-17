@@ -5,7 +5,18 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, Numeric, String, Text, text
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Text,
+    text,
+)
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -22,6 +33,14 @@ class DeviceNetworkPolicy(Base):
     __tablename__ = "device_network_policies"
 
     __table_args__ = (
+        CheckConstraint(
+            "policy_type IN ('bandwidth_limit', 'device_priority')",
+            name="chk_device_network_policy_type",
+        ),
+        CheckConstraint(
+            "status IN ('pending', 'applied', 'failed')",
+            name="chk_device_network_policy_status",
+        ),
         Index("idx_device_network_policies_device_id", "device_id"),
         Index("idx_device_network_policies_router_id", "router_id"),
     )

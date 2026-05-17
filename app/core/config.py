@@ -13,6 +13,7 @@ class Settings(BaseSettings):
 
     EMAIL_DELIVERY_ENABLED: bool = False
     DATA_ENCRYPTION_KEY: str = ""
+    TRUSTED_PROXY_IPS: list[str] = []
 
     SECRET_KEY: str
     ALGORITHM: str

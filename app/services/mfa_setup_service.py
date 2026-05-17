@@ -22,7 +22,7 @@ from app.services.mfa_setup_token_service import (
     hash_mfa_setup_token,
 )
 
-MAX_MFA_SETUP_ATTEMPTS = 10
+MAX_MFA_SETUP_ATTEMPTS = 5
 
 
 def is_mfa_setup_challenge_active(challenge: MFASetupChallenge) -> bool:

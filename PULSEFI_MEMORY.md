@@ -230,32 +230,24 @@ What works:
 ## Current Next Step
 
 Next step:
-- Step 15C: Platform Admin manages ISP Admin accounts.
+- Start frontend integration after final backend hardening validation.
 
 Likely scope:
-- View one ISP Admin.
-- Update ISP Admin basic info/status.
-- Deactivate/reactivate ISP Admin.
-- Keep route protection as Platform Admin only.
-- Keep files split under platform_admin schemas/services/endpoints.
+- Platform Admin web dashboard.
+- ISP Admin web dashboard.
+- App User mobile app.
+- Keep backend changes small and limited to blockers, API contract fixes, or safety corrections found during integration.
 
 Possible endpoints:
-- `GET /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
-- `PATCH /api/v1/platform-admin/isps/{isp_id}/admins/{admin_id}`
+- Use `docs/API_CONTRACT.md` as the frontend reference.
+- Update the API contract whenever endpoint behavior or response shape changes.
 
 ## Pending Later Roadmap
 
-After Step 15:
-- Step 16: ISP Admin management endpoints.
-- Step 17: User mobile app endpoints.
-- Step 18: Router adapter/simulator layer.
-- Step 19: Usage data ingestion.
-- Step 20: Alerts system.
-- Step 21: Prediction/recommendation logic.
-- Step 22: Reports and analytics.
-- Step 23: Frontend integration.
-- Step 24: Deployment preparation.
-
+After final backend hardening:
+- Frontend integration.
+- Final presentation/demo polish.
+- Production deployment hardening.
 ## Pending SE Diagram Updates
 
 Batch-update SE artifacts later for:
@@ -1082,7 +1074,7 @@ Recent quality fixes:
 - API test setup was refactored into `tests/api/conftest.py` with a shared `api_client` fixture.
 
 
-## MFA Setup Flow Fix ? 2026-05-15
+## MFA Setup Flow Fix - 2026-05-15
 
 Completed and tested:
 - Added signed MFA setup token helpers.
@@ -1101,7 +1093,7 @@ Impact:
 - SE diagrams: later update auth/login sequence to include MFA setup required -> setup confirm -> token issued.
 
 
-## MFA Setup Token Hardening and Cleanup ? 2026-05-15
+## MFA Setup Token Hardening and Cleanup - 2026-05-15
 
 Completed and tested:
 - Hardened MFA setup-token handling.
@@ -1119,7 +1111,7 @@ Impact:
 - Architecture: MFA files are now split by responsibility.
 
 
-## Server-Side MFA Setup State ? 2026-05-15
+## Server-Side MFA Setup State - 2026-05-15
 
 Completed and tested:
 - Added `MFASetupChallenge` model and Alembic migration.
@@ -1139,7 +1131,7 @@ Impact:
 - SE diagrams: later update auth/login sequence and ERD to include pending MFA setup challenge storage.
 
 
-## MFA Setup Secret Redaction ? 2026-05-15
+## MFA Setup Secret Redaction - 2026-05-15
 
 Completed and tested:
 - Pending MFA setup secrets are redacted from `mfa_setup_challenges` after successful setup.
@@ -1153,7 +1145,7 @@ Impact:
 - Security: improves secret retention behavior, but full encryption at rest is still pending before production.
 
 
-## MFA Setup Challenge Cleanup Service ? 2026-05-15
+## MFA Setup Challenge Cleanup Service - 2026-05-15
 
 Completed and tested:
 - Added `app/services/mfa_setup_cleanup_service.py`.
@@ -1172,7 +1164,7 @@ Impact:
 - Future work: connect this to a scheduled maintenance task, CLI command, or admin-only maintenance endpoint.
 
 
-## MFA Secret Encryption at Rest ? 2026-05-15
+## MFA Secret Encryption at Rest - 2026-05-15
 
 Completed and tested:
 - Added encryption helper foundation using `cryptography`.
@@ -1190,7 +1182,7 @@ Impact:
 - Deployment: production must configure `DATA_ENCRYPTION_KEY` securely and must not commit it.
 
 
-## Auth Rate Limiting MVP ? 2026-05-15
+## Auth Rate Limiting MVP - 2026-05-15
 
 Completed and tested:
 - Added shared in-memory rate limiting dependency.
@@ -1211,7 +1203,7 @@ Impact:
 - Production note: current limiter is in-memory and suitable for local/demo/single-server use. Production should use Redis or another shared store.
 
 
-## Final Pre-Step-18 Hardening Pass ? 2026-05-15
+## Final Pre-Step-18 Hardening Pass - 2026-05-15
 
 Completed and tested:
 - Added encryption helper foundation with `DATA_ENCRYPTION_KEY`.
@@ -1511,9 +1503,9 @@ Next:
 
 ---
 
-## Step 18 Progress — 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18D — App User Device Policy Execution Endpoint
+### Step 18D ï¿½ App User Device Policy Execution Endpoint
 
 Completed and tested:
 
@@ -1552,13 +1544,13 @@ Impact:
 
 Next:
 
-- Step 18E — Add ISP Admin/router action log visibility or add tests for policy execution endpoint.
+- Step 18E ï¿½ Add ISP Admin/router action log visibility or add tests for policy execution endpoint.
 
 ---
 
-## Step 18 Progress — 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18E — ISP Admin Router Action Log Visibility
+### Step 18E ï¿½ ISP Admin Router Action Log Visibility
 
 Completed and tested:
 
@@ -1598,13 +1590,13 @@ Impact:
 
 Next:
 
-- Step 18F — Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.
+- Step 18F ï¿½ Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.
 
 ---
 
-## Step 18 Progress — 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18F — Router Policy Execution and Router Action Log Integration Tests
+### Step 18F ï¿½ Router Policy Execution and Router Action Log Integration Tests
 
 Completed and tested:
 
@@ -1640,13 +1632,13 @@ Impact:
 
 Next:
 
-- Step 18G — Add router capability visibility endpoint or Step 18 cleanup/docs before moving to Step 19 usage ingestion.
+- Step 18G ï¿½ Add router capability visibility endpoint or Step 18 cleanup/docs before moving to Step 19 usage ingestion.
 
 ---
 
-## Step 18 Progress — 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18G — App User Router Capability Visibility Endpoint
+### Step 18G ï¿½ App User Router Capability Visibility Endpoint
 
 Completed and tested:
 
@@ -1686,13 +1678,13 @@ Impact:
 
 Next:
 
-- Step 18 cleanup/docs, then Step 19 — usage data ingestion and simulator usage generation.
+- Step 18 cleanup/docs, then Step 19 ï¿½ usage data ingestion and simulator usage generation.
 
 ---
 
-## Step 19 Progress — 2026-05-16
+## Step 19 Progress ï¿½ 2026-05-16
 
-### Step 19A/19B — Simulator Usage Ingestion Service and ISP Admin Trigger Endpoint
+### Step 19A/19B ï¿½ Simulator Usage Ingestion Service and ISP Admin Trigger Endpoint
 
 Completed and tested:
 
@@ -1737,7 +1729,7 @@ Testing:
 
 Next step:
 
-- Step 19C — connected device ingestion/update from simulator data, including device connection logs for new/seen devices.
+- Step 19C ï¿½ connected device ingestion/update from simulator data, including device connection logs for new/seen devices.
 
 ---
 
@@ -3274,3 +3266,34 @@ Impact:
 Codex review item addressed:
 
 - P1 password reset tokens are not invalidated account-wide.
+
+---
+
+## Step 26F Progress - 2026-05-17
+
+### Remaining P2/P3 Backend Hardening Before Frontend Integration
+
+Completed:
+
+- Expanded `.env.example` with `DATA_ENCRYPTION_KEY`, `EMAIL_DELIVERY_ENABLED`, `TEST_DATABASE_URL`, and trusted proxy guidance.
+- Added email verification rate limiting at 5 attempts per 15 minutes.
+- Aligned MFA login and MFA setup challenge attempt counters to 5 attempts.
+- Hardened rate-limit client identification so `X-Forwarded-For` is trusted only from configured trusted proxy IPs.
+- Added stale plan-change approval protection: ISP Admin approval now rejects with 409 Conflict if the subscription plan changed after request creation.
+- Added SQLAlchemy model check constraints and an Alembic migration for device policy, recommendation, report, and user subscription enum-like fields.
+- Added simulator honesty fields to router capability responses: `integration_mode` and `is_simulator`.
+- Added focused API/service tests for rate limits, email verification throttling, stale plan-change review, model constraints, simulator capability mode, ISP Admin scope wiring, and device policy validation responses.
+
+Validation notes:
+
+- Focused auth, plan-change, model-constraint, router capability, and high-risk API tests passed.
+- Alembic sees the new migration as head.
+- Local `alembic upgrade head` is blocked by the expected limited runtime DB role because `pulsefi_app` is not table owner; apply this migration with a migration/admin DB role.
+
+Impact:
+
+- Database schema: yes, new check-constraint migration.
+- Existing data: no data rewrite.
+- API behavior: email verification is now rate-limited; stale plan-change approval returns 409; router capabilities expose simulator mode.
+- Frontend integration: safer and clearer before web/mobile work begins.
+- SE diagrams: later mention simulator/demo mode in router capability flow if diagrams are updated.

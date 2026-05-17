@@ -8,7 +8,7 @@ The backend is a FastAPI + PostgreSQL service designed for a deployable Final Ye
 
 ## Current Backend Status
 
-Current phase: **Step 25 complete - final backend readiness before frontend integration**.
+Current phase: **Step 26 complete - final backend hardening before frontend integration**.
 
 Recently completed and tested:
 
@@ -20,19 +20,23 @@ Recently completed and tested:
 - Step 25C: Auth-sensitive rate limits tightened to 5 attempts per 15 minutes.
 - Step 25D: API contract refreshed for standard errors and rate limits.
 - Step 25E: Final docs/status alignment.
+- Step 26A-E: Codex P1 backend fixes for router response safety, OpenAPI errors, ISP ownership joins, device policy validation, and password reset token invalidation.
+- Step 26F: Remaining P2/P3 backend hardening for fresh setup, auth rate limiting, stale plan-change review, database constraints, simulator capability honesty, API tests, and docs cleanup.
 
 Current next work:
 
 - Begin frontend integration for the web dashboards and mobile app.
-- Keep backend fixes limited to P0/P1 bugs discovered during frontend integration.
+- Keep backend changes during frontend integration limited to discovered blockers, contract fixes, and small safety corrections.
 
 Important active reminders:
 
 - ISP Admin endpoints must stay scoped by current_admin.isp_id.
 - App User /me endpoints must use the authenticated App User from the JWT.
 - Router raw passwords must not be accepted or stored until encrypted credential storage is intentionally implemented.
-- Current auth rate limiter is in-memory and should later be replaced with Redis/shared-store limiting for production multi-worker deployment.
-- The backend is frontend-ready for MVP/demo work, but final production hardening is still required before real deployment.
+- Auth rate limiting is still in-memory and should later be replaced with Redis/shared-store limiting for production multi-worker deployment.
+- X-Forwarded-For is trusted only from configured trusted proxies.
+- Router capability responses clearly identify simulator/demo mode.
+- The backend is ready to start MVP/frontend integration after final validation, but production hardening is still required before real deployment.
 
 ---
 
@@ -311,7 +315,7 @@ Avoid claiming universal router support before it exists. Use simulator support 
 
 ---
 
-## Backend Quality Progress â€” 2026-05-14
+## Backend Quality Progress - 2026-05-14
 
 The backend quality foundation was improved before continuing Step 16.
 
@@ -343,7 +347,7 @@ Future permission hardening:
 
 ---
 
-## Testing Progress â€” 2026-05-14
+## Testing Progress - 2026-05-14
 
 Completed:
 
@@ -365,7 +369,7 @@ Recommended test command:
 
 ---
 
-## CI Progress â€” 2026-05-14
+## CI Progress - 2026-05-14
 
 Completed:
 
@@ -390,9 +394,9 @@ Important note:
 
 ---
 
-## Step 16 Progress â€” 2026-05-14
+## Step 16 Progress - 2026-05-14
 
-### Step 16A â€” ISP Admin Router Foundation
+### Step 16A - ISP Admin Router Foundation
 
 Completed:
 
@@ -420,9 +424,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress â€” 2026-05-14
+## Step 16 Progress - 2026-05-14
 
-### Step 16B â€” ISP Admin App User Invitation Endpoints
+### Step 16B - ISP Admin App User Invitation Endpoints
 
 Completed:
 
@@ -456,9 +460,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Testing Progress â€” 2026-05-14
+## Step 16 Testing Progress - 2026-05-14
 
-### Step 16B â€” App User Invitation Endpoints Tested
+### Step 16B - App User Invitation Endpoints Tested
 
 Tested successfully:
 
@@ -490,9 +494,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress â€” 2026-05-14
+## Step 16 Progress - 2026-05-14
 
-### Step 16C â€” ISP Admin App User Management Endpoints
+### Step 16C - ISP Admin App User Management Endpoints
 
 Completed and tested:
 
@@ -546,9 +550,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress â€” 2026-05-14
+## Step 16 Progress - 2026-05-14
 
-### Step 16D â€” ISP Admin Subscription Plan Management Endpoints
+### Step 16D - ISP Admin Subscription Plan Management Endpoints
 
 Completed and tested:
 
@@ -595,9 +599,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress â€” 2026-05-14
+## Step 16 Progress - 2026-05-14
 
-### Step 16E â€” ISP Admin User Subscription Assignment and Management Endpoints
+### Step 16E - ISP Admin User Subscription Assignment and Management Endpoints
 
 Completed and tested:
 
@@ -627,11 +631,11 @@ Completed and tested:
 
 Subscription status values:
 
-- `pending` â€” assigned but not active yet
-- `active` â€” currently active subscription
-- `suspended` â€” temporarily stopped, such as unpaid bill/admin action
-- `expired` â€” ended by date
-- `cancelled` â€” permanently cancelled
+- `pending` - assigned but not active yet
+- `active` - currently active subscription
+- `suspended` - temporarily stopped, such as unpaid bill/admin action
+- `expired` - ended by date
+- `cancelled` - permanently cancelled
 
 Database migration:
 
@@ -656,9 +660,9 @@ Next Step 16 work:
 
 ---
 
-## Step 16 Progress â€” 2026-05-14
+## Step 16 Progress - 2026-05-14
 
-### Step 16F â€” ISP Admin Router Management Endpoints
+### Step 16F - ISP Admin Router Management Endpoints
 
 Completed and tested:
 
@@ -710,7 +714,7 @@ Next Step 16 work:
 
 ---
 
-## Current Backend State â€” 2026-05-14
+## Current Backend State - 2026-05-14
 
 Step 16A through Step 16F are complete and tested.
 
@@ -757,9 +761,9 @@ All data is scoped to the authenticated ISP Admin's `isp_id`.
 
 ---
 
-## Step 17 Progress â€” 2026-05-14
+## Step 17 Progress - 2026-05-14
 
-### Step 17A â€” App User Mobile Endpoint Foundation
+### Step 17A - App User Mobile Endpoint Foundation
 
 Completed and tested:
 
@@ -816,9 +820,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress â€” 2026-05-14
+## Step 17 Progress - 2026-05-14
 
-### Step 17B â€” App User Subscription Endpoints
+### Step 17B - App User Subscription Endpoints
 
 Completed and tested:
 
@@ -869,9 +873,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress â€” 2026-05-14
+## Step 17 Progress - 2026-05-14
 
-### Step 17C â€” App User Router and Device View Endpoints
+### Step 17C - App User Router and Device View Endpoints
 
 Completed and tested:
 
@@ -930,7 +934,7 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17D â€” App User usage endpoints.
+- Step 17D - App User usage endpoints.
 - Required usage behavior:
   - total usage for the logged-in user
   - download/upload/total usage
@@ -1022,9 +1026,9 @@ Security rules:
 
 ---
 
-## Latest Current Backend Status ? 2026-05-15
+## Historical Backend Status - 2026-05-15
 
-Current phase: **Step 18 ? Router adapter and simulator layer**.
+Historical phase at that time: **Step 18 - Router adapter and simulator layer**.
 
 Completed:
 - Platform Admin MVP endpoints.

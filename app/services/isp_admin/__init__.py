@@ -10,6 +10,7 @@ from app.services.isp_admin.device_connection_log_service import (
     list_device_connection_logs_for_isp,
 )
 from app.services.isp_admin.plan_change_request_service import (
+    StalePlanChangeRequestApprovalError,
     get_plan_change_request_for_isp,
     list_plan_change_requests_for_isp,
     review_plan_change_request_for_isp,
@@ -102,6 +103,7 @@ __all__ = [
     "list_user_subscriptions_for_isp",
     "review_plan_change_request_for_isp",
     "revoke_app_user_invitation",
+    "StalePlanChangeRequestApprovalError",
     "update_app_user_for_isp",
     "update_router_for_isp",
     "update_subscription_plan_for_isp",

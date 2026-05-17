@@ -1,10 +1,10 @@
 ﻿# PulseFi Backend Review Package
 
-Date: 2026-05-16
+Date: 2026-05-17
 
 ## Purpose
 
-This document prepares the PulseFi backend for a full Codex review before frontend integration.
+This document summarizes the PulseFi backend after Codex review fixes and final hardening before frontend integration.
 
 PulseFi is a Final Year Project: a Smart Network Monitoring and Optimization System for ISP admins and app users.
 
@@ -29,6 +29,8 @@ Completed major backend areas:
 - Stored reports and expanded report types
 - API contract snapshot
 - Local demo seed helper
+- Codex P1 fixes through Step 26E
+- Remaining P2/P3 hardening through Step 26F
 
 ## Recent Completed Steps
 
@@ -56,6 +58,28 @@ Step 24 completed so far:
 - API contract snapshot: docs/API_CONTRACT.md
 - Local demo seed helper: scripts/seed_demo_data.py
 
+Step 25 completed:
+
+- Migration integrity hardening.
+- Standard API error response foundation.
+- Auth-sensitive rate limits tightened to 5 attempts per 15 minutes.
+- API contract refreshed for standard errors and rate limits.
+- Final docs/status alignment.
+
+Step 26 completed:
+
+- App User router responses hide admin-only router fields.
+- OpenAPI documents the standard `error` / `message` / optional `details` response shape.
+- ISP ownership paths for usage, ingestion, and analytics were hardened.
+- Device policy request validation was tightened.
+- Password reset tokens are invalidated account-wide.
+- Email verification is rate-limited.
+- MFA challenge counters are aligned to 5 attempts.
+- Rate limiting trusts `X-Forwarded-For` only from configured trusted proxies.
+- Stale plan-change approval now returns 409 Conflict.
+- Enum-like model fields have check-constraint migration coverage.
+- Router capability responses identify simulator/demo mode.
+
 Demo accounts:
 
 - Platform Admin: platform.demo@pulsefi-demo.com
@@ -79,35 +103,27 @@ Codex should verify these especially:
 
 ## Known Risks / Items to Review
 
-Ask Codex to check:
+Remaining items to keep in mind:
 
-- Whether any ISP Admin service accidentally misses ISP scoping.
-- Whether any endpoint returns too much data.
-- Whether any schema exposes sensitive fields.
-- Whether old docs still mention outdated Step numbers.
-- Whether tests cover enough ownership/isolation cases.
-- Whether migrations can rebuild a fresh database from scratch.
-- Whether .env.example or deployment docs need improvement.
-- Whether router credential encryption is still incomplete.
-- Whether report/analytics queries are efficient enough for demo.
-- Whether OpenAPI/API contract is clear enough for frontend.
+- Apply the new check-constraint migration with a migration/admin DB role, not the limited runtime `pulsefi_app` role.
+- Use Redis/shared-store rate limiting before production multi-worker deployment.
+- Configure real email delivery before production token/email flows.
+- Keep router credential storage deferred until encrypted credential handling is intentionally added.
+- Keep final frontend integration focused on the existing API contract unless a real blocker is found.
 
-## Validation To Run Before Codex Review
+## Final Validation
 
-Before using Codex, run:
+Before frontend integration, run:
 
 - .\venv\Scripts\python.exe -m pytest
 - .\venv\Scripts\python.exe -m compileall app tests scripts
+- .\venv\Scripts\python.exe -m alembic heads
+- .\venv\Scripts\python.exe -m alembic current
+- git diff --check
 
-## Recommended Codex Review Prompt
+## Suggested Next Work
 
-Use docs/CODEX_REVIEW_PROMPT.md.
-
-## Suggested Next Work After Codex
-
-After Codex review:
-
-1. Fix P0/P1 backend issues.
-2. Regenerate docs/API_CONTRACT.md if endpoints change.
-3. Update memory/docs.
-4. Start frontend integration.
+1. Run final validation.
+2. Apply pending migration with the migration/admin DB role.
+3. Start frontend integration.
+4. Regenerate docs/API_CONTRACT.md if endpoint behavior changes during integration.

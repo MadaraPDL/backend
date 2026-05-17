@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import DateTime, ForeignKey, Index, Numeric, String, Text, text
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Index, Numeric, String, Text, text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -23,6 +23,19 @@ class Recommendation(Base):
     __tablename__ = "recommendations"
 
     __table_args__ = (
+        CheckConstraint(
+            "recommendation_type IN ("
+            "'upgrade_plan', "
+            "'downgrade_plan', "
+            "'stay_current', "
+            "'monitor_usage'"
+            ")",
+            name="chk_recommendation_type",
+        ),
+        CheckConstraint(
+            "status IN ('new', 'accepted')",
+            name="chk_recommendation_status",
+        ),
         Index("idx_recommendations_user_id", "user_id"),
         Index("idx_recommendations_user_subscription_id", "user_subscription_id"),
     )

@@ -20,6 +20,14 @@ def test_openapi_documents_auth_rate_limit_response() -> None:
         "$ref": "#/components/schemas/APIErrorResponse"
     }
 
+    email_verify_responses = schema["paths"]["/api/v1/auth/email/verify"]["post"][
+        "responses"
+    ]
+
+    assert email_verify_responses["429"]["content"]["application/json"]["schema"] == {
+        "$ref": "#/components/schemas/APIErrorResponse"
+    }
+
 
 def test_openapi_documents_protected_endpoint_auth_errors() -> None:
     schema = app.openapi()

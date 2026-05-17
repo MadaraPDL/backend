@@ -14,6 +14,7 @@ from app.schemas.isp_admin import (
     PlanChangeRequestStatus,
 )
 from app.services.isp_admin import (
+    StalePlanChangeRequestApprovalError,
     get_app_user_for_isp,
     get_plan_change_request_for_isp,
     list_plan_change_requests_for_isp,
@@ -137,12 +138,22 @@ async def review_plan_change_request_endpoint(
             detail="Only pending plan change requests can be reviewed",
         )
 
-    reviewed_request = await review_plan_change_request_for_isp(
-        db=db,
-        change_request=change_request,
-        current_admin=current_admin,
-        request=request,
-    )
+    try:
+        reviewed_request = await review_plan_change_request_for_isp(
+            db=db,
+            change_request=change_request,
+            current_admin=current_admin,
+            request=request,
+        )
+    except StalePlanChangeRequestApprovalError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                "Subscription plan changed after this request was created. "
+                "Ask the user to submit a new plan change request."
+            ),
+        )
 
     if reviewed_request is None:
         raise HTTPException(

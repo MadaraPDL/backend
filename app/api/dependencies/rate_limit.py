@@ -6,20 +6,34 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, Request, status
 
+from app.core.config import settings
+
 
 _attempts: dict[tuple[str, str], deque[datetime]] = defaultdict(deque)
 
 
-def get_client_identifier(request: Request) -> str:
-    forwarded_for = request.headers.get("x-forwarded-for")
-
-    if forwarded_for:
-        return forwarded_for.split(",")[0].strip()
-
+def _get_direct_client_host(request: Request) -> str:
     if request.client is None:
         return "unknown-client"
 
     return request.client.host
+
+
+def _is_trusted_proxy_host(client_host: str) -> bool:
+    return client_host in settings.TRUSTED_PROXY_IPS
+
+
+def get_client_identifier(request: Request) -> str:
+    direct_client_host = _get_direct_client_host(request)
+    forwarded_for = request.headers.get("x-forwarded-for")
+
+    if forwarded_for and _is_trusted_proxy_host(direct_client_host):
+        forwarded_client = forwarded_for.split(",")[0].strip()
+
+        if forwarded_client:
+            return forwarded_client
+
+    return direct_client_host
 
 
 def check_rate_limit(

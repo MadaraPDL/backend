@@ -107,6 +107,7 @@ def _is_auth_rate_limited_path(path: str) -> bool:
 
     return path in {
         f"{api_prefix}/auth/login",
+        f"{api_prefix}/auth/email/verify",
         f"{api_prefix}/auth/mfa/verify",
         f"{api_prefix}/auth/mfa/setup/confirm",
         f"{api_prefix}/auth/password/forgot",

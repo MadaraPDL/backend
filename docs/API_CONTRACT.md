@@ -1,6 +1,6 @@
 # PulseFi Backend API Contract
 
-Generated at: `2026-05-16T12:32:11.679461+00:00`
+Generated at: `2026-05-17`
 
 This file is a frontend integration snapshot generated from FastAPI OpenAPI.
 
@@ -55,14 +55,14 @@ Important:
 
 | Method | Path | Frontend Area | Auth | Request Body | Responses | Summary |
 |---|---|---|---|---|---|---|
-| POST | `/api/v1/auth/email/verify` | Shared Auth | Public or token-flow endpoint | `VerifyEmailRequest` | 200, 422 | Verify Email |
-| POST | `/api/v1/auth/invitations/accept` | Shared Auth | Public or token-flow endpoint | `AcceptInvitationRequest` | 201, 422 | Accept Account Invitation |
-| POST | `/api/v1/auth/login` | Shared Auth | Public or token-flow endpoint | `LoginRequest` | 200, 422 | Login |
+| POST | `/api/v1/auth/email/verify` | Shared Auth | Public or token-flow endpoint | `VerifyEmailRequest` | 200, 422, 429 | Verify Email |
+| POST | `/api/v1/auth/invitations/accept` | Shared Auth | Public or token-flow endpoint | `AcceptInvitationRequest` | 201, 422, 429 | Accept Account Invitation |
+| POST | `/api/v1/auth/login` | Shared Auth | Public or token-flow endpoint | `LoginRequest` | 200, 422, 429 | Login |
 | GET | `/api/v1/auth/me` | Mobile App | App User JWT | `None` | 200 | Get Me |
-| POST | `/api/v1/auth/mfa/setup/confirm` | Shared Auth | Check endpoint dependency | `MFASetupConfirmRequest` | 200, 422 | Confirm Mfa Setup |
-| POST | `/api/v1/auth/mfa/verify` | Shared Auth | Public or token-flow endpoint | `MFAVerifyRequest` | 200, 422 | Verify Mfa |
-| POST | `/api/v1/auth/password/forgot` | Shared Auth | Public or token-flow endpoint | `ForgotPasswordRequest` | 200, 422 | Forgot Password |
-| POST | `/api/v1/auth/password/reset` | Shared Auth | Public or token-flow endpoint | `ResetPasswordRequest` | 200, 422 | Reset Password |
+| POST | `/api/v1/auth/mfa/setup/confirm` | Shared Auth | Check endpoint dependency | `MFASetupConfirmRequest` | 200, 422, 429 | Confirm Mfa Setup |
+| POST | `/api/v1/auth/mfa/verify` | Shared Auth | Public or token-flow endpoint | `MFAVerifyRequest` | 200, 422, 429 | Verify Mfa |
+| POST | `/api/v1/auth/password/forgot` | Shared Auth | Public or token-flow endpoint | `ForgotPasswordRequest` | 200, 422, 429 | Forgot Password |
+| POST | `/api/v1/auth/password/reset` | Shared Auth | Public or token-flow endpoint | `ResetPasswordRequest` | 200, 422, 429 | Reset Password |
 
 ## Health
 
@@ -160,6 +160,7 @@ Important:
 
 - Use `/me/...` endpoints with App User accounts.
 - Main responsibilities: user summary, subscriptions, routers, devices, usage, alerts, predictions, recommendations, plan change requests, and device policies.
+- Router capability responses include `integration_mode` and `is_simulator` so the mobile app can clearly label simulator/demo actions.
 
 ### Deployment / CORS
 
@@ -228,6 +229,7 @@ Auth-sensitive endpoints are currently limited to:
 Affected endpoints:
 
 - POST /api/v1/auth/login
+- POST /api/v1/auth/email/verify
 - POST /api/v1/auth/mfa/verify
 - POST /api/v1/auth/mfa/setup/confirm
 - POST /api/v1/auth/password/forgot
@@ -245,7 +247,18 @@ When the limit is exceeded, the API returns:
 
 Frontend apps should show a friendly message and avoid retrying immediately.
 
-Production note: the current limiter is in-memory and IP-based. Before multi-worker production deployment, replace it with Redis/shared-store rate limiting.
+Production note: the current limiter is in-memory. `X-Forwarded-For` is trusted only from configured trusted proxy IPs. Before multi-worker production deployment, replace it with Redis/shared-store rate limiting.
+
+---
+
+## Router Capability Simulator Mode
+
+`GET /api/v1/me/routers/{router_id}/capabilities` returns capability booleans plus:
+
+- `integration_mode`: currently `simulator`
+- `is_simulator`: currently `true`
+
+Frontend apps should present device policy execution as simulated/demo behavior while this mode is active.
 
 ---
 

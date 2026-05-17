@@ -15,6 +15,7 @@ from app.models.subscription_plan import SubscriptionPlan
 from app.models.user_subscription import UserSubscription
 from app.schemas.isp_admin import ISPAdminPlanChangeRequestReviewRequest
 from app.services.isp_admin import (
+    StalePlanChangeRequestApprovalError,
     get_plan_change_request_for_isp,
     list_plan_change_requests_for_isp,
     review_plan_change_request_for_isp,
@@ -403,3 +404,133 @@ async def test_isp_admin_can_reject_plan_change_request_for_own_isp(
     assert reviewed_request.reviewed_at is not None
     assert reviewed_request.admin_response == "Rejected for now."
     assert subscription.plan_id == current_plan.id
+
+
+@pytest.mark.asyncio
+async def test_isp_admin_cannot_approve_stale_plan_change_request(
+    integration_db,
+):
+    suffix = uuid4().hex[:12]
+    now = datetime.now(timezone.utc)
+    today = date.today()
+
+    isp = ISP(
+        name=f"Plan Stale ISP {suffix}",
+        contact_email=f"plan-stale-isp-{suffix}@example.com",
+        status="active",
+    )
+
+    integration_db.add(isp)
+    await integration_db.flush()
+
+    admin = Admin(
+        isp_id=isp.id,
+        full_name="Plan Stale Admin",
+        email=f"plan-stale-admin-{suffix}@example.com",
+        username=f"plan_stale_admin_{suffix}",
+        password_hash=hash_password("CorrectHorseBatteryStaple123!"),
+        role="isp_admin",
+        status="active",
+        email_verified_at=now,
+        password_changed_at=now,
+        mfa_enabled=False,
+        mfa_required=False,
+        preferred_mfa_method="email",
+    )
+
+    user = AppUser(
+        isp_id=isp.id,
+        full_name="Plan Stale User",
+        email=f"plan-stale-user-{suffix}@example.com",
+        username=f"plan_stale_user_{suffix}",
+        password_hash=hash_password("CorrectHorseBatteryStaple123!"),
+        status="active",
+        email_verified_at=now,
+        password_changed_at=now,
+        mfa_enabled=False,
+        mfa_required=False,
+        preferred_mfa_method="email",
+    )
+
+    current_plan = SubscriptionPlan(
+        isp_id=isp.id,
+        plan_name=f"Current Stale Plan {suffix}",
+        monthly_price=Decimal("25.00"),
+        data_limit_gb=100,
+        speed_limit_mbps=50,
+        description="Current plan",
+        is_active=True,
+        created_by_admin_id=None,
+    )
+
+    requested_plan = SubscriptionPlan(
+        isp_id=isp.id,
+        plan_name=f"Requested Stale Plan {suffix}",
+        monthly_price=Decimal("40.00"),
+        data_limit_gb=250,
+        speed_limit_mbps=100,
+        description="Requested plan",
+        is_active=True,
+        created_by_admin_id=None,
+    )
+
+    intervening_plan = SubscriptionPlan(
+        isp_id=isp.id,
+        plan_name=f"Intervening Stale Plan {suffix}",
+        monthly_price=Decimal("35.00"),
+        data_limit_gb=200,
+        speed_limit_mbps=75,
+        description="Plan already applied before review",
+        is_active=True,
+        created_by_admin_id=None,
+    )
+
+    integration_db.add_all([admin, user, current_plan, requested_plan, intervening_plan])
+    await integration_db.flush()
+
+    subscription = UserSubscription(
+        user_id=user.id,
+        plan_id=current_plan.id,
+        subscription_label="Stale Subscription",
+        assigned_by_admin_id=None,
+        start_date=today,
+        end_date=None,
+        status="active",
+        auto_renew=True,
+    )
+
+    integration_db.add(subscription)
+    await integration_db.flush()
+
+    change_request = SubscriptionChangeRequest(
+        user_id=user.id,
+        user_subscription_id=subscription.id,
+        current_plan_id=current_plan.id,
+        requested_plan_id=requested_plan.id,
+        recommendation_id=None,
+        request_type="upgrade",
+        reason="Please upgrade me.",
+        status="pending",
+    )
+
+    integration_db.add(change_request)
+    await integration_db.flush()
+
+    subscription.plan_id = intervening_plan.id
+    await integration_db.flush()
+
+    with pytest.raises(StalePlanChangeRequestApprovalError):
+        await review_plan_change_request_for_isp(
+            db=integration_db,
+            change_request=change_request,
+            current_admin=admin,
+            request=ISPAdminPlanChangeRequestReviewRequest(
+                decision="approve",
+                admin_response="Approve stale request.",
+            ),
+        )
+
+    assert subscription.plan_id == intervening_plan.id
+    assert change_request.status == "pending"
+    assert change_request.reviewed_by_admin_id is None
+    assert change_request.reviewed_at is None

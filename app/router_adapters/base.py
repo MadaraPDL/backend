@@ -39,6 +39,8 @@ class RouterActionResult:
 
 class RouterAdapter(Protocol):
     adapter_name: str
+    integration_mode: str
+    is_simulator: bool
 
     def get_capabilities(self, router: Router) -> RouterCapabilities:
         """Return what this router adapter can safely support."""

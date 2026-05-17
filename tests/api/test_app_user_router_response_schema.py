@@ -3,6 +3,7 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 from app.schemas.app_user.routers import MyRouterResponse
+from app.services.app_user.router_service import get_my_router_capabilities
 
 
 def test_app_user_router_response_excludes_admin_only_fields() -> None:
@@ -38,3 +39,18 @@ def test_app_user_router_response_excludes_admin_only_fields() -> None:
     assert "api_endpoint" not in response
     assert "username" not in response
     assert "password_encrypted" not in response
+
+
+def test_app_user_router_capabilities_identify_simulator_mode() -> None:
+    router = SimpleNamespace(
+        id=uuid4(),
+        router_name="Demo Router",
+    )
+
+    response = get_my_router_capabilities(router).model_dump()
+
+    assert response["adapter_name"] == "simulator"
+    assert response["integration_mode"] == "simulator"
+    assert response["is_simulator"] is True
+    assert response["can_apply_bandwidth_limit"] is True
+    assert response["can_apply_device_priority"] is True

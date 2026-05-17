@@ -14,6 +14,8 @@ from app.router_adapters.base import (
 
 class SimulatorRouterAdapter:
     adapter_name = "simulator"
+    integration_mode = "simulator"
+    is_simulator = True
 
     def get_capabilities(self, router: Router) -> RouterCapabilities:
         return RouterCapabilities(

@@ -14,6 +14,10 @@ from app.models.user_subscription import UserSubscription
 from app.schemas.isp_admin import ISPAdminPlanChangeRequestReviewRequest
 
 
+class StalePlanChangeRequestApprovalError(RuntimeError):
+    """Raised when a pending request no longer matches the subscription state."""
+
+
 async def list_plan_change_requests_for_isp(
     db: AsyncSession,
     isp_id: UUID,
@@ -116,6 +120,11 @@ async def review_plan_change_request_for_isp(
 
         if subscription is None:
             return None
+
+        if subscription.plan_id != change_request.current_plan_id:
+            raise StalePlanChangeRequestApprovalError(
+                "Subscription plan changed after this request was created."
+            )
 
         requested_plan = await _get_active_requested_plan_for_isp(
             db=db,

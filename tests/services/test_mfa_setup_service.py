@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from uuid import uuid4
 
@@ -60,3 +61,15 @@ async def test_build_mfa_setup_response_stores_encrypted_pending_secret(monkeypa
     assert db.added.setup_token_hash == "hashed-setup-token"
     assert db.added.authenticator_secret == "encrypted::RAWSECRET123"
     assert db.added.authenticator_secret != "RAWSECRET123"
+
+
+def test_mfa_setup_challenge_is_inactive_after_five_attempts():
+    challenge = SimpleNamespace(
+        used_at=None,
+        revoked_at=None,
+        expires_at=datetime.now(timezone.utc) + timedelta(minutes=5),
+        attempt_count=5,
+        authenticator_secret="encrypted-secret",
+    )
+
+    assert mfa_setup_service.is_mfa_setup_challenge_active(challenge) is False

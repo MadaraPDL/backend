@@ -4,7 +4,7 @@ from datetime import date, datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from sqlalchemy import Date, DateTime, ForeignKey, Index, String, Text, text
+from sqlalchemy import CheckConstraint, Date, DateTime, ForeignKey, Index, String, Text, text
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -19,6 +19,16 @@ class Report(Base):
     __tablename__ = "reports"
 
     __table_args__ = (
+        CheckConstraint(
+            "report_type IN ("
+            "'usage_report', "
+            "'device_report', "
+            "'alert_report', "
+            "'recommendation_report', "
+            "'network_performance_report'"
+            ")",
+            name="chk_report_type",
+        ),
         Index("idx_reports_isp_id", "isp_id"),
     )
 

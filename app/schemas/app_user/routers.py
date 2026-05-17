@@ -21,6 +21,8 @@ class MyRouterResponse(BaseModel):
 class MyRouterCapabilitiesResponse(BaseModel):
     router_id: UUID
     adapter_name: str
+    integration_mode: str
+    is_simulator: bool
     can_read_total_usage: bool
     can_read_connected_devices: bool
     can_read_device_usage: bool

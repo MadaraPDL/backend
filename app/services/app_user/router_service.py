@@ -61,6 +61,8 @@ def get_my_router_capabilities(
     return MyRouterCapabilitiesResponse(
         router_id=router.id,
         adapter_name=adapter.adapter_name,
+        integration_mode=adapter.integration_mode,
+        is_simulator=adapter.is_simulator,
         can_read_total_usage=capabilities.can_read_total_usage,
         can_read_connected_devices=capabilities.can_read_connected_devices,
         can_read_device_usage=capabilities.can_read_device_usage,
