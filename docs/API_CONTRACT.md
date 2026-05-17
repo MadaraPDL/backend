@@ -165,3 +165,84 @@ Important:
 
 - Frontend origins must be configured in `BACKEND_CORS_ORIGINS`.
 - Wildcard CORS is blocked when `DEBUG=False`.
+
+---
+
+## Standard Error Response Contract
+
+PulseFi API errors now use a consistent frontend-friendly shape.
+
+### Normal HTTP errors
+
+```json
+{
+  "error": "not_found",
+  "message": "Resource not found"
+}
+```
+
+Common error values include:
+
+- bad_request
+- unauthorized
+- forbidden
+- not_found
+- conflict
+- validation_error
+- rate_limited
+- service_unavailable
+- client_error
+- server_error
+
+### Validation errors
+
+```json
+{
+  "error": "validation_error",
+  "message": "Request validation failed",
+  "details": []
+}
+```
+
+### Unexpected server errors
+
+```json
+{
+  "error": "server_error",
+  "message": "Internal server error"
+}
+```
+
+Frontend apps should read message for display text and error for programmatic handling.
+
+---
+
+## Auth Rate Limit Contract
+
+Auth-sensitive endpoints are currently limited to:
+
+```text
+5 attempts per 15 minutes
+```
+
+Affected endpoints:
+
+- POST /api/v1/auth/login
+- POST /api/v1/auth/mfa/verify
+- POST /api/v1/auth/mfa/setup/confirm
+- POST /api/v1/auth/password/forgot
+- POST /api/v1/auth/password/reset
+- POST /api/v1/auth/invitations/accept
+
+When the limit is exceeded, the API returns:
+
+```json
+{
+  "error": "rate_limited",
+  "message": "Too many attempts. Please try again later."
+}
+```
+
+Frontend apps should show a friendly message and avoid retrying immediately.
+
+Production note: the current limiter is in-memory and IP-based. Before multi-worker production deployment, replace it with Redis/shared-store rate limiting.

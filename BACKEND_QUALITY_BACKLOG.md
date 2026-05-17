@@ -1808,3 +1808,18 @@ Security note:
 
 - This improves MVP/demo protection.
 - The limiter is still in-memory, so Redis/shared-store rate limiting remains needed before production multi-worker deployment.
+
+---
+
+## Step 25D Quality Note - 2026-05-17
+
+Completed:
+
+- Refreshed API contract documentation after standard API error responses and stricter auth rate limits.
+- Added frontend-facing guidance for standard error payloads.
+- Added frontend-facing guidance for auth rate-limit handling.
+
+Impact:
+
+- Frontend readiness improved.
+- No database or runtime code changes.

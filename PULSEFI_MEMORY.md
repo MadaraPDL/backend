@@ -2964,3 +2964,25 @@ Impact:
 - API behavior: stricter 429 rate limiting for auth-sensitive endpoints.
 - Security: improves protection against brute-force login, MFA, reset-token, and invitation-token guessing.
 - Production note: current limiter is still in-memory and should later be replaced with Redis/shared-store rate limiting for multi-worker deployment.
+
+---
+
+## Step 25D Progress - 2026-05-17
+
+### API Contract Refresh for Error Responses and Rate Limits
+
+Completed:
+
+- Updated docs/API_CONTRACT.md with the standard API error response shape.
+- Documented frontend handling for error, message, and optional details.
+- Documented auth rate limit behavior: 5 attempts per 15 minutes.
+- Documented affected auth endpoints.
+- Documented expected rate_limited response.
+
+Impact:
+
+- Database schema: no change.
+- Existing data: no change.
+- API behavior: no new runtime change; this documents Step 25B and Step 25C behavior.
+- Frontend integration: improved because web/mobile clients now know how to handle backend errors and rate limits.
+- SE diagrams: no direct update needed.
