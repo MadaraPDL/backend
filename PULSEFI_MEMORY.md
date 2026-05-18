@@ -3297,3 +3297,41 @@ Impact:
 - API behavior: email verification is now rate-limited; stale plan-change approval returns 409; router capabilities expose simulator mode.
 - Frontend integration: safer and clearer before web/mobile work begins.
 - SE diagrams: later mention simulator/demo mode in router capability flow if diagrams are updated.
+
+## 2026-05-18 Frontend/Admin UI + Auth Integration Handoff
+
+The PulseFi admin frontend has been updated in `C:\PulseFi\pulsefi-admin-web`.
+
+Current frontend structure:
+- `npm run dev` loads the real admin web app shell.
+- `npm run dev:design` loads the temporary design preview hub.
+- `src/App.tsx` switches by `import.meta.env.MODE === "design"`.
+- `src/App.real.tsx` is the real admin web app shell.
+- `src/PulseFiDesignPreviewApp.tsx` and `src/PulseFiDesignHub.tsx` are design/dev-only.
+- The real admin app must not expose App User, States, White/Black switch, or manual role tabs.
+- The real product has one shared admin login page.
+- Backend token/account role should route:
+  - Platform Admin -> Platform Admin dashboard
+  - ISP Admin -> ISP Admin dashboard
+- App User UI is only design reference for the future React Native mobile app, not part of the admin web product.
+
+Frontend auth integration progress:
+- Added `src/api/adminAuth.ts`.
+- Login now calls `POST /api/v1/auth/login`.
+- Login request now includes `account_type: "admin"`.
+- Frontend then attempts to route using role from login response, JWT payload, or `GET /api/v1/auth/me`.
+- `npm run lint` and `npm run build` passed after the `adminAuth.ts` update.
+
+Current blocker:
+- Backend returns `429 rate_limited` after repeated login attempts.
+- Earlier backend returned `422 validation_error` because `account_type` was missing; this has been fixed on frontend.
+- Codex should inspect backend auth rate-limit implementation and provide a clean local-dev reset/fix without weakening production security.
+- Codex should verify `/auth/me` response shape includes enough role/account info for frontend routing.
+- Codex should verify MFA-required flow for ISP Admin and connect/finish the frontend MFA verification path.
+
+Important security/product rules:
+- Do not store or display router passwords until encryption is implemented.
+- ISP Admin backend queries must remain scoped by `current_admin.isp_id`.
+- Platform Admin and ISP Admin are the only admin roles.
+- App User is not an admin role.
+- Design preview hub must stay development-only.

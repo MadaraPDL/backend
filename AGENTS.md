@@ -2303,3 +2303,60 @@ Next work:
 
 
 
+
+## Current Assistant/Codex Instructions — Frontend/Auth Handoff
+
+When continuing PulseFi from this point:
+
+1. Read these files first:
+   - `PULSEFI_MEMORY.md`
+   - `AGENTS.md`
+   - `ROADMAP.md`
+   - `README.md`
+   - `BACKEND_QUALITY_BACKLOG.md`
+
+2. Also inspect the frontend repo:
+   - `C:\PulseFi\pulsefi-admin-web`
+   - Current important files:
+     - `src/App.tsx`
+     - `src/App.real.tsx`
+     - `src/api/adminAuth.ts`
+     - `src/PulseFiDesignPreviewApp.tsx`
+     - `src/PulseFiDesignHub.tsx`
+     - `src/pulsefi-white-design.css`
+
+3. Product structure rule:
+   - There are only two admin roles:
+     - Platform Admin
+     - ISP Admin
+   - App User is not an admin role.
+   - Admin web app has one shared admin login page.
+   - Role routing must come from backend-authenticated account data, not from a visible UI role switch.
+   - App User UI belongs to the future React Native mobile app.
+
+4. Preview mode rule:
+   - `npm run dev` should run the real admin web app.
+   - `npm run dev:design` should run the temporary UI/UX preview hub.
+   - The preview hub must remain dev/design-only.
+   - Do not expose App User/States/theme preview tabs in the production admin app.
+
+5. Current auth issue:
+   - Frontend now sends `account_type: "admin"` to `/api/v1/auth/login`.
+   - Backend previously returned 422 because `account_type` was missing.
+   - Backend now returns `429 rate_limited` after repeated attempts.
+   - Fix the local-dev rate-limit blocker cleanly.
+   - Verify `/auth/me` role mapping.
+   - Complete the MFA-required frontend flow.
+
+6. Safety/security rules:
+   - Do not store or expose router passwords until encryption exists.
+   - Keep all ISP Admin queries scoped by `current_admin.isp_id`.
+   - Do not weaken production authentication/rate-limit behavior just to make local testing easier.
+   - Prefer a dev-only reset/documented workaround for local rate-limit issues.
+
+7. Required response style:
+   - Give step-by-step commands.
+   - Explain each changed code block.
+   - Run checks before commit.
+   - Update docs/memory after major changes.
+   - Be honest about what is mocked, incomplete, or not yet backend-connected.

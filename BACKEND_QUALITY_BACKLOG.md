@@ -1911,3 +1911,64 @@ Impact:
 - Final Codex P1 issue addressed.
 - No database change.
 - Password reset flow is safer before frontend integration.
+
+## Current Backend Quality Backlog — Auth/UI Integration Issues
+
+### P1 — Admin login rate limit blocks local development
+Frontend login now sends the required `account_type: "admin"` field, but backend returns:
+- `429 rate_limited`
+- Message: `Too many attempts. Please try again later.`
+
+Required:
+- Locate the login rate-limit implementation.
+- Provide a clean local-dev reset path.
+- Do not weaken production rate limiting.
+- Add documentation for how to clear/reset local auth rate limit during development.
+- Add/confirm tests for:
+  - successful admin login with `account_type=admin`
+  - missing `account_type` returns validation error
+  - repeated failures return 429
+  - successful login after lockout expires/reset
+
+### P1 — Verify `/auth/me` role contract
+Frontend now falls back to `GET /api/v1/auth/me` to determine admin role.
+
+Required:
+- Ensure `/auth/me` returns enough information for frontend routing:
+  - `account_type`
+  - `role` or `admin_role`
+  - email/username if available
+- Platform Admin must be distinguishable from ISP Admin.
+- App User must not be accepted in admin web login.
+
+### P1 — MFA-required flow incomplete in frontend
+Backend exposes:
+- `/api/v1/auth/mfa/verify`
+- `/api/v1/auth/mfa/setup/confirm`
+
+Required:
+- Confirm exact request/response schema for MFA verify.
+- Connect frontend MFA screen after login returns MFA required.
+- Clarify behavior when admin has `mfa_required=true` but `mfa_enabled=false`.
+- Ensure MFA setup-only flow cannot bypass security.
+
+### P1 — Frontend/admin production routing
+Current real frontend shell still uses design preview dashboard components as temporary dashboard views.
+
+Required:
+- Replace mock dashboard previews with real routed pages/components.
+- Use backend token/session to protect routes.
+- No visible role switch in production.
+- No App User UI inside production admin web app.
+
+### P2 — Tests needed
+Add or expand tests for:
+- admin login
+- `/auth/me`
+- MFA verify
+- rate limit behavior
+- platform admin routing data
+- ISP admin isolation by `current_admin.isp_id`
+- invitation flows
+- subscription flows
+- usage/alerts/recommendations once connected.

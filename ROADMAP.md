@@ -2470,3 +2470,52 @@ Next backend work:
 
 
 
+
+## Current Roadmap Update — Admin Frontend/Auth Handoff
+
+### Completed / In Progress
+- Admin frontend now has a separated design preview mode and real app mode.
+- `npm run dev` is intended for the real admin web app.
+- `npm run dev:design` is intended for UI/UX preview only.
+- Real admin shell now has one shared login page.
+- Frontend login now sends `account_type: "admin"` to `/api/v1/auth/login`.
+- App User screens in the preview are design reference only for the later React Native mobile app.
+
+### Next Required Work
+1. Fix backend local-dev login blocker:
+   - Investigate `429 rate_limited` during admin login.
+   - Provide clean local reset or dev-safe handling.
+   - Do not remove production rate-limit protection.
+
+2. Finish real admin auth flow:
+   - Confirm `/auth/login` response shape.
+   - Confirm `/auth/me` response shape.
+   - Ensure frontend can route by authenticated admin role.
+   - Platform Admin should route to Platform Admin dashboard.
+   - ISP Admin should route to ISP Admin dashboard.
+   - No visible role switch in production.
+
+3. Finish MFA frontend/backend flow:
+   - Login should show MFA verification when backend returns MFA required.
+   - Connect `/api/v1/auth/mfa/verify`.
+   - Handle invalid/expired MFA codes.
+   - Handle backup-code option if backend supports it.
+   - Clarify behavior when `mfa_required=true` but `mfa_enabled=false`.
+
+4. Convert design preview pages into production admin pages:
+   - Replace mock data with API calls.
+   - Add protected routes.
+   - Add loading/error/empty states inside real pages.
+   - Keep design hub dev-only.
+
+5. Frontend pages to connect first:
+   - Shared admin login
+   - Platform Admin overview / ISPs / ISP admin invitations
+   - ISP Admin overview / user invitations / subscriptions
+   - Then routers, devices, usage, alerts, recommendations, reports.
+
+6. Later phases:
+   - React Native App User mobile app.
+   - Router sync MVP.
+   - Usage prediction/recommendations.
+   - Deployment and final presentation polish.
