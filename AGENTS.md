@@ -2360,3 +2360,11 @@ When continuing PulseFi from this point:
    - Run checks before commit.
    - Update docs/memory after major changes.
    - Be honest about what is mocked, incomplete, or not yet backend-connected.
+## Current PulseFi Implementation Notes
+
+Current backend checkpoint:
+- Automatic ISP intelligence run is implemented and pushed.
+- Scheduler exists for local/demo use only and is disabled by default.
+- Keep tests running with ENABLE_INTELLIGENCE_SCHEDULER=false.
+- Do not allow automatic intelligence to create duplicate predictions/recommendations on repeated runs.
+- Next cleanup target: convert FastAPI on_event startup/shutdown hooks to lifespan.

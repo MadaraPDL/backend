@@ -2519,3 +2519,28 @@ Next backend work:
    - Router sync MVP.
    - Usage prediction/recommendations.
    - Deployment and final presentation polish.
+
+## Current Backend Checkpoint — Automatic Intelligence
+
+Completed:
+- Added `POST /api/v1/isp-admin/intelligence/run`.
+- Added ISP-scoped automatic intelligence service.
+- Added local/demo scheduler controlled by:
+  - `ENABLE_INTELLIGENCE_SCHEDULER`
+  - `INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES`
+- Added idempotency protection:
+  - Reuses today's prediction when it already exists.
+  - Reuses existing recommendation for that prediction.
+  - Avoids duplicate prediction/recommendation rows on repeated scheduler ticks.
+- Verified scheduler behavior locally.
+- Backend tests passed with scheduler disabled; only FastAPI `on_event` warnings remain.
+
+Next Steps:
+1. Cleanup leftover auth/rate-limit reset files and commit them if valid.
+2. Convert FastAPI startup/shutdown `@app.on_event` hooks to lifespan to remove warnings.
+3. Connect frontend Intelligence Center to `POST /api/v1/isp-admin/intelligence/run`.
+4. Add better seeded tests for automatic intelligence.
+5. Add list endpoints for predictions/recommendations if dashboard history is needed.
+6. Add simulator/demo controls to generate usage data from dashboard.
+7. Review duplicate generated test/demo data and optionally add cleanup scripts.
+8. Prepare production scheduling plan: worker/cron/queue instead of in-process scheduler.

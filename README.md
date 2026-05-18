@@ -1899,3 +1899,23 @@ Next work:
 - Run Codex backend improvement review.
 - Fix P0/P1 issues from Codex.
 - Then begin frontend integration.
+## Automatic Intelligence Scheduler
+
+PulseFi now supports an ISP-scoped automatic intelligence run.
+
+Manual endpoint:
+POST /api/v1/isp-admin/intelligence/run
+
+Local/demo scheduler environment variables:
+ENABLE_INTELLIGENCE_SCHEDULER=false
+INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES=60
+
+For local demo only:
+ENABLE_INTELLIGENCE_SCHEDULER=true
+INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES=1
+
+Notes:
+- Keep the scheduler disabled during tests.
+- The automatic run is idempotent for the current day.
+- It reuses existing predictions and recommendations instead of duplicating them every scheduler tick.
+- For production/multi-worker deployment, move scheduling to a dedicated worker, cron job, or queue system.
