@@ -1826,6 +1826,22 @@ Completed:
   - App User: `user.demo@pulsefi-demo.com`
   - password: `PulseFiDemo123!`
 
+### Local development auth rate-limit reset
+
+Auth-sensitive endpoints are rate-limited at 5 attempts per 15 minutes. The
+limiter is intentionally in-memory for the MVP backend, so restarting the
+backend process clears local development lockouts.
+
+When `DEBUG=True`, local development can also clear the in-memory limiter with:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/auth/rate-limit/reset
+```
+
+The reset endpoint returns 404 when `DEBUG=False` and is hidden from OpenAPI.
+Before multi-worker production deployment, replace the in-memory limiter with a
+Redis/shared-store implementation.
+
 Validation completed:
 
 - Script compile check passed.
@@ -1883,4 +1899,3 @@ Next work:
 - Run Codex backend improvement review.
 - Fix P0/P1 issues from Codex.
 - Then begin frontend integration.
-

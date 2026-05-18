@@ -7,6 +7,7 @@ from app.api.v1.endpoints.auth import (
     me,
     mfa,
     password_reset,
+    rate_limits,
 )
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
@@ -17,3 +18,4 @@ router.include_router(invitations.router)
 router.include_router(password_reset.router)
 router.include_router(email_verification.router)
 router.include_router(me.router)
+router.include_router(rate_limits.router)
