@@ -3369,6 +3369,41 @@ Production note:
 - The reset endpoint is disabled outside DEBUG.
 - The limiter is still in-memory and must be replaced with Redis/shared-store rate limiting before multi-worker production deployment.
 
+## Step 27C - Admin Auth Routing, Session Restore, and MFA Integration - 2026-05-18
+
+Frontend checkpoint completed in `C:\PulseFi\pulsefi-admin-web`.
+
+Completed:
+- Reconciled the admin app split:
+  - normal `npm run dev` and production build load the real admin app
+  - `npm run dev:design` / Vite `--mode design` load the design preview hub
+  - App User preview remains design-only and is not a production admin role
+- Preserved existing dashboard work:
+  - Platform Admin summary, ISP create/list/update, and ISP Admin invitation workflow
+  - ISP Admin summary, App User invitations, App User management, plans, subscriptions, routers, monitoring, operations, network activity, and intelligence center
+- Finished shared admin auth routing:
+  - login sends `account_type: "admin"`
+  - normal token response saves an admin session and routes by backend role
+  - page load with an existing token now calls `GET /api/v1/auth/me`
+  - invalid/expired tokens, non-admin accounts, and App User tokens clear local admin session and return to login
+  - only `platform_admin` and `isp_admin` are accepted in admin web
+- Finished MFA frontend flow:
+  - `mfa_required` responses show MFA verification and submit `POST /api/v1/auth/mfa/verify`
+  - `mfa_setup_required` responses show MFA setup and submit `POST /api/v1/auth/mfa/setup/confirm`
+  - session is saved only after the backend returns a valid admin token
+
+Backend contract changes:
+- None in this checkpoint.
+- Existing local-dev reset remains `POST /api/v1/auth/rate-limit/reset` when `DEBUG=True`.
+
+Validation completed:
+- Frontend lint passed.
+- Frontend production build passed.
+- Frontend design-mode build passed.
+
+Manual browser testing still needed:
+- Start backend and frontend, then test Platform Admin login, ISP Admin login, session refresh, expired-token clearing, MFA verify, MFA setup confirm, and invitation URL token cleanup.
+
 ## Automatic Intelligence Idempotency Update
 
 The automatic intelligence service now avoids duplicate prediction and recommendation rows on repeated scheduler runs.

@@ -1920,6 +1920,7 @@ Status update - 2026-05-18:
 - P1 `/auth/me` role contract is covered by an API regression test and returns `account_type`, `account_id`, `role`, identity, status, and MFA fields.
 - P1 MFA frontend dead-end is fixed in the real admin web app by wiring MFA verify and MFA setup confirm.
 - P1 frontend production routing is cleaned up so real admin dashboards no longer render the design preview components.
+- Step 27C follow-up: page load now validates existing admin tokens with `GET /api/v1/auth/me`; invalid, expired, or App User tokens clear the admin session and return to login.
 - Remaining production hardening: replace in-memory rate limiting with Redis/shared-store rate limiting before multi-worker deployment.
 
 ### P1 — Admin login rate limit blocks local development

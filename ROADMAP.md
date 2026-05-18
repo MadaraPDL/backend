@@ -24,6 +24,16 @@ Next step:
 
 - Start frontend integration for Platform Admin dashboard, ISP Admin dashboard, and App User mobile app.
 
+Current frontend checkpoint:
+
+- Step 27C completed locally for the admin web app:
+  - real admin app vs design preview mode split
+  - shared admin login with `account_type: "admin"`
+  - verified session restoration through `GET /api/v1/auth/me`
+  - role-based routing for `platform_admin` and `isp_admin`
+  - no App User admin role in production admin web
+  - MFA verify and MFA setup-confirm flows wired to backend endpoints
+
 Backend rule during frontend integration:
 
 - Fix discovered blockers, contract mismatches, or small safety issues.
