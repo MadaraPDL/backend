@@ -3413,3 +3413,27 @@ Behavior:
 - Reuses an existing recommendation for that prediction when present.
 - Creates only missing prediction/recommendation records.
 - Repeated scheduler ticks should skip/reuse already processed subscriptions instead of duplicating rows.
+
+## Step 27D - ISP Admin Intelligence, Recommendations, and Real Dashboard Integration - 2026-05-18
+
+Backend updates:
+- Added ISP Admin recommendation viewing routes:
+  - `GET /api/v1/isp-admin/recommendations`
+  - `GET /api/v1/isp-admin/recommendations/{recommendation_id}`
+- Recommendation list supports `status`, `user_id`, `subscription_id`, `limit`, and `offset` filters.
+- Recommendation ownership is scoped through App User, subscription, optional linked prediction, and `current_admin.isp_id`.
+- Non-owned or fake recommendations return `404`.
+- Platform Admin and App User accounts cannot access ISP Admin recommendation routes.
+- Database schema did not change.
+
+Frontend updates:
+- The real ISP Admin dashboard Intelligence Center now connects analytics summary, recommendation history, recent reports, active subscriptions, prediction generation, recommendation generation, and automatic intelligence runs.
+- The frontend API client remains environment-based:
+  - `VITE_API_BASE_URL` when set
+  - fallback `http://127.0.0.1:8000/api/v1`
+- `.env` files remain local/uncommitted.
+
+Validation target:
+- Backend: pytest, compileall, git diff --check, git status.
+- Frontend: lint, production build, design build, git diff --check, git status.
+- Manual browser checks still need backend and frontend running together.

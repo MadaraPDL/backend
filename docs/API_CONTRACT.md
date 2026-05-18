@@ -1,6 +1,6 @@
 # PulseFi Backend API Contract
 
-Generated at: `2026-05-17`
+Generated at: `2026-05-18`
 
 This file is a frontend integration snapshot generated from FastAPI OpenAPI.
 
@@ -87,6 +87,8 @@ Important:
 | GET | `/api/v1/isp-admin/plans/{plan_id}` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 200, 422 | Get Subscription Plan Endpoint |
 | PATCH | `/api/v1/isp-admin/plans/{plan_id}` | ISP Admin Web Dashboard | ISP Admin JWT | `SubscriptionPlanUpdateRequest` | 200, 422 | Update Subscription Plan Endpoint |
 | POST | `/api/v1/isp-admin/predictions/subscriptions/{subscription_id}/generate` | ISP Admin Web Dashboard | ISP Admin JWT | `ISPAdminPredictionGenerateRequest` | 201, 422 | Generate Prediction For Subscription Endpoint |
+| GET | `/api/v1/isp-admin/recommendations` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 200, 422 | List Recommendations Endpoint |
+| GET | `/api/v1/isp-admin/recommendations/{recommendation_id}` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 200, 422 | Get Recommendation Endpoint |
 | POST | `/api/v1/isp-admin/recommendations/predictions/{prediction_id}/generate` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 201, 422 | Generate Recommendation For Prediction Endpoint |
 | GET | `/api/v1/isp-admin/reports` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 200, 422 | List Reports Endpoint |
 | POST | `/api/v1/isp-admin/reports` | ISP Admin Web Dashboard | ISP Admin JWT | `ISPAdminReportCreateRequest` | 201, 422 | Generate Report Endpoint |
@@ -320,3 +322,23 @@ Behavior:
 Production note:
 - This scheduler is suitable for local/demo use.
 - Before multi-worker production deployment, move scheduling to a single worker, cron, or job queue to avoid duplicate background runs.
+
+### Step 27D ISP Admin Intelligence Integration
+
+Added ISP Admin recommendation viewing routes:
+- `GET /api/v1/isp-admin/recommendations`
+- `GET /api/v1/isp-admin/recommendations/{recommendation_id}`
+
+Supported recommendation list filters:
+- `status`
+- `user_id`
+- `subscription_id`
+- `limit`
+- `offset`
+
+Frontend integration notes:
+- ISP Admin recommendation queries are scoped to the authenticated admin's ISP.
+- Non-owned recommendations return `404`.
+- The real admin frontend must read the API base URL from `VITE_API_BASE_URL`.
+- Local fallback remains `http://127.0.0.1:8000/api/v1`.
+- `.env`, `.env.local`, `.env.development.local`, and other secret-bearing env files remain uncommitted.

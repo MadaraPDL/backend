@@ -28,6 +28,15 @@ Current next work:
 - Begin frontend integration for the web dashboards and mobile app.
 - Keep backend changes during frontend integration limited to discovered blockers, contract fixes, and small safety corrections.
 
+Current frontend integration checkpoint:
+
+- Step 27D added ISP Admin recommendation viewing routes:
+  - `GET /api/v1/isp-admin/recommendations`
+  - `GET /api/v1/isp-admin/recommendations/{recommendation_id}`
+- The real ISP Admin Intelligence Center now connects analytics, recommendation history, reports, prediction generation, recommendation generation, and automatic intelligence runs.
+- Frontend API configuration must come from `VITE_API_BASE_URL`; local development falls back to `http://127.0.0.1:8000/api/v1`.
+- `.env` files remain local and must not be committed.
+
 Important active reminders:
 
 - ISP Admin endpoints must stay scoped by current_admin.isp_id.

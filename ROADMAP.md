@@ -34,6 +34,14 @@ Current frontend checkpoint:
   - no App User admin role in production admin web
   - MFA verify and MFA setup-confirm flows wired to backend endpoints
 
+- Step 27D added ISP Admin intelligence/dashboard integration:
+  - `GET /api/v1/isp-admin/recommendations`
+  - `GET /api/v1/isp-admin/recommendations/{recommendation_id}`
+  - ISP Admin recommendation viewing stays scoped to `current_admin.isp_id`
+  - the real Intelligence Center connects analytics, recommendations, reports, prediction generation, recommendation generation, and automatic intelligence runs
+  - frontend API configuration remains `VITE_API_BASE_URL` with local fallback only
+  - local `.env` files remain uncommitted
+
 Backend rule during frontend integration:
 
 - Fix discovered blockers, contract mismatches, or small safety issues.
@@ -2550,7 +2558,7 @@ Next Steps:
 2. Convert FastAPI startup/shutdown `@app.on_event` hooks to lifespan to remove warnings.
 3. Connect frontend Intelligence Center to `POST /api/v1/isp-admin/intelligence/run`.
 4. Add better seeded tests for automatic intelligence.
-5. Add list endpoints for predictions/recommendations if dashboard history is needed.
+5. Add prediction list endpoints if dashboard prediction history is needed.
 6. Add simulator/demo controls to generate usage data from dashboard.
 7. Review duplicate generated test/demo data and optionally add cleanup scripts.
 8. Prepare production scheduling plan: worker/cron/queue instead of in-process scheduler.

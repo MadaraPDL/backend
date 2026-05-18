@@ -1989,8 +1989,10 @@ Done:
 - Added scheduler-ready automatic intelligence service.
 - Added environment-gated local/demo scheduler.
 - Added idempotency guard to avoid duplicate prediction/recommendation rows.
+- Step 27D added ISP Admin recommendation viewing routes and connected recommendation history in the real Intelligence Center.
 
 Follow-up:
 - Convert FastAPI `on_event` startup/shutdown hooks to lifespan to remove warnings.
 - Add seeded tests for automatic intelligence once stable test fixtures exist.
+- Add prediction list endpoints if dashboard prediction history is needed.
 - Move scheduler to a production worker/cron system before multi-worker deployment.
