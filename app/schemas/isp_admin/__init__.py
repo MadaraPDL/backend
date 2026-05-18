@@ -7,6 +7,10 @@ from app.schemas.isp_admin.analytics import (
 from app.schemas.isp_admin.device_connection_logs import (
     ISPAdminDeviceConnectionLogResponse,
 )
+from app.schemas.isp_admin.intelligence import (
+    ISPAdminIntelligenceRunItem,
+    ISPAdminIntelligenceRunResponse,
+)
 from app.schemas.isp_admin.plan_change_requests import (
     ISPAdminPlanChangeRequestResponse,
     ISPAdminPlanChangeRequestReviewRequest,
@@ -82,6 +86,8 @@ __all__ = [
     "ISPAdminAlertResponse",
     "ISPAdminAnalyticsSummaryResponse",
     "ISPAdminDeviceConnectionLogResponse",
+    "ISPAdminIntelligenceRunResponse",
+    "ISPAdminIntelligenceRunItem",
     "ISPAdminPlanChangeRequestResponse",
     "ISPAdminPlanChangeRequestReviewRequest",
     "ISPAdminPredictionGenerateRequest",

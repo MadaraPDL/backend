@@ -1914,32 +1914,41 @@ Impact:
 
 ## Current Backend Quality Backlog — Auth/UI Integration Issues
 
+Status update - 2026-05-18:
+
+- P1 local auth rate-limit unblocker is fixed with a DEBUG-only reset endpoint at `POST /api/v1/auth/rate-limit/reset`.
+- P1 `/auth/me` role contract is covered by an API regression test and returns `account_type`, `account_id`, `role`, identity, status, and MFA fields.
+- P1 MFA frontend dead-end is fixed in the real admin web app by wiring MFA verify and MFA setup confirm.
+- P1 frontend production routing is cleaned up so real admin dashboards no longer render the design preview components.
+- Remaining production hardening: replace in-memory rate limiting with Redis/shared-store rate limiting before multi-worker deployment.
+
 ### P1 — Admin login rate limit blocks local development
 Frontend login now sends the required `account_type: "admin"` field, but backend returns:
 - `429 rate_limited`
 - Message: `Too many attempts. Please try again later.`
 
 Required:
-- Locate the login rate-limit implementation.
-- Provide a clean local-dev reset path.
-- Do not weaken production rate limiting.
-- Add documentation for how to clear/reset local auth rate limit during development.
+- Done: implementation is in `app/api/dependencies/rate_limit.py`.
+- Done: local reset is `POST /api/v1/auth/rate-limit/reset` while `DEBUG=True`.
+- Done: production rate limiting is not weakened; reset returns 404 when `DEBUG=False`.
+- Done: docs now describe how to clear/reset local auth rate limit during development.
 - Add/confirm tests for:
   - successful admin login with `account_type=admin`
   - missing `account_type` returns validation error
-  - repeated failures return 429
-  - successful login after lockout expires/reset
+  - Done: repeated failures return 429
+  - Done: successful login attempt behavior after reset
 
 ### P1 — Verify `/auth/me` role contract
 Frontend now falls back to `GET /api/v1/auth/me` to determine admin role.
 
 Required:
-- Ensure `/auth/me` returns enough information for frontend routing:
+- Done: ensure `/auth/me` returns enough information for frontend routing:
   - `account_type`
-  - `role` or `admin_role`
+  - `account_id`
+  - `role`
   - email/username if available
-- Platform Admin must be distinguishable from ISP Admin.
-- App User must not be accepted in admin web login.
+- Done: Platform Admin is distinguishable from ISP Admin by `role`.
+- Done in frontend: App User is not accepted in admin web login.
 
 ### P1 — MFA-required flow incomplete in frontend
 Backend exposes:
@@ -1947,19 +1956,19 @@ Backend exposes:
 - `/api/v1/auth/mfa/setup/confirm`
 
 Required:
-- Confirm exact request/response schema for MFA verify.
-- Connect frontend MFA screen after login returns MFA required.
-- Clarify behavior when admin has `mfa_required=true` but `mfa_enabled=false`.
-- Ensure MFA setup-only flow cannot bypass security.
+- Done: MFA verify uses `POST /api/v1/auth/mfa/verify` with `challenge_token` and `code`.
+- Done: frontend MFA verification screen is connected.
+- Done: `mfa_required=true` and `mfa_enabled=false` returns `mfa_setup_required` and no access token.
+- Done: frontend setup flow calls `POST /api/v1/auth/mfa/setup/confirm`; setup-only flow cannot bypass token issuance.
 
 ### P1 — Frontend/admin production routing
 Current real frontend shell still uses design preview dashboard components as temporary dashboard views.
 
 Required:
-- Replace mock dashboard previews with real routed pages/components.
-- Use backend token/session to protect routes.
-- No visible role switch in production.
-- No App User UI inside production admin web app.
+- Done: mock dashboard preview imports were removed from the real app shell.
+- Done: backend token/session role decides Platform Admin vs ISP Admin routing.
+- Done: no visible role switch in production.
+- Done: App User product preview remains design-only under `npm run dev:design`.
 
 ### P2 — Tests needed
 Add or expand tests for:
@@ -1972,3 +1981,15 @@ Add or expand tests for:
 - invitation flows
 - subscription flows
 - usage/alerts/recommendations once connected.
+
+## Automatic Intelligence Scheduler Follow-up
+
+Done:
+- Added scheduler-ready automatic intelligence service.
+- Added environment-gated local/demo scheduler.
+- Added idempotency guard to avoid duplicate prediction/recommendation rows.
+
+Follow-up:
+- Convert FastAPI `on_event` startup/shutdown hooks to lifespan to remove warnings.
+- Add seeded tests for automatic intelligence once stable test fixtures exist.
+- Move scheduler to a production worker/cron system before multi-worker deployment.

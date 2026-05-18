@@ -1,4 +1,4 @@
-﻿from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -10,6 +10,10 @@ from app.core.api_errors import (
 )
 from app.core.config import settings
 from app.core.openapi import configure_openapi
+from app.services.intelligence_scheduler import (
+    start_intelligence_scheduler,
+    stop_intelligence_scheduler,
+)
 
 
 def create_application() -> FastAPI:
@@ -48,3 +52,13 @@ def create_application() -> FastAPI:
 
 
 app = create_application()
+
+
+@app.on_event("startup")
+async def start_background_services() -> None:
+    start_intelligence_scheduler()
+
+
+@app.on_event("shutdown")
+async def stop_background_services() -> None:
+    await stop_intelligence_scheduler()

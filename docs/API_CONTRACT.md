@@ -258,6 +258,8 @@ Frontend apps should show a friendly message and avoid retrying immediately.
 
 Production note: the current limiter is in-memory. `X-Forwarded-For` is trusted only from configured trusted proxy IPs. Before multi-worker production deployment, replace it with Redis/shared-store rate limiting.
 
+Local development note: while `DEBUG=True`, `POST /api/v1/auth/rate-limit/reset` clears the in-memory limiter for the running backend process. This route is hidden from OpenAPI and returns 404 when `DEBUG=False`.
+
 ---
 
 ## Router Capability Simulator Mode
@@ -300,3 +302,21 @@ OpenAPI components added:
 - APIValidationErrorResponse
 
 Frontend-generated clients should use these schemas instead of FastAPI default detail-based validation errors.
+
+### ISP Admin Automatic Intelligence Scheduler
+
+PulseFi now supports a local/demo automatic intelligence scheduler.
+
+Environment flags:
+- `ENABLE_INTELLIGENCE_SCHEDULER`
+- `INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES`
+
+Behavior:
+- When enabled, the backend periodically checks active ISPs.
+- For each ISP, it checks active subscriptions.
+- It generates missing daily predictions and recommendations.
+- Existing prediction/recommendation records are reused to avoid duplicate rows.
+
+Production note:
+- This scheduler is suitable for local/demo use.
+- Before multi-worker production deployment, move scheduling to a single worker, cron, or job queue to avoid duplicate background runs.

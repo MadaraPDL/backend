@@ -1,10 +1,13 @@
-﻿from pydantic import AliasChoices, Field, model_validator
+from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     APP_NAME: str = Field(default="PulseFi API", validation_alias=AliasChoices("APP_NAME", "app_name"))
     APP_VERSION: str
     DEBUG: bool
+
+    ENABLE_INTELLIGENCE_SCHEDULER: bool = False
+    INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES: int = 60
 
     API_V1_PREFIX: str
 

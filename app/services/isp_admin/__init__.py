@@ -109,3 +109,8 @@ __all__ = [
     "update_subscription_plan_for_isp",
     "update_user_subscription_for_isp",
 ]
+
+from app.services.isp_admin.intelligence_service import (
+    list_active_subscription_ids_for_isp,
+    run_intelligence_for_isp,
+)

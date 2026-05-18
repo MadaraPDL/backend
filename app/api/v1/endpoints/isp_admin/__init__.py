@@ -4,6 +4,7 @@ from . import (
     alerts,
     analytics,
     device_connection_logs,
+    intelligence,
     plan_change_requests,
     plans,
     predictions,
@@ -41,3 +42,4 @@ router.include_router(router_action_logs.router)
 router.include_router(usage_ingestion.router)
 router.include_router(usage_records.router)
 router.include_router(device_connection_logs.router)
+router.include_router(intelligence.router)

@@ -3335,3 +3335,46 @@ Important security/product rules:
 - Platform Admin and ISP Admin are the only admin roles.
 - App User is not an admin role.
 - Design preview hub must stay development-only.
+
+## 2026-05-18 Auth/UI Integration Cleanup
+
+Completed:
+- Added a development-only auth rate-limit reset endpoint:
+  - `POST /api/v1/auth/rate-limit/reset`
+  - Available only when `DEBUG=True`.
+  - Hidden from OpenAPI.
+  - Clears the existing in-memory rate-limit state without changing production limits.
+- Added API regression coverage for:
+  - local DEBUG reset clears the login rate-limit bucket
+  - reset endpoint returns 404 when `DEBUG=False`
+  - `/auth/me` returns the frontend routing shape including `account_type`, `account_id`, `role`, `username`, status, and MFA fields
+- Confirmed backend MFA behavior:
+  - `mfa_required=True` and `mfa_enabled=False` returns `mfa_setup_required` and does not issue an access token.
+  - `mfa_enabled=True` returns `mfa_required` and must be completed through `/api/v1/auth/mfa/verify`.
+- Updated the real admin frontend shell so:
+  - `npm run dev` loads the real admin login/dashboard app.
+  - `npm run dev:design` loads the design preview hub.
+  - the real app no longer renders `PulseFiWhiteDesignPreview` or `PulseFiPlatformAdminWhitePreview`.
+  - routing uses the backend admin role saved from login/MFA result.
+  - only `platform_admin` and `isp_admin` are accepted as admin roles.
+  - MFA verify and MFA setup confirm are wired to backend endpoints.
+- Removed the temporary `src/App.backup.tsx` file from the frontend source tree.
+
+Local dev reset command:
+- If repeated bad login attempts trigger `429 rate_limited` while `DEBUG=True`, call:
+  - `POST http://127.0.0.1:8000/api/v1/auth/rate-limit/reset`
+- Restarting the backend process also clears the in-memory limiter.
+
+Production note:
+- The reset endpoint is disabled outside DEBUG.
+- The limiter is still in-memory and must be replaced with Redis/shared-store rate limiting before multi-worker production deployment.
+
+## Automatic Intelligence Idempotency Update
+
+The automatic intelligence service now avoids duplicate prediction and recommendation rows on repeated scheduler runs.
+
+Behavior:
+- Reuses today's existing prediction for each subscription when present.
+- Reuses an existing recommendation for that prediction when present.
+- Creates only missing prediction/recommendation records.
+- Repeated scheduler ticks should skip/reuse already processed subscriptions instead of duplicating rows.
