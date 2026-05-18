@@ -167,6 +167,15 @@ Important:
 - Frontend origins must be configured in `BACKEND_CORS_ORIGINS`.
 - Wildcard CORS is blocked when `DEBUG=False`.
 
+### Invitation Email Delivery
+
+- `POST /api/v1/platform-admin/isps/{isp_id}/admin-invitations` sends the ISP Admin invitation email through the configured SMTP transport when `EMAIL_DELIVERY_ENABLED=True`.
+- `POST /api/v1/isp-admin/user-invitations` sends the App User invitation email through the configured SMTP transport when `EMAIL_DELIVERY_ENABLED=True`.
+- SMTP configuration uses `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `SMTP_USE_TLS`, and `SMTP_USE_SSL`.
+- Invitation accept links are built from `FRONTEND_ADMIN_URL`.
+- `dev_invitation_token` is a local development helper and is only populated when `DEBUG=True`; production responses must not expose invitation tokens.
+- The frontend should remove `token` from `/accept-invitation` URLs immediately after reading it and submit the token only in the `POST /api/v1/auth/invitations/accept` request body.
+
 ---
 
 ## Standard Error Response Contract

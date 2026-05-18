@@ -38,6 +38,7 @@ router = APIRouter(prefix="/isps/{isp_id}")
 @router.post(
     "/admin-invitations",
     response_model=ISPAdminInvitationResponse,
+    response_model_exclude_none=True,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_isp_admin_invitation_endpoint(
@@ -108,14 +109,14 @@ async def create_isp_admin_invitation_endpoint(
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Invitation was created but email delivery failed. Check SMTP settings.",
+            detail="Invitation email delivery failed. Check SMTP settings.",
         ) from exc
 
     await db.commit()
 
     response_data = ISPAdminInvitationResponse.model_validate(invitation).model_dump()
 
-    # Development-only helper until real email sending is added.
+    # Development-only helper for local invitation testing.
     # Never return invitation tokens in production.
     if settings.DEBUG:
         response_data["dev_invitation_token"] = raw_token
@@ -126,6 +127,7 @@ async def create_isp_admin_invitation_endpoint(
 @router.get(
     "/admin-invitations",
     response_model=list[ISPAdminInvitationResponse],
+    response_model_exclude_none=True,
 )
 async def list_isp_admin_invitations_endpoint(
     isp_id: UUID,
@@ -166,6 +168,7 @@ async def list_isp_admin_invitations_endpoint(
 @router.patch(
     "/admin-invitations/{invitation_id}/revoke",
     response_model=RevokeISPAdminInvitationResponse,
+    response_model_exclude_none=True,
 )
 async def revoke_isp_admin_invitation_endpoint(
     isp_id: UUID,

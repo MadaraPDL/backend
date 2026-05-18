@@ -4,6 +4,7 @@ import asyncio
 import smtplib
 from email.message import EmailMessage
 from html import escape
+from urllib.parse import urlencode
 
 from app.core.config import settings
 
@@ -75,6 +76,16 @@ async def send_email(
     await asyncio.to_thread(_send_message_blocking, message)
 
 
+def _build_accept_invitation_url(*, raw_token: str, account_type: str) -> str:
+    query = urlencode(
+        {
+            "token": raw_token,
+            "account_type": account_type,
+        }
+    )
+    return f"{settings.FRONTEND_ADMIN_URL.rstrip('/')}/accept-invitation?{query}"
+
+
 async def send_isp_admin_invitation_email(
     *,
     to_email: str,
@@ -83,10 +94,9 @@ async def send_isp_admin_invitation_email(
     raw_token: str,
     expires_in_days: int,
 ) -> None:
-    accept_url = (
-        f"{settings.FRONTEND_ADMIN_URL}/accept-invitation"
-        f"?token={raw_token}"
-        f"&account_type=admin"
+    accept_url = _build_accept_invitation_url(
+        raw_token=raw_token,
+        account_type="admin",
     )
 
     display_name = full_name or to_email
@@ -133,6 +143,64 @@ PulseFi
     await send_email(
         to_email=to_email,
         subject=f"PulseFi invitation for {isp_name}",
+        text_body=text_body,
+        html_body=html_body,
+    )
+
+
+async def send_app_user_invitation_email(
+    *,
+    to_email: str,
+    full_name: str | None,
+    raw_token: str,
+    expires_in_days: int,
+) -> None:
+    accept_url = _build_accept_invitation_url(
+        raw_token=raw_token,
+        account_type="app_user",
+    )
+
+    display_name = full_name or to_email
+
+    text_body = f"""
+Hello {display_name},
+
+You have been invited to create a PulseFi App User account.
+
+Open this link to accept the invitation and create your login information:
+
+{accept_url}
+
+This invitation expires in {expires_in_days} day(s).
+
+If you did not expect this invitation, you can ignore this email.
+
+PulseFi
+""".strip()
+
+    html_body = f"""
+<!doctype html>
+<html>
+  <body style="font-family: Arial, sans-serif; color: #102033;">
+    <h2>PulseFi App User Invitation</h2>
+    <p>Hello {escape(display_name)},</p>
+    <p>You have been invited to create a PulseFi App User account.</p>
+    <p>
+      <a href="{escape(accept_url)}"
+         style="display:inline-block;padding:12px 16px;background:#2274a5;color:white;text-decoration:none;border-radius:10px;font-weight:bold;">
+        Accept invitation
+      </a>
+    </p>
+    <p>This invitation expires in {expires_in_days} day(s).</p>
+    <p>If you did not expect this invitation, you can ignore this email.</p>
+    <p>PulseFi</p>
+  </body>
+</html>
+""".strip()
+
+    await send_email(
+        to_email=to_email,
+        subject="PulseFi App User invitation",
         text_body=text_body,
         html_body=html_body,
     )

@@ -19,6 +19,7 @@ from app.schemas.isp_admin import (
     RevokeAppUserInvitationResponse,
 )
 from app.services.account_service import get_account_by_identifier
+from app.services.email import EmailDeliveryError, send_app_user_invitation_email
 from app.services.isp_admin import (
     can_revoke_app_user_invitation,
     create_app_user_invitation,
@@ -35,6 +36,7 @@ router = APIRouter(prefix="/user-invitations")
 @router.post(
     "",
     response_model=AppUserInvitationResponse,
+    response_model_exclude_none=True,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_app_user_invitation_endpoint(
@@ -80,11 +82,25 @@ async def create_app_user_invitation_endpoint(
         current_admin=current_admin,
     )
 
+    try:
+        await send_app_user_invitation_email(
+            to_email=invitation.email,
+            full_name=invitation.full_name,
+            raw_token=raw_token,
+            expires_in_days=request.expires_in_days,
+        )
+    except EmailDeliveryError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Invitation email delivery failed. Check SMTP settings.",
+        ) from exc
+
     await db.commit()
 
     response_data = AppUserInvitationResponse.model_validate(invitation).model_dump()
 
-    # Development-only helper until real email sending is added.
+    # Development-only helper for local invitation testing.
     # Never return invitation tokens in production.
     if settings.DEBUG:
         response_data["dev_invitation_token"] = raw_token
@@ -95,6 +111,7 @@ async def create_app_user_invitation_endpoint(
 @router.get(
     "",
     response_model=list[AppUserInvitationResponse],
+    response_model_exclude_none=True,
 )
 async def list_app_user_invitations_endpoint(
     invitation_status: AppUserInvitationStatus | None = Query(
@@ -129,6 +146,7 @@ async def list_app_user_invitations_endpoint(
 @router.patch(
     "/{invitation_id}/revoke",
     response_model=RevokeAppUserInvitationResponse,
+    response_model_exclude_none=True,
 )
 async def revoke_app_user_invitation_endpoint(
     invitation_id: UUID,

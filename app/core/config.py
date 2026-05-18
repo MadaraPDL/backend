@@ -49,6 +49,11 @@ class Settings(BaseSettings):
                     f"Email delivery is enabled but missing settings: {joined}."
                 )
 
+            if self.SMTP_USERNAME and not self.SMTP_PASSWORD:
+                raise ValueError(
+                    "Email delivery is enabled but SMTP_PASSWORD is missing for SMTP_USERNAME."
+                )
+
         if self.DEBUG:
             return self
 

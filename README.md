@@ -206,6 +206,30 @@ Authentication design:
 - Backup codes are single-use and stored hashed.
 - SMS verification is deferred for now because it adds recurring production cost.
 
+### Email Delivery Configuration
+
+PulseFi invitation emails use SMTP when `EMAIL_DELIVERY_ENABLED=True`.
+
+Required SMTP settings for real delivery:
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_FROM_EMAIL`
+- `SMTP_FROM_NAME`
+- `SMTP_USE_TLS`
+- `SMTP_USE_SSL`
+- `FRONTEND_ADMIN_URL`
+
+If SMTP authentication is needed, set `SMTP_USERNAME` and `SMTP_PASSWORD`. Do not add or commit real secrets to `.env.example`.
+
+Invitation email behavior:
+
+- Platform Admin ISP Admin invitations send through SMTP when email delivery is enabled.
+- ISP Admin App User invitations send through SMTP when email delivery is enabled.
+- `dev_invitation_token` is only populated in API responses while `DEBUG=True`.
+- Production responses must not expose invitation tokens.
+- Invitation links use `/accept-invitation?token=...`; frontends should read the token once, remove it from the URL, and submit it only in the accept-invitation POST body.
+
 ---
 
 ## Backend Technology
@@ -1859,5 +1883,4 @@ Next work:
 - Run Codex backend improvement review.
 - Fix P0/P1 issues from Codex.
 - Then begin frontend integration.
-
 
