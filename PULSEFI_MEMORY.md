@@ -3457,3 +3457,41 @@ Frontend:
 - ISP Admin dashboard now includes ISP Admin invitation management.
 - ISP Admin can create, list, filter, and revoke same-ISP ISP Admin invitations.
 - Development invitation token is shown only if backend returns it.
+
+## Frontend Checkpoint - Final Admin UI/UX Cleanup and Theme Support
+
+Completed final admin web UI/UX cleanup in the frontend repo.
+
+Frontend commit:
+- pulsefi-admin-web: 5ee1003
+
+Completed:
+- Cleaned redundant UI changes from the admin web app.
+- Removed the redundant Platform Admin separate ISP Admin Invitations sidebar/page.
+- Kept Platform Admin ISP Admin invitation create/list/filter/revoke inside ISP Management after selecting an ISP.
+- Preserved Platform Admin ISP Admin Accounts as a separate section for accepted admin accounts.
+- Preserved Platform Admin real features: Overview, ISP Management, ISP Admin Accounts, and System Health/Platform Readiness.
+- Preserved ISP Admin real sections: Overview, Users, App User Invitations, ISP Admin Invitations, Plans, Subscriptions, Routers, Intelligence, Monitoring, Operations, and Network.
+- Added live admin dark/light mode support.
+- Theme persists with localStorage key pulsefi-admin-theme.
+- Live admin wrapper uses data-theme="dark" / data-theme="light".
+- Added topbar theme toggle for Platform Admin and ISP Admin dashboards.
+- Cleaned old CSS patch blocks and temporary layout/auth fixes.
+- Preserved dark login, hidden login logo, full-width login button, forgot-password below password input, compact MFA page, compact MFA code input, and compact MFA buttons.
+- Fixed Platform Admin sidebar/navigation cleanup.
+- Kept table scrolling inside cards and avoided whole-page horizontal scrolling.
+- Deleted temporary CSS backup file src/styles/pulsefi-admin.css.fullwidth-backup.
+
+Validation reported:
+- 
+pm.cmd run lint passed.
+- 
+pm.cmd run build passed.
+- 
+pm.cmd run build -- --mode design passed.
+- git diff --check passed with only CRLF normalization warnings.
+
+Manual smoke test still required:
+- Platform Admin login, theme toggle, Overview, ISPs, ISP Admin Accounts, System Health.
+- ISP Admin login, theme toggle, Overview, Users, App User Invitations, ISP Admin Invitations, Plans, Subscriptions, Routers, Intelligence, Monitoring, Operations, Network.
+- End-to-end invitation flow: ISP Admin invites another ISP Admin, invitee accepts, new ISP Admin logs in and sees same-ISP scoped dashboard.

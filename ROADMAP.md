@@ -2562,3 +2562,23 @@ Next Steps:
 6. Add simulator/demo controls to generate usage data from dashboard.
 7. Review duplicate generated test/demo data and optionally add cleanup scripts.
 8. Prepare production scheduling plan: worker/cron/queue instead of in-process scheduler.
+
+## Admin Web UI/UX Checkpoint
+
+Status: Complete
+
+Completed:
+- Final live admin UI cleanup.
+- Platform Admin redundant invitation page removed.
+- Platform Admin ISP Admin invitations merged into ISP Management.
+- Platform Admin sidebar simplified.
+- ISP Admin dashboard sections preserved.
+- Dark/light theme support added to live admin app.
+- Auth/login/MFA screens polished.
+- Old temporary CSS patches cleaned.
+
+Next:
+- Run full backend + frontend smoke test.
+- Verify Platform Admin selected-ISP workflows.
+- Verify ISP Admin same-ISP invitation acceptance flow.
+- Continue with next product feature after smoke test passes.
