@@ -79,6 +79,7 @@ Important:
 | GET | `/api/v1/isp-admin/analytics/summary` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 200, 422 | Get Analytics Summary Endpoint |
 | GET | `/api/v1/isp-admin/device-connection-logs` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 200, 422 | List Device Connection Logs Endpoint |
 | GET | `/api/v1/isp-admin/device-connection-logs/{connection_log_id}` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 200, 422 | Get Device Connection Log Endpoint |
+| POST | `/api/v1/isp-admin/intelligence/run` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 200, 422 | Run Intelligence Endpoint |
 | GET | `/api/v1/isp-admin/plan-change-requests` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 200, 422 | List Plan Change Requests Endpoint |
 | GET | `/api/v1/isp-admin/plan-change-requests/{request_id}` | ISP Admin Web Dashboard | ISP Admin JWT | `None` | 200, 422 | Get Plan Change Request Endpoint |
 | PATCH | `/api/v1/isp-admin/plan-change-requests/{request_id}/review` | ISP Admin Web Dashboard | ISP Admin JWT | `ISPAdminPlanChangeRequestReviewRequest` | 200, 422 | Review Plan Change Request Endpoint |
@@ -328,6 +329,7 @@ Production note:
 Added ISP Admin recommendation viewing routes:
 - `GET /api/v1/isp-admin/recommendations`
 - `GET /api/v1/isp-admin/recommendations/{recommendation_id}`
+- `POST /api/v1/isp-admin/intelligence/run`
 
 Supported recommendation list filters:
 - `status`
