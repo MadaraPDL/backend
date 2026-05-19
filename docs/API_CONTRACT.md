@@ -344,3 +344,71 @@ Frontend integration notes:
 - The real admin frontend must read the API base URL from `VITE_API_BASE_URL`.
 - Local fallback remains `http://127.0.0.1:8000/api/v1`.
 - `.env`, `.env.local`, `.env.development.local`, and other secret-bearing env files remain uncommitted.
+
+### ISP Admin - ISP Admin Invitations
+
+These endpoints allow an authenticated ISP Admin to invite another ISP Admin under the same ISP.
+
+Important scoping rule:
+- The request does not accept `isp_id`.
+- The backend always uses `current_admin.isp_id`.
+- An ISP Admin cannot invite an admin into another ISP.
+
+#### Create ISP Admin invitation
+
+`POST /api/v1/isp-admin/admin-invitations`
+
+Auth:
+- Bearer token
+- Must be an active `isp_admin`
+
+Request:
+
+``json
+{
+  "email": "new.admin@example.com",
+  "full_name": "New ISP Admin",
+  "expires_in_days": 7
+}
+``
+
+Response:
+
+``json
+{
+  "id": "uuid",
+  "email": "new.admin@example.com",
+  "full_name": "New ISP Admin",
+  "account_type": "admin",
+  "admin_role": "isp_admin",
+  "isp_id": "uuid",
+  "invited_by_admin_id": "uuid",
+  "expires_at": "datetime",
+  "accepted_at": null,
+  "revoked_at": null,
+  "created_at": "datetime",
+  "dev_invitation_token": "debug-only-token"
+}
+``
+
+Notes:
+- `dev_invitation_token` is returned only when `DEBUG=True`.
+- In production, email delivery must be configured.
+
+#### List ISP Admin invitations
+
+`GET /api/v1/isp-admin/admin-invitations`
+
+Optional query:
+- `status=pending`
+- `status=accepted`
+- `status=revoked`
+- `status=expired`
+- `limit`
+- `offset`
+
+#### Revoke ISP Admin invitation
+
+`PATCH /api/v1/isp-admin/admin-invitations/{invitation_id}/revoke`
+
+Only pending invitations can be revoked.

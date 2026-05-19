@@ -3437,3 +3437,23 @@ Validation target:
 - Backend: pytest, compileall, git diff --check, git status.
 - Frontend: lint, production build, design build, git diff --check, git status.
 - Manual browser checks still need backend and frontend running together.
+
+## Frontend/Backend Checkpoint - ISP Admin Invites ISP Admin
+
+Added same-ISP ISP Admin invitation support.
+
+Backend:
+- `POST /api/v1/isp-admin/admin-invitations`
+- `GET /api/v1/isp-admin/admin-invitations`
+- `PATCH /api/v1/isp-admin/admin-invitations/{invitation_id}/revoke`
+
+Security rule:
+- ISP Admin invitation endpoints are scoped by `current_admin.isp_id`.
+- ISP Admin cannot choose or override `isp_id`.
+- Invited account role is always `isp_admin`.
+- Invitation uses existing account invitation acceptance flow.
+
+Frontend:
+- ISP Admin dashboard now includes ISP Admin invitation management.
+- ISP Admin can create, list, filter, and revoke same-ISP ISP Admin invitations.
+- Development invitation token is shown only if backend returns it.

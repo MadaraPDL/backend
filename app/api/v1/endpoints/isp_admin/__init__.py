@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+﻿from fastapi import APIRouter
 
 from . import (
+    admin_invitations,
     alerts,
     analytics,
     device_connection_logs,
@@ -30,6 +31,7 @@ router.include_router(summary.router)
 router.include_router(alerts.router)
 router.include_router(analytics.router)
 router.include_router(reports.router)
+router.include_router(admin_invitations.router)
 router.include_router(user_invitations.router)
 router.include_router(users.router)
 router.include_router(plans.router)
