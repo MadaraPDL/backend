@@ -51,6 +51,8 @@ The mobile app currently exposes:
 - Logout.
 - Light/dark theme toggle.
 - Tab icons and dashboard-style dark theme polish.
+- Dedicated Subscriptions/Plans screen inside the More tab.
+- Subscription list, selected subscription details, status, limits, speed, price, auto-renew, start/end date, and monthly active total.
 
 Current mobile API helpers include calls for:
 
@@ -76,19 +78,14 @@ Current mobile API helpers include calls for:
 
 ### High Priority
 
-1. Dedicated Subscriptions screen
+1. Dedicated Subscriptions screen - completed in mobile Step 31A/31B
 
-Backend endpoints already available:
+Implemented frontend work:
 
-- `GET /api/v1/me/subscriptions`
-- `GET /api/v1/me/subscriptions/{subscription_id}`
-
-Needed frontend work:
-
-- Add a Subscriptions tab or nested screen.
-- Show all subscriptions, not only the active one on Home.
-- Show plan name, data limit, price, status, auto-renew, start/end date.
-- Add subscription detail view.
+- Added Subscriptions/Plans screen inside the More tab.
+- Shows all subscriptions, not only the active one on Home.
+- Shows plan name, data limit, speed, price, status, auto-renew, start/end date, and selected subscription details.
+- Uses `GET /api/v1/me/subscriptions` and `GET /api/v1/me/subscriptions/{subscription_id}`.
 
 2. Dedicated Routers screen
 
@@ -240,13 +237,10 @@ Do not start these unless needed for demo or deployment:
 
 ## Recommended Next Frontend Steps
 
-1. Finish current mobile visual polish and commit/push it.
-2. Add Mobile Subscriptions screen.
-3. Add Mobile Routers screen.
-4. Add Mobile detail screens for alerts/devices/insights/policies.
-5. Add manual plan-change request flow.
-6. Run admin web endpoint coverage review.
-7. Add missing admin web detail panels/modals where needed.
-8. Create final demo runbook.
-9. Update SE diagrams.
-10. Run full phone/admin demo smoke test.
+1. Add Mobile Routers screen.
+2. Add Mobile detail screens for alerts/devices/insights/policies.
+3. Add manual plan-change request flow.
+4. Run admin web endpoint coverage review.
+5. Add missing admin web detail panels/modals where needed.
+6. Update SE diagrams.
+7. Run full phone/admin demo smoke test.
