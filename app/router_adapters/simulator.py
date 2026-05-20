@@ -51,27 +51,60 @@ class SimulatorRouterAdapter:
         *,
         router: Router,
         device: Device,
-        limit_mbps: Decimal,
+        limit_mbps: Decimal | None = None,
+        download_limit_mbps: Decimal | None = None,
+        upload_limit_mbps: Decimal | None = None,
     ) -> RouterActionResult:
-        if limit_mbps <= 0:
+        effective_download_limit = download_limit_mbps or limit_mbps
+        effective_upload_limit = upload_limit_mbps or limit_mbps
+
+        if effective_download_limit is None and effective_upload_limit is None:
             return RouterActionResult(
                 success=False,
                 action_type="bandwidth_limit",
                 status="failed",
-                message="Bandwidth limit must be greater than 0.",
-                error_message="Invalid bandwidth limit.",
+                message="At least one bandwidth limit is required.",
+                error_message="Missing bandwidth limits.",
+            )
+
+        if effective_download_limit is not None and effective_download_limit <= 0:
+            return RouterActionResult(
+                success=False,
+                action_type="bandwidth_limit",
+                status="failed",
+                message="Download limit must be greater than 0.",
+                error_message="Invalid download limit.",
+            )
+
+        if effective_upload_limit is not None and effective_upload_limit <= 0:
+            return RouterActionResult(
+                success=False,
+                action_type="bandwidth_limit",
+                status="failed",
+                message="Upload limit must be greater than 0.",
+                error_message="Invalid upload limit.",
             )
 
         return RouterActionResult(
             success=True,
             action_type="bandwidth_limit",
             status="success",
-            message="Simulated bandwidth limit applied successfully.",
+            message="Simulated directional bandwidth limits applied successfully.",
             response_payload={
                 "adapter": self.adapter_name,
                 "router_id": str(router.id),
                 "device_id": str(device.id),
-                "limit_mbps": str(limit_mbps),
+                "limit_mbps": str(limit_mbps) if limit_mbps is not None else None,
+                "download_limit_mbps": (
+                    str(effective_download_limit)
+                    if effective_download_limit is not None
+                    else None
+                ),
+                "upload_limit_mbps": (
+                    str(effective_upload_limit)
+                    if effective_upload_limit is not None
+                    else None
+                ),
             },
         )
 

@@ -41,6 +41,14 @@ class DeviceNetworkPolicy(Base):
             "status IN ('pending', 'applied', 'failed')",
             name="chk_device_network_policy_status",
         ),
+        CheckConstraint(
+            "download_limit_mbps IS NULL OR download_limit_mbps > 0",
+            name="chk_device_network_policy_download_limit_positive",
+        ),
+        CheckConstraint(
+            "upload_limit_mbps IS NULL OR upload_limit_mbps > 0",
+            name="chk_device_network_policy_upload_limit_positive",
+        ),
         Index("idx_device_network_policies_device_id", "device_id"),
         Index("idx_device_network_policies_router_id", "router_id"),
     )
@@ -72,6 +80,16 @@ class DeviceNetworkPolicy(Base):
     policy_type: Mapped[str] = mapped_column(String, nullable=False)
 
     bandwidth_limit_mbps: Mapped[Decimal | None] = mapped_column(
+        Numeric,
+        nullable=True,
+    )
+
+    download_limit_mbps: Mapped[Decimal | None] = mapped_column(
+        Numeric,
+        nullable=True,
+    )
+
+    upload_limit_mbps: Mapped[Decimal | None] = mapped_column(
         Numeric,
         nullable=True,
     )

@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Protocol
-from uuid import UUID
 
 from app.models.device import Device
 from app.models.router import Router
@@ -55,9 +54,11 @@ class RouterAdapter(Protocol):
         *,
         router: Router,
         device: Device,
-        limit_mbps: Decimal,
+        limit_mbps: Decimal | None = None,
+        download_limit_mbps: Decimal | None = None,
+        upload_limit_mbps: Decimal | None = None,
     ) -> RouterActionResult:
-        """Apply a bandwidth limit to a device if supported."""
+        """Apply directional bandwidth limits to a device if supported."""
         ...
 
     async def apply_device_priority(

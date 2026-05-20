@@ -1,6 +1,7 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import UTC, datetime
+from decimal import Decimal
 from uuid import UUID
 
 from sqlalchemy import select
@@ -42,7 +43,17 @@ async def get_device_policy_for_execution(
     return result.scalar_one_or_none()
 
 
+def _resolve_policy_limits(
+    policy: DeviceNetworkPolicy,
+) -> tuple[Decimal | None, Decimal | None]:
+    download_limit = policy.download_limit_mbps or policy.bandwidth_limit_mbps
+    upload_limit = policy.upload_limit_mbps or policy.bandwidth_limit_mbps
+    return download_limit, upload_limit
+
+
 def _build_command_payload(policy: DeviceNetworkPolicy) -> dict:
+    download_limit, upload_limit = _resolve_policy_limits(policy)
+
     return {
         "policy_id": str(policy.id),
         "policy_type": policy.policy_type,
@@ -53,6 +64,8 @@ def _build_command_payload(policy: DeviceNetworkPolicy) -> dict:
             if policy.bandwidth_limit_mbps is not None
             else None
         ),
+        "download_limit_mbps": str(download_limit) if download_limit is not None else None,
+        "upload_limit_mbps": str(upload_limit) if upload_limit is not None else None,
         "priority_level": policy.priority_level,
     }
 
@@ -87,16 +100,20 @@ async def _execute_policy_with_adapter(
                 message="Router does not support bandwidth limits.",
             )
 
-        if policy.bandwidth_limit_mbps is None:
+        download_limit, upload_limit = _resolve_policy_limits(policy)
+
+        if download_limit is None and upload_limit is None:
             return _failed_result(
                 action_type=ACTION_TYPE_BANDWIDTH_LIMIT,
-                message="Bandwidth limit policy requires bandwidth_limit_mbps.",
+                message="Bandwidth limit policy requires a download or upload limit.",
             )
 
         return await adapter.apply_bandwidth_limit(
             router=router,
             device=device,
             limit_mbps=policy.bandwidth_limit_mbps,
+            download_limit_mbps=download_limit,
+            upload_limit_mbps=upload_limit,
         )
 
     if policy.policy_type == ACTION_TYPE_DEVICE_PRIORITY:
@@ -176,4 +193,3 @@ async def execute_device_network_policy(
     await db.refresh(action_log)
 
     return policy, action_log
-

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from uuid import UUID
 
 from sqlalchemy import select
@@ -57,6 +58,19 @@ async def get_my_device_policy(
     return result.scalar_one_or_none()
 
 
+def _resolve_directional_limits(
+    data: MyDevicePolicyCreate,
+) -> tuple[Decimal | None, Decimal | None, Decimal | None]:
+    download_limit = data.download_limit_mbps or data.bandwidth_limit_mbps
+    upload_limit = data.upload_limit_mbps or data.bandwidth_limit_mbps
+
+    legacy_limit = data.bandwidth_limit_mbps
+    if legacy_limit is None and download_limit is not None and download_limit == upload_limit:
+        legacy_limit = download_limit
+
+    return legacy_limit, download_limit, upload_limit
+
+
 async def create_my_device_policy(
     *,
     db: AsyncSession,
@@ -73,12 +87,16 @@ async def create_my_device_policy(
     if device is None:
         return None
 
+    legacy_limit, download_limit, upload_limit = _resolve_directional_limits(data)
+
     policy = DeviceNetworkPolicy(
         device_id=device.id,
         router_id=device.router_id,
         requested_by_user_id=current_user.id,
         policy_type=data.policy_type,
-        bandwidth_limit_mbps=data.bandwidth_limit_mbps,
+        bandwidth_limit_mbps=legacy_limit,
+        download_limit_mbps=download_limit,
+        upload_limit_mbps=upload_limit,
         priority_level=data.priority_level,
     )
 
