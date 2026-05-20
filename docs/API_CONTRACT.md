@@ -1,4 +1,4 @@
-# PulseFi Backend API Contract
+﻿# PulseFi Backend API Contract
 
 Generated at: `2026-05-18`
 
@@ -170,6 +170,29 @@ Important:
 - Use `/me/...` endpoints with App User accounts.
 - Main responsibilities: user summary, subscriptions, routers, devices, usage, alerts, predictions, recommendations, plan change requests, and device policies.
 - Router capability responses include `integration_mode` and `is_simulator` so the mobile app can clearly label simulator/demo actions.
+
+
+### Device Policy Directional Bandwidth Contract
+
+`POST /api/v1/me/device-policies` supports App User device network policies.
+
+For `policy_type = "bandwidth_limit"`, new mobile clients should send:
+
+```json
+{
+  "device_id": "<device_id>",
+  "policy_type": "bandwidth_limit",
+  "download_limit_mbps": 10,
+  "upload_limit_mbps": 2
+}
+```
+
+Backward compatibility:
+
+- `bandwidth_limit_mbps` is still accepted for older clients.
+- If only `bandwidth_limit_mbps` is sent, the backend treats it as both download and upload limit.
+- `PATCH /api/v1/me/device-policies/{policy_id}/execute` applies the pending policy through the router adapter.
+- Simulator mode stores directional limits in router action payloads.
 
 ### Deployment / CORS
 
@@ -421,3 +444,4 @@ Optional query:
 `PATCH /api/v1/isp-admin/admin-invitations/{invitation_id}/revoke`
 
 Only pending invitations can be revoked.
+
