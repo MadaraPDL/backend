@@ -1,5 +1,6 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
+from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlalchemy import select
@@ -48,3 +49,27 @@ async def get_my_device(
     )
 
     return result.scalar_one_or_none()
+
+
+async def update_my_device_trust(
+    db: AsyncSession,
+    current_user: AppUser,
+    device_id: UUID,
+    is_trusted: bool,
+) -> Device | None:
+    device = await get_my_device(
+        db=db,
+        current_user=current_user,
+        device_id=device_id,
+    )
+
+    if device is None:
+        return None
+
+    device.is_trusted = is_trusted
+    device.updated_at = datetime.now(UTC)
+
+    await db.commit()
+    await db.refresh(device)
+
+    return device

@@ -1,6 +1,7 @@
-from app.services.app_user.device_service import (
+﻿from app.services.app_user.device_service import (
     get_my_device,
     list_my_devices,
+    update_my_device_trust,
 )
 from app.services.app_user.router_service import (
     get_my_router,
@@ -57,6 +58,7 @@ __all__ = [
     "get_my_subscription",
     "get_my_usage_summary",
     "list_my_devices",
+    "update_my_device_trust",
     "list_my_device_usage",
     "list_my_routers",
     "list_my_subscriptions",
