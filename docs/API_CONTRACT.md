@@ -1,4 +1,4 @@
-﻿# PulseFi Backend API Contract
+# PulseFi Backend API Contract
 
 Generated at: `2026-05-18`
 
@@ -32,6 +32,7 @@ Important:
 | PATCH | `/api/v1/me/device-policies/{policy_id}/execute` | Mobile App | App User JWT | `None` | 200, 422 | Execute My Device Policy Endpoint |
 | GET | `/api/v1/me/devices` | Mobile App | App User JWT | `None` | 200, 422 | List My Devices Endpoint |
 | GET | `/api/v1/me/devices/{device_id}` | Mobile App | App User JWT | `None` | 200, 422 | Get My Device Endpoint |
+| PATCH | `/api/v1/me/devices/{device_id}/trust` | Mobile App | App User JWT | `{"is_trusted": true/false}` | 200, 404, 422 | Update My Device Trust Endpoint |
 | GET | `/api/v1/me/plan-change-requests` | Mobile App | App User JWT | `None` | 200, 422 | List My Plan Change Requests Endpoint |
 | POST | `/api/v1/me/plan-change-requests` | Mobile App | App User JWT | `MyPlanChangeRequestCreate` | 201, 422 | Create My Plan Change Request Endpoint |
 | GET | `/api/v1/me/plan-change-requests/{request_id}` | Mobile App | App User JWT | `None` | 200, 422 | Get My Plan Change Request Endpoint |

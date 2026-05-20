@@ -1,4 +1,4 @@
-﻿# PulseFi Frontend Coverage Roadmap
+# PulseFi Frontend Coverage Roadmap
 
 Last updated: 2026-05-20
 
@@ -57,6 +57,8 @@ The mobile app currently exposes:
 - Router list, selected router details, simulator/demo mode, and capability support display.
 - Device detail panel on the Devices screen.
 - Device detail fetches device record and device usage totals from detail endpoints.
+- App User device Trust/Untrust action on the Devices screen.
+- Device policy detail panel on the Devices screen.
 - Alert detail panel on the Alerts screen.
 - Alert detail fetches the full alert record from the alert detail endpoint.
 - Insights detail panels for predictions, recommendations, and plan-change requests.
@@ -71,6 +73,7 @@ Current mobile API helpers include calls for:
 - `GET /api/v1/me/usage/records`
 - `GET /api/v1/me/devices`
 - `GET /api/v1/me/devices/{device_id}`
+- `PATCH /api/v1/me/devices/{device_id}/trust`
 - `GET /api/v1/me/usage/devices`
 - `GET /api/v1/me/usage/devices/{device_id}`
 - `GET /api/v1/me/routers/{router_id}/capabilities`
@@ -86,6 +89,7 @@ Current mobile API helpers include calls for:
 - `GET /api/v1/me/plan-change-requests/{request_id}`
 - `GET /api/v1/me/device-policies`
 - `POST /api/v1/me/device-policies`
+- `GET /api/v1/me/device-policies/{policy_id}`
 - `PATCH /api/v1/me/device-policies/{policy_id}/execute`
 
 ## Mobile App: Missing or Incomplete
@@ -115,14 +119,12 @@ Implemented frontend work:
 
 Backend endpoints already available:
 
-- `GET /api/v1/me/device-policies/{policy_id}`
-
-Needed frontend work:
+Device/detail frontend work completed:
 
 - Device detail panel is completed in mobile Step 33A.
 - Alert detail panel is completed in mobile Step 33B.
 - Prediction, recommendation, and plan-change request detail panels are completed in mobile Step 33C.
-- Still add device policy detail support using `GET /api/v1/me/device-policies/{policy_id}`.
+- Device policy detail panel is completed in mobile Step 34C.
 - Keep details scoped to the logged-in App User only.
 
 4. Manual plan-change request creation
@@ -242,9 +244,10 @@ Do not start these unless needed for demo or deployment:
 
 ## Recommended Next Frontend Steps
 
-1. Add mobile device policy detail support.
-2. Add manual plan-change request flow.
-3. Run admin web endpoint coverage review.
+1. Add manual plan-change request flow.
+2. Add mobile account/auth flows.
+3. Add mobile filters/search.
+4. Run admin web endpoint coverage review.
 4. Add missing admin web detail panels/modals where needed.
 5. Update SE diagrams.
 6. Run full phone/admin demo smoke test.
