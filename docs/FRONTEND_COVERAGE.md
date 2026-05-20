@@ -65,6 +65,9 @@ The mobile app currently exposes:
 - Insights detail panels fetch full records from prediction, recommendation, and plan-change request detail endpoints.
 - Manual Plan Request screen inside the More tab.
 - Manual Plan Request lists available ISP plans and creates plan-change requests without needing a recommendation.
+- Current device policy display on Devices screen.
+- Devices now show only the latest active bandwidth limit and latest active priority policy per device.
+- Users can remove the current bandwidth limit or current priority policy from PulseFi policy state.
 
 Current mobile API helpers include calls for:
 
@@ -94,6 +97,7 @@ Current mobile API helpers include calls for:
 - `GET /api/v1/me/device-policies`
 - `POST /api/v1/me/device-policies`
 - `GET /api/v1/me/device-policies/{policy_id}`
+- `PATCH /api/v1/me/device-policies/{policy_id}/deactivate`
 - `PATCH /api/v1/me/device-policies/{policy_id}/execute`
 
 ## Mobile App: Missing or Incomplete
@@ -143,14 +147,16 @@ Implemented frontend/backend work:
 
 ### Medium Priority
 
-5. Better policy history and execution feedback
+5. Better policy history and execution feedback - partially completed in mobile Step 37A
 
-Needed frontend work:
+Implemented frontend/backend work:
 
-- Show policy detail.
-- Show pending/applied/failed state clearly.
-- Show failure reason.
-- Show latest router action result if exposed to App User later.
+- Device policy detail is shown on the Devices screen.
+- Pending/applied/failed state is shown.
+- Failure reason is shown when available.
+- Only the latest active bandwidth limit and latest active priority policy are shown as current policies.
+- App User can remove/deactivate the current bandwidth limit or priority policy from PulseFi policy state.
+- Latest router action result is still not shown to App User unless a future App User router-action-log endpoint is added.
 
 6. Better filtering/search
 

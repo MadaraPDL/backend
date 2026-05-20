@@ -29,6 +29,7 @@ Important:
 | GET | `/api/v1/me/device-policies` | Mobile App | App User JWT | `None` | 200, 422 | List My Device Policies Endpoint |
 | POST | `/api/v1/me/device-policies` | Mobile App | App User JWT | `MyDevicePolicyCreate` | 201, 422 | Create My Device Policy Endpoint |
 | GET | `/api/v1/me/device-policies/{policy_id}` | Mobile App | App User JWT | `None` | 200, 422 | Get My Device Policy Endpoint |
+| PATCH | `/api/v1/me/device-policies/{policy_id}/deactivate` | Mobile App | App User JWT | `None` | 200, 404, 422 | Deactivate My Device Policy Endpoint |
 | PATCH | `/api/v1/me/device-policies/{policy_id}/execute` | Mobile App | App User JWT | `None` | 200, 422 | Execute My Device Policy Endpoint |
 | GET | `/api/v1/me/devices` | Mobile App | App User JWT | `None` | 200, 422 | List My Devices Endpoint |
 | GET | `/api/v1/me/devices/{device_id}` | Mobile App | App User JWT | `None` | 200, 422 | Get My Device Endpoint |

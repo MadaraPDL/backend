@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-20
 
-Current phase: **Step 35B complete - Manual mobile plan-change requests**.
+Current phase: **Step 37A complete - Current mobile device policies and policy removal**.
 
 Latest completed work:
 
@@ -15,7 +15,17 @@ Latest completed work:
 - Step 34C added Mobile Device Policy detail panel using `GET /api/v1/me/device-policies/{policy_id}`.
 - Step 35A added backend App User available plans endpoint: `GET /api/v1/me/plans`.
 - Step 35B added Mobile Manual Plan Request screen using `POST /api/v1/me/plan-change-requests`.
-- `docs/API_CONTRACT.md` and `docs/FRONTEND_COVERAGE.md` now track the new manual plan-change coverage.
+- Step 36A added mobile filters/search for Alerts, Devices, Recommendations, and Plan Change Requests.
+- Step 37A added backend App User device policy deactivate endpoint: `PATCH /api/v1/me/device-policies/{policy_id}/deactivate`.
+- Step 37A updated mobile Devices so users see only current active bandwidth/priority policy per device.
+- Step 37A added Mobile Remove limit / Remove priority actions.
+- Step 37A cleared stale plan-change success messages on refresh/load.
+
+Current compatibility note:
+
+- Mobile High priority currently uses `priority_level = 5` because the local live database still has an older `chk_policy_priority` constraint.
+- Backend schema/service direction supports priority levels 1-10, but the live DB constraint migration requires the table owner/admin user.
+- Future production migration should remove `chk_policy_priority` and replace it with a 1-10 range constraint.
 
 Current repo paths:
 
@@ -26,7 +36,7 @@ Current repo paths:
 Current next recommended work:
 
 1. Add mobile account/auth flows: forgot/reset password, invitation acceptance, email verification, MFA, and identity update.
-2. Add mobile filters/search for alerts, devices, usage, recommendations, and policies.
+2. Continue mobile filters/search if more detail is needed for Usage records and policy lists.
 3. Run admin web endpoint coverage review against `docs/API_CONTRACT.md` and `docs/FRONTEND_COVERAGE.md`.
 4. Update SE diagrams for mobile flows, trust/untrust devices, router capability checks, device policies, simulator ingestion, and plan-change review.
 
@@ -38,9 +48,10 @@ Rules that remain active:
 - App User mobile screens must not assume router actions are available; check router capabilities first.
 - App User device trust updates must be ownership-scoped to the current App User.
 - Manual App User plan-change requests must validate owned subscription and same-ISP active target plan.
+- Device policy deactivate/remove actions must remain ownership-scoped to the current App User.
 - Do not store raw router passwords until encrypted credential storage exists.
 - Router capability responses must clearly show simulator/demo mode.
-- Future assistants must treat Step 35B as the current documentation checkpoint unless docs show a newer checkpoint.
+- Future assistants must treat Step 37A as the current documentation checkpoint unless docs show a newer checkpoint.
 - Historical sections below may mention older steps; this synchronized block is the current source of truth.
 <!-- PULSEFI_SYNC_END -->
 
