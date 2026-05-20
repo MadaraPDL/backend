@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-20
 
-Current phase: **Step 34C complete - App User trust/untrust devices and mobile policy details**.
+Current phase: **Step 35B complete - Manual mobile plan-change requests**.
 
 Latest completed work:
 
@@ -13,7 +13,9 @@ Latest completed work:
 - Step 34A added backend App User device trust update endpoint: `PATCH /api/v1/me/devices/{device_id}/trust`.
 - Step 34B added Mobile Trust device / Mark untrusted action.
 - Step 34C added Mobile Device Policy detail panel using `GET /api/v1/me/device-policies/{policy_id}`.
-- `docs/API_CONTRACT.md` and `docs/FRONTEND_COVERAGE.md` now track the new mobile/backend coverage.
+- Step 35A added backend App User available plans endpoint: `GET /api/v1/me/plans`.
+- Step 35B added Mobile Manual Plan Request screen using `POST /api/v1/me/plan-change-requests`.
+- `docs/API_CONTRACT.md` and `docs/FRONTEND_COVERAGE.md` now track the new manual plan-change coverage.
 
 Current repo paths:
 
@@ -23,11 +25,10 @@ Current repo paths:
 
 Current next recommended work:
 
-1. Add manual mobile plan-change request UI using `POST /api/v1/me/plan-change-requests`.
-2. Add mobile account/auth flows: forgot/reset password, invitation acceptance, email verification, MFA, and identity update.
-3. Add mobile filters/search for alerts, devices, usage, recommendations, and policies.
-4. Run admin web endpoint coverage review against `docs/API_CONTRACT.md` and `docs/FRONTEND_COVERAGE.md`.
-5. Update SE diagrams for mobile flows, trust/untrust devices, router capability checks, device policies, simulator ingestion, and plan-change review.
+1. Add mobile account/auth flows: forgot/reset password, invitation acceptance, email verification, MFA, and identity update.
+2. Add mobile filters/search for alerts, devices, usage, recommendations, and policies.
+3. Run admin web endpoint coverage review against `docs/API_CONTRACT.md` and `docs/FRONTEND_COVERAGE.md`.
+4. Update SE diagrams for mobile flows, trust/untrust devices, router capability checks, device policies, simulator ingestion, and plan-change review.
 
 Rules that remain active:
 
@@ -36,9 +37,10 @@ Rules that remain active:
 - App User `/me` endpoints must use `get_current_app_user`.
 - App User mobile screens must not assume router actions are available; check router capabilities first.
 - App User device trust updates must be ownership-scoped to the current App User.
+- Manual App User plan-change requests must validate owned subscription and same-ISP active target plan.
 - Do not store raw router passwords until encrypted credential storage exists.
 - Router capability responses must clearly show simulator/demo mode.
-- Future assistants must treat Step 34C as the current documentation checkpoint unless docs show a newer checkpoint.
+- Future assistants must treat Step 35B as the current documentation checkpoint unless docs show a newer checkpoint.
 - Historical sections below may mention older steps; this synchronized block is the current source of truth.
 <!-- PULSEFI_SYNC_END -->
 

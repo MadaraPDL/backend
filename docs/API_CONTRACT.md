@@ -36,6 +36,7 @@ Important:
 | GET | `/api/v1/me/plan-change-requests` | Mobile App | App User JWT | `None` | 200, 422 | List My Plan Change Requests Endpoint |
 | POST | `/api/v1/me/plan-change-requests` | Mobile App | App User JWT | `MyPlanChangeRequestCreate` | 201, 422 | Create My Plan Change Request Endpoint |
 | GET | `/api/v1/me/plan-change-requests/{request_id}` | Mobile App | App User JWT | `None` | 200, 422 | Get My Plan Change Request Endpoint |
+| GET | `/api/v1/me/plans` | Mobile App | App User JWT | `None` | 200 | List My Available Plans Endpoint |
 | GET | `/api/v1/me/predictions` | Mobile App | App User JWT | `None` | 200, 422 | List My Predictions Endpoint |
 | GET | `/api/v1/me/predictions/{prediction_id}` | Mobile App | App User JWT | `None` | 200, 422 | Get My Prediction Endpoint |
 | GET | `/api/v1/me/recommendations` | Mobile App | App User JWT | `None` | 200, 422 | List My Recommendations Endpoint |

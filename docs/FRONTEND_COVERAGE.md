@@ -63,6 +63,8 @@ The mobile app currently exposes:
 - Alert detail fetches the full alert record from the alert detail endpoint.
 - Insights detail panels for predictions, recommendations, and plan-change requests.
 - Insights detail panels fetch full records from prediction, recommendation, and plan-change request detail endpoints.
+- Manual Plan Request screen inside the More tab.
+- Manual Plan Request lists available ISP plans and creates plan-change requests without needing a recommendation.
 
 Current mobile API helpers include calls for:
 
@@ -86,7 +88,9 @@ Current mobile API helpers include calls for:
 - `GET /api/v1/me/recommendations/{recommendation_id}`
 - `POST /api/v1/me/recommendations/{recommendation_id}/plan-change-request`
 - `GET /api/v1/me/plan-change-requests`
+- `POST /api/v1/me/plan-change-requests`
 - `GET /api/v1/me/plan-change-requests/{request_id}`
+- `GET /api/v1/me/plans`
 - `GET /api/v1/me/device-policies`
 - `POST /api/v1/me/device-policies`
 - `GET /api/v1/me/device-policies/{policy_id}`
@@ -127,17 +131,15 @@ Device/detail frontend work completed:
 - Device policy detail panel is completed in mobile Step 34C.
 - Keep details scoped to the logged-in App User only.
 
-4. Manual plan-change request creation
+4. Manual plan-change request creation - completed in mobile Step 35A/35B
 
-Backend endpoint already available:
+Implemented frontend/backend work:
 
-- `POST /api/v1/me/plan-change-requests`
-
-Needed frontend work:
-
-- Add a manual plan-change request form.
-- Let the user choose subscription and target plan where possible.
-- Keep recommendation-based request flow as the faster path.
+- Added `GET /api/v1/me/plans` to list active available plans for the current App User's ISP.
+- Added Manual Plan Request screen inside the More tab.
+- Lets the App User choose a current subscription and target plan.
+- Sends `POST /api/v1/me/plan-change-requests`.
+- Keeps recommendation-based request flow as the faster path.
 
 ### Medium Priority
 
@@ -244,10 +246,9 @@ Do not start these unless needed for demo or deployment:
 
 ## Recommended Next Frontend Steps
 
-1. Add manual plan-change request flow.
-2. Add mobile account/auth flows.
-3. Add mobile filters/search.
-4. Run admin web endpoint coverage review.
+1. Add mobile account/auth flows.
+2. Add mobile filters/search.
+3. Run admin web endpoint coverage review.
 4. Add missing admin web detail panels/modals where needed.
 5. Update SE diagrams.
 6. Run full phone/admin demo smoke test.
