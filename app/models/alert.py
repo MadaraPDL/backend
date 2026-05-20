@@ -32,6 +32,10 @@ class Alert(Base):
             ")",
             name="chk_alert_type",
         ),
+        CheckConstraint(
+            "severity IN ('low', 'medium', 'high', 'critical')",
+            name="chk_alert_severity",
+        ),
         Index("idx_alerts_status", "status"),
         Index("idx_alerts_user_id", "user_id"),
         Index("idx_alerts_user_subscription_id", "user_subscription_id"),
