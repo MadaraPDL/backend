@@ -1,20 +1,20 @@
 ﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-20
 
-Current phase: **Step 29L complete - App User mobile MVP integration with custom directional device bandwidth limits**.
+Current phase: **Step 29M complete locally - Mobile Devices UI capability-aware router actions**.
 
 Latest completed work:
 
-- Mobile App User login/session restore works.
-- Mobile Home, Usage, Devices, Alerts, Insights, and Profile screens are connected.
-- Mobile Insights loads predictions, recommendations, and plan-change requests.
-- Mobile recommendations can create plan-change requests.
-- ISP Admin web now exposes **Run full simulator** from router management.
-- Backend alert severity now allows `medium`, fixing simulator new-device alerts.
-- Backend `device_network_policies` supports `download_limit_mbps` and `upload_limit_mbps`.
-- Legacy `bandwidth_limit_mbps` remains for backward compatibility.
-- Router adapter/execution payloads include directional limits.
-- Mobile Devices screen now supports custom download/upload Mbps instead of fixed `Limit 10 Mbps`.
+- Step 29L completed App User mobile MVP integration with custom directional device bandwidth limits.
+- Step 29M polished the mobile Devices screen after custom limit testing.
+- Mobile Devices now loads router capabilities through `GET /api/v1/me/routers/{router_id}/capabilities`.
+- Each device card now shows router mode/capability status.
+- Custom download/upload bandwidth actions are disabled when the router cannot apply bandwidth limits.
+- Device priority actions are disabled when the router cannot apply device priority.
+- Unsupported actions now show a clear message instead of letting the user create actions blindly.
+- Backend code and schema were not changed for Step 29M.
+- Mobile app local commit: `a146b5a Add capability-aware mobile device actions`.
+- Mobile app currently has no GitHub remote configured, so Step 29M is committed locally but not pushed.
 
 Important active endpoint groups:
 
@@ -23,6 +23,7 @@ Important active endpoint groups:
 - `GET /api/v1/me/summary`
 - `GET /api/v1/me/subscriptions`
 - `GET /api/v1/me/routers`
+- `GET /api/v1/me/routers/{router_id}/capabilities`
 - `GET /api/v1/me/devices`
 - `GET /api/v1/me/usage/summary`
 - `GET /api/v1/me/usage/records`
@@ -45,19 +46,21 @@ Current repo paths:
 
 Current next recommended work:
 
-1. Polish the mobile Devices UI after testing custom limits on phone.
-2. Add capability-aware mobile UI for router actions.
+1. Test the Step 29M mobile Devices UI on phone with simulator data.
+2. Create/connect a GitHub remote for `C:\PulseFi\pulsefi-mobile-app` and push the mobile commits.
 3. Add mobile MFA setup/management later.
-4. Update SE diagrams for mobile device-policy actions and directional bandwidth limits.
+4. Update SE diagrams for mobile device-policy actions, router capability checks, and directional bandwidth limits.
 
 Rules that remain active:
 
 - ISP Admin endpoints must use `get_current_isp_admin`.
 - Every ISP Admin query must be scoped by `current_admin.isp_id`.
 - App User `/me` endpoints must use `get_current_app_user`.
+- App User mobile screens must not assume router actions are available; check router capabilities first.
 - Do not store raw router passwords until encrypted credential storage exists.
 - Router capability responses must clearly show simulator/demo mode.
-- Future assistants must treat Step 29L as complete unless docs show a newer checkpoint.
+- Future assistants must treat Step 29M as complete locally unless docs show a newer checkpoint.
+- Historical sections below may mention older steps; this synchronized block is the current source of truth.
 <!-- PULSEFI_SYNC_END -->
 
 # PulseFi Backend Quality Improvement Backlog
