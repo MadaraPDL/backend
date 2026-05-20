@@ -47,6 +47,7 @@ from app.services.app_user.plan_change_request_service import (
 
 from app.services.app_user.device_policy_service import (
     create_my_device_policy,
+    deactivate_my_device_policy,
     get_my_device_policy,
     list_my_device_policies,
 )
@@ -77,6 +78,7 @@ __all__ = [
     "get_my_plan_change_request",
     "list_my_plan_change_requests",
     "create_my_device_policy",
+    "deactivate_my_device_policy",
     "get_my_device_policy",
     "list_my_device_policies",
     "list_my_available_plans",

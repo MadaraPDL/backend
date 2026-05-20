@@ -1,5 +1,6 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
+from datetime import UTC, datetime
 from decimal import Decimal
 from uuid import UUID
 
@@ -71,6 +72,30 @@ def _resolve_directional_limits(
     return legacy_limit, download_limit, upload_limit
 
 
+async def deactivate_my_device_policy(
+    *,
+    db: AsyncSession,
+    current_user: AppUser,
+    policy_id: UUID,
+) -> DeviceNetworkPolicy | None:
+    policy = await get_my_device_policy(
+        db=db,
+        current_user=current_user,
+        policy_id=policy_id,
+    )
+
+    if policy is None:
+        return None
+
+    policy.is_active = False
+    policy.updated_at = datetime.now(UTC)
+
+    await db.commit()
+    await db.refresh(policy)
+
+    return policy
+
+
 async def create_my_device_policy(
     *,
     db: AsyncSession,
@@ -88,6 +113,20 @@ async def create_my_device_policy(
         return None
 
     legacy_limit, download_limit, upload_limit = _resolve_directional_limits(data)
+    now = datetime.now(UTC)
+
+    active_policy_result = await db.execute(
+        select(DeviceNetworkPolicy).where(
+            DeviceNetworkPolicy.device_id == device.id,
+            DeviceNetworkPolicy.requested_by_user_id == current_user.id,
+            DeviceNetworkPolicy.policy_type == data.policy_type,
+            DeviceNetworkPolicy.is_active.is_(True),
+        )
+    )
+
+    for active_policy in active_policy_result.scalars().all():
+        active_policy.is_active = False
+        active_policy.updated_at = now
 
     policy = DeviceNetworkPolicy(
         device_id=device.id,

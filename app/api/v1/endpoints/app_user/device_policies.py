@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from uuid import UUID
 
@@ -15,6 +15,7 @@ from app.schemas.app_user import (
 )
 from app.services.app_user import (
     create_my_device_policy,
+    deactivate_my_device_policy,
     get_my_device_policy,
     list_my_device_policies,
 )
@@ -77,6 +78,30 @@ async def get_my_device_policy_endpoint(
     current_user: AppUser = Depends(get_current_app_user),
 ) -> MyDevicePolicyResponse:
     policy = await get_my_device_policy(
+        db=db,
+        current_user=current_user,
+        policy_id=policy_id,
+    )
+
+    if policy is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Device policy not found",
+        )
+
+    return policy
+
+
+@router.patch(
+    "/{policy_id}/deactivate",
+    response_model=MyDevicePolicyResponse,
+)
+async def deactivate_my_device_policy_endpoint(
+    policy_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: AppUser = Depends(get_current_app_user),
+) -> MyDevicePolicyResponse:
+    policy = await deactivate_my_device_policy(
         db=db,
         current_user=current_user,
         policy_id=policy_id,
