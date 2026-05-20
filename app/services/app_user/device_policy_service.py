@@ -136,7 +136,9 @@ async def create_my_device_policy(
         bandwidth_limit_mbps=legacy_limit,
         download_limit_mbps=download_limit,
         upload_limit_mbps=upload_limit,
-        priority_level=data.priority_level,
+        priority_level=(
+            5 if data.policy_type == "device_priority" else data.priority_level
+        ),
     )
 
     db.add(policy)
