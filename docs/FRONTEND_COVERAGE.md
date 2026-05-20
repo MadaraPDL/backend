@@ -57,6 +57,8 @@ The mobile app currently exposes:
 - Router list, selected router details, simulator/demo mode, and capability support display.
 - Device detail panel on the Devices screen.
 - Device detail fetches device record and device usage totals from detail endpoints.
+- Alert detail panel on the Alerts screen.
+- Alert detail fetches the full alert record from the alert detail endpoint.
 
 Current mobile API helpers include calls for:
 
@@ -71,6 +73,7 @@ Current mobile API helpers include calls for:
 - `GET /api/v1/me/usage/devices/{device_id}`
 - `GET /api/v1/me/routers/{router_id}/capabilities`
 - `GET /api/v1/me/alerts`
+- `GET /api/v1/me/alerts/{alert_id}`
 - `PATCH /api/v1/me/alerts/{alert_id}/read`
 - `GET /api/v1/me/predictions`
 - `GET /api/v1/me/recommendations`
@@ -107,7 +110,6 @@ Implemented frontend work:
 
 Backend endpoints already available:
 
-- `GET /api/v1/me/alerts/{alert_id}`
 - `GET /api/v1/me/predictions/{prediction_id}`
 - `GET /api/v1/me/recommendations/{recommendation_id}`
 - `GET /api/v1/me/plan-change-requests/{request_id}`
@@ -116,8 +118,9 @@ Backend endpoints already available:
 Needed frontend work:
 
 - Device detail panel is completed in mobile Step 33A.
-- Still add tap-to-open detail screens or bottom sheets for alerts, predictions, recommendations, policies, and plan-change requests.
-- Show full alert, prediction, recommendation, policy, and request details.
+- Alert detail panel is completed in mobile Step 33B.
+- Still add tap-to-open detail screens or bottom sheets for predictions, recommendations, policies, and plan-change requests.
+- Show full prediction, recommendation, policy, and request details.
 - Keep details scoped to the logged-in App User only.
 
 4. Manual plan-change request creation
