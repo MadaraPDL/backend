@@ -1,42 +1,17 @@
 ﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-20
 
-Current phase: **Step 29M complete locally - Mobile Devices UI capability-aware router actions**.
+Current phase: **Step 30D complete - Mobile theme polish, frontend coverage roadmap, and demo runbook documented**.
 
 Latest completed work:
 
-- Step 29L completed App User mobile MVP integration with custom directional device bandwidth limits.
-- Step 29M polished the mobile Devices screen after custom limit testing.
-- Mobile Devices now loads router capabilities through `GET /api/v1/me/routers/{router_id}/capabilities`.
-- Each device card now shows router mode/capability status.
-- Custom download/upload bandwidth actions are disabled when the router cannot apply bandwidth limits.
-- Device priority actions are disabled when the router cannot apply device priority.
-- Unsupported actions now show a clear message instead of letting the user create actions blindly.
-- Backend code and schema were not changed for Step 29M.
-- Mobile app local commit: `a146b5a Add capability-aware mobile device actions`.
-- Mobile app currently has no GitHub remote configured, so Step 29M is committed locally but not pushed.
-
-Important active endpoint groups:
-
-- `POST /api/v1/auth/login`
-- `GET /api/v1/auth/me`
-- `GET /api/v1/me/summary`
-- `GET /api/v1/me/subscriptions`
-- `GET /api/v1/me/routers`
-- `GET /api/v1/me/routers/{router_id}/capabilities`
-- `GET /api/v1/me/devices`
-- `GET /api/v1/me/usage/summary`
-- `GET /api/v1/me/usage/records`
-- `GET /api/v1/me/usage/devices`
-- `GET /api/v1/me/alerts`
-- `GET /api/v1/me/predictions`
-- `GET /api/v1/me/recommendations`
-- `POST /api/v1/me/recommendations/{recommendation_id}/plan-change-request`
-- `GET /api/v1/me/plan-change-requests`
-- `GET /api/v1/me/device-policies`
-- `POST /api/v1/me/device-policies`
-- `PATCH /api/v1/me/device-policies/{policy_id}/execute`
-- `POST /api/v1/isp-admin/usage-ingestion/routers/{router_id}/simulator/run`
+- Step 29M mobile capability-aware device actions are complete and pushed to `https://github.com/MadaraPDL/pulsefi-mobile-app.git`.
+- Step 30A added mobile tab icons and a shared light/dark theme foundation.
+- Step 30B connected mobile screen bodies to the shared theme.
+- Step 30C polished mobile dashboard-style sections, badges, buttons, list cards, and dark-mode readability.
+- `docs/FRONTEND_COVERAGE.md` now documents backend features that are still missing/incomplete in the frontend.
+- `docs/DEMO_RUNBOOK.md` now documents LAN demo setup, password-reset LAN setup, local MFA recovery notes, and final demo checks.
+- Backend code and database schema were not changed for this documentation checkpoint.
 
 Current repo paths:
 
@@ -46,10 +21,13 @@ Current repo paths:
 
 Current next recommended work:
 
-1. Test the Step 29M mobile Devices UI on phone with simulator data.
-2. Create/connect a GitHub remote for `C:\PulseFi\pulsefi-mobile-app` and push the mobile commits.
-3. Add mobile MFA setup/management later.
-4. Update SE diagrams for mobile device-policy actions, router capability checks, and directional bandwidth limits.
+1. Finish and commit/push any remaining mobile theme polish if still uncommitted.
+2. Add Mobile Subscriptions screen using `GET /api/v1/me/subscriptions` and `GET /api/v1/me/subscriptions/{subscription_id}`.
+3. Add Mobile Routers screen using `GET /api/v1/me/routers`, `GET /api/v1/me/routers/{router_id}`, and router capabilities.
+4. Add mobile detail screens for alerts, devices, predictions, recommendations, policies, and plan-change requests.
+5. Add manual mobile plan-change request UI using `POST /api/v1/me/plan-change-requests`.
+6. Run admin web endpoint coverage review against `docs/API_CONTRACT.md` and `docs/FRONTEND_COVERAGE.md`.
+7. Update SE diagrams for mobile flows, router capability checks, device policies, simulator ingestion, and plan-change review.
 
 Rules that remain active:
 
@@ -59,7 +37,7 @@ Rules that remain active:
 - App User mobile screens must not assume router actions are available; check router capabilities first.
 - Do not store raw router passwords until encrypted credential storage exists.
 - Router capability responses must clearly show simulator/demo mode.
-- Future assistants must treat Step 29M as complete locally unless docs show a newer checkpoint.
+- Future assistants must treat Step 30D as the current documentation checkpoint unless docs show a newer checkpoint.
 - Historical sections below may mention older steps; this synchronized block is the current source of truth.
 <!-- PULSEFI_SYNC_END -->
 
