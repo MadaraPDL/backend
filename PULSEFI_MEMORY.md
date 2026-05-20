@@ -3514,3 +3514,67 @@ Frontend:
 - Settings includes theme switching, session details, email/username update with 2FA, password reset email request, shortcuts, and logout.
 - Login forgot-password sends a reset email.
 - `/reset-password?token=...` opens the reset page, reads the token once, removes it from the URL, and submits the reset token only to the reset endpoint.
+
+## Mobile App + Admin State Persistence Checkpoint - 2026-05-20 10:32
+
+Frontend/admin update:
+- Fixed mobile browser/admin dashboard state loss when switching apps.
+- Admin MFA challenge/setup step is persisted in sessionStorage so switching to the authenticator app and returning does not reset back to login.
+- Platform Admin active sidebar section is persisted in localStorage.
+- ISP Admin active sidebar section is persisted in localStorage.
+- This fixes returning from App User Invitations, Settings, Users, etc. back to Overview after browser/app switching.
+
+Mobile app update:
+- Created real App User mobile app project at C:\PulseFi\pulsefi-mobile-app using Expo + React Native + TypeScript.
+- Used Expo SDK 54 for Expo Go compatibility.
+- Installed expo-secure-store and React Navigation dependencies.
+- Added App User login flow using POST /api/v1/auth/login with account_type="app_user".
+- Added SecureStore-backed mobile session persistence.
+- Added API client using EXPO_PUBLIC_API_BASE_URL.
+- Added Home screen connected to GET /api/v1/me/summary.
+- Added AppUserSession and AppUserSummary TypeScript types.
+- Fixed mobile API client syntax issue caused by a malformed fetch template string.
+- Current mobile checkpoint target: login with real App User account and load /me/summary.
+
+Current local mobile project:
+- C:\PulseFi\pulsefi-mobile-app is the active mobile app folder.
+- C:\PulseFi\pulsefi-mobile is the older locked SDK 55 attempt and should be cleaned later after reboot if no longer needed.
+
+Next steps:
+1. Confirm App User mobile login works against LAN backend.
+2. Add mobile bottom tabs.
+3. Add Usage, Devices, Alerts, Subscriptions, Predictions, and Recommendations screens.
+4. Add alert mark-as-read.
+5. Add recommendation-to-plan-change-request action if needed for demo.
+6. Then proceed to deployment/demo readiness.
+
+## Mobile App + Admin State Persistence Checkpoint - 2026-05-20 10:34
+
+Frontend/admin update:
+- Fixed mobile browser/admin dashboard state loss when switching apps.
+- Admin MFA challenge/setup step is persisted in sessionStorage so switching to the authenticator app and returning does not reset back to login.
+- Platform Admin active sidebar section is persisted in localStorage.
+- ISP Admin active sidebar section is persisted in localStorage.
+
+Mobile app update:
+- Created real App User mobile app project at C:\PulseFi\pulsefi-mobile-app using Expo + React Native + TypeScript.
+- Used Expo SDK 54 for Expo Go compatibility.
+- Installed expo-secure-store and React Navigation dependencies.
+- Added App User login flow using POST /api/v1/auth/login with account_type="app_user".
+- Added SecureStore-backed mobile session persistence.
+- Added API client using EXPO_PUBLIC_API_BASE_URL.
+- Added Home screen connected to GET /api/v1/me/summary.
+- Fixed mobile API client malformed fetch template string issue.
+- Current mobile checkpoint target: login with real App User account and load /me/summary.
+
+Current local mobile project:
+- C:\PulseFi\pulsefi-mobile-app is the active mobile app folder.
+- C:\PulseFi\pulsefi-mobile is the older locked SDK 55 attempt and can be cleaned later after reboot if no longer needed.
+
+Next steps:
+1. Confirm App User mobile login works against LAN backend.
+2. Add mobile bottom tabs.
+3. Add Usage, Devices, Alerts, Subscriptions, Predictions, and Recommendations screens.
+4. Add alert mark-as-read.
+5. Add recommendation-to-plan-change-request action if needed for demo.
+6. Then proceed to deployment/demo readiness.

@@ -2368,3 +2368,17 @@ Current backend checkpoint:
 - Keep tests running with ENABLE_INTELLIGENCE_SCHEDULER=false.
 - Do not allow automatic intelligence to create duplicate predictions/recommendations on repeated runs.
 - Next cleanup target: convert FastAPI on_event startup/shutdown hooks to lifespan.
+
+## Latest Working Notes - 2026-05-20 10:32
+
+- When testing admin web or mobile on phone, run backend with --host 0.0.0.0 and use the PC LAN IP in frontend/mobile API URLs.
+- Mobile app should use EXPO_PUBLIC_API_BASE_URL=http://<PC_LAN_IP>:8000/api/v1.
+- Do not commit .env files containing local IPs or SMTP/secrets.
+- Active mobile app folder is pulsefi-mobile-app, not the earlier locked pulsefi-mobile SDK 55 folder.
+
+## Latest Working Notes - 2026-05-20 10:34
+
+- When testing admin web or mobile on phone, run backend with --host 0.0.0.0 and use the PC LAN IP in frontend/mobile API URLs.
+- Mobile app should use EXPO_PUBLIC_API_BASE_URL=http://<PC_LAN_IP>:8000/api/v1.
+- Do not commit .env files containing local IPs or SMTP/secrets.
+- Active mobile app folder is pulsefi-mobile-app, not the earlier locked pulsefi-mobile SDK 55 folder.

@@ -2582,3 +2582,19 @@ Next:
 - Verify Platform Admin selected-ISP workflows.
 - Verify ISP Admin same-ISP invitation acceptance flow.
 - Continue with next product feature after smoke test passes.
+
+## Current Frontend/Mobile Status - 2026-05-20 10:32
+
+- Admin web now preserves pending MFA state during authenticator-app switching.
+- Admin web now preserves current Platform/ISP dashboard section instead of resetting to Overview.
+- App User mobile app MVP has started in C:\PulseFi\pulsefi-mobile-app.
+- Mobile app currently contains login, SecureStore session persistence, API client, and /me/summary Home screen.
+- Next mobile milestone: bottom-tab navigation and real App User screens for usage, devices, alerts, subscriptions, predictions, and recommendations.
+
+## Current Frontend/Mobile Status - 2026-05-20 10:34
+
+- Admin web now preserves pending MFA state during authenticator-app switching.
+- Admin web now preserves current Platform/ISP dashboard section instead of resetting to Overview.
+- App User mobile app MVP has started in C:\PulseFi\pulsefi-mobile-app.
+- Mobile app currently contains login, SecureStore session persistence, API client, and /me/summary Home screen.
+- Next mobile milestone: bottom-tab navigation and real App User screens for usage, devices, alerts, subscriptions, predictions, and recommendations.
