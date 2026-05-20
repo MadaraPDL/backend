@@ -36,6 +36,8 @@ from app.services.app_user.recommendation_service import (
     list_my_recommendations,
 )
 
+from app.services.app_user.plan_service import list_my_available_plans
+
 from app.services.app_user.plan_change_request_service import (
     create_my_plan_change_request,
     create_my_plan_change_request_from_recommendation,
@@ -77,4 +79,5 @@ __all__ = [
     "create_my_device_policy",
     "get_my_device_policy",
     "list_my_device_policies",
+    "list_my_available_plans",
 ]
