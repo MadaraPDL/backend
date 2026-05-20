@@ -1,3 +1,50 @@
+﻿<!-- PULSEFI_SYNC_START -->
+## Current Synchronized PulseFi Checkpoint - 2026-05-20
+
+Current phase: **Step 29A - Mobile App integration / App User React Native MVP**.
+
+The backend MVP is already complete through the main Platform Admin, ISP Admin, App User /me, simulator, usage, alerts, predictions, recommendations, reports, hardening, API contract, and admin-web integration checkpoints.
+
+The current active development focus is now the **mobile app**:
+
+- App User login works normally after the latest fixes.
+- Continue building the React Native / Expo App User mobile app.
+- Mobile app should use App User accounts with ccount_type: "app_user".
+- Mobile authenticated routes must use /api/v1/me/....
+- Do not build App User screens inside the admin web app.
+- Admin web remains for Platform Admin and ISP Admin only.
+- Backend changes during mobile work should be limited to:
+  - API blockers found by the mobile app
+  - response-shape mismatches
+  - small safety fixes
+  - API contract updates when behavior changes
+
+Important current mobile endpoint groups:
+
+- POST /api/v1/auth/login
+- GET /api/v1/auth/me
+- GET /api/v1/me/summary
+- GET /api/v1/me/subscriptions
+- GET /api/v1/me/routers
+- GET /api/v1/me/devices
+- GET /api/v1/me/usage/summary
+- GET /api/v1/me/usage/records
+- GET /api/v1/me/usage/devices
+- GET /api/v1/me/alerts
+- GET /api/v1/me/predictions
+- GET /api/v1/me/recommendations
+- GET /api/v1/me/plan-change-requests
+- GET /api/v1/me/device-policies
+
+Mobile app source reminder:
+
+- Local mobile app path: C:\PulseFi\pulsefi-mobile-app
+- Backend path: C:\PulseFi\backend
+- Admin web path: C:\PulseFi\pulsefi-admin-web
+
+Future assistants must treat this mobile app phase as the current step unless GitHub/local docs show a newer committed checkpoint.
+<!-- PULSEFI_SYNC_END -->
+
 # PulseFi Project Memory
 
 This file is the grouped project context for PulseFi. It should be read before continuing major backend work, especially when starting a new step.
@@ -347,7 +394,7 @@ Current next step:
 
 ---
 
-## Latest Progress Update � 2026-05-14
+## Latest Progress Update ï¿½ 2026-05-14
 
 Backend quality improvements completed:
 
@@ -399,9 +446,9 @@ Step 16F expected rule:
 
 ---
 
-## Step 16 Progress � 2026-05-14
+## Step 16 Progress ï¿½ 2026-05-14
 
-### Step 16F � ISP Admin Router Management Endpoints
+### Step 16F ï¿½ ISP Admin Router Management Endpoints
 
 Completed and tested:
 
@@ -525,7 +572,7 @@ When helping with PulseFi, the assistant/Codex should follow these rules:
 
 ---
 
-## Step 16G � ISP Admin Dashboard Summary
+## Step 16G ï¿½ ISP Admin Dashboard Summary
 
 Completed and tested:
 
@@ -588,9 +635,9 @@ Current backend state:
 
 ---
 
-## Step 17 Progress � 2026-05-14
+## Step 17 Progress ï¿½ 2026-05-14
 
-### Step 17A � App User Mobile Endpoint Foundation
+### Step 17A ï¿½ App User Mobile Endpoint Foundation
 
 Completed and tested:
 
@@ -647,9 +694,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress � 2026-05-14
+## Step 17 Progress ï¿½ 2026-05-14
 
-### Step 17B � App User Subscription Endpoints
+### Step 17B ï¿½ App User Subscription Endpoints
 
 Completed and tested:
 
@@ -700,9 +747,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress � 2026-05-14
+## Step 17 Progress ï¿½ 2026-05-14
 
-### Step 17C � App User Router and Device View Endpoints
+### Step 17C ï¿½ App User Router and Device View Endpoints
 
 Completed and tested:
 
@@ -761,7 +808,7 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17D � App User usage endpoints.
+- Step 17D ï¿½ App User usage endpoints.
 - Required usage behavior:
   - total usage for the logged-in user
   - download/upload/total usage
@@ -891,9 +938,9 @@ Then continue from the latest completed step.
 
 ---
 
-## Step 17 Progress � 2026-05-15
+## Step 17 Progress ï¿½ 2026-05-15
 
-### Step 17E � App User Alert Endpoints
+### Step 17E ï¿½ App User Alert Endpoints
 
 Completed and tested:
 
@@ -924,13 +971,13 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17F � App User predictions and recommendations endpoints, or plan change request endpoints.
+- Step 17F ï¿½ App User predictions and recommendations endpoints, or plan change request endpoints.
 
 ---
 
-## Step 17 Progress � 2026-05-15
+## Step 17 Progress ï¿½ 2026-05-15
 
-### Step 17F � App User Prediction and Recommendation Endpoints
+### Step 17F ï¿½ App User Prediction and Recommendation Endpoints
 
 Completed and tested:
 
@@ -968,13 +1015,13 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17G � App User subscription plan change request endpoints.
+- Step 17G ï¿½ App User subscription plan change request endpoints.
 
 ---
 
-## Step 17 Progress � 2026-05-15
+## Step 17 Progress ï¿½ 2026-05-15
 
-### Step 17G � App User Plan Change Request Endpoints
+### Step 17G ï¿½ App User Plan Change Request Endpoints
 
 Completed and tested:
 
@@ -1011,13 +1058,13 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17H � App User device policy endpoints.
+- Step 17H ï¿½ App User device policy endpoints.
 
 ---
 
-## Step 17 Progress � 2026-05-15
+## Step 17 Progress ï¿½ 2026-05-15
 
-### Step 17H � App User Device Policy Endpoints
+### Step 17H ï¿½ App User Device Policy Endpoints
 
 Completed and tested:
 
@@ -1053,7 +1100,7 @@ Impact:
 
 Next Backend Step:
 
-- Step 18 � Router adapter and simulator layer.
+- Step 18 ï¿½ Router adapter and simulator layer.
 
 
 ## Backend Quality Fixes Completed
@@ -1417,9 +1464,9 @@ Next backend step:
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18A/18B � Router Adapter Interface and Simulator Adapter
+### Step 18A/18B ï¿½ Router Adapter Interface and Simulator Adapter
 
 Completed and tested:
 
@@ -1456,13 +1503,13 @@ Impact:
 
 Next:
 
-- Step 18C � Add service layer that uses the router adapter registry to apply pending device network policies and create router action logs.
+- Step 18C ï¿½ Add service layer that uses the router adapter registry to apply pending device network policies and create router action logs.
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18C � Router Policy Execution Service
+### Step 18C ï¿½ Router Policy Execution Service
 
 Completed and tested:
 
@@ -1499,13 +1546,13 @@ Impact:
 
 Next:
 
-- Step 18D � Add safe API endpoint for executing a pending device policy through the router execution service.
+- Step 18D ï¿½ Add safe API endpoint for executing a pending device policy through the router execution service.
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18D � App User Device Policy Execution Endpoint
+### Step 18D ï¿½ App User Device Policy Execution Endpoint
 
 Completed and tested:
 
@@ -1544,13 +1591,13 @@ Impact:
 
 Next:
 
-- Step 18E � Add ISP Admin/router action log visibility or add tests for policy execution endpoint.
+- Step 18E ï¿½ Add ISP Admin/router action log visibility or add tests for policy execution endpoint.
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18E � ISP Admin Router Action Log Visibility
+### Step 18E ï¿½ ISP Admin Router Action Log Visibility
 
 Completed and tested:
 
@@ -1590,13 +1637,13 @@ Impact:
 
 Next:
 
-- Step 18F � Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.
+- Step 18F ï¿½ Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18F � Router Policy Execution and Router Action Log Integration Tests
+### Step 18F ï¿½ Router Policy Execution and Router Action Log Integration Tests
 
 Completed and tested:
 
@@ -1632,13 +1679,13 @@ Impact:
 
 Next:
 
-- Step 18G � Add router capability visibility endpoint or Step 18 cleanup/docs before moving to Step 19 usage ingestion.
+- Step 18G ï¿½ Add router capability visibility endpoint or Step 18 cleanup/docs before moving to Step 19 usage ingestion.
 
 ---
 
-## Step 18 Progress � 2026-05-16
+## Step 18 Progress ï¿½ 2026-05-16
 
-### Step 18G � App User Router Capability Visibility Endpoint
+### Step 18G ï¿½ App User Router Capability Visibility Endpoint
 
 Completed and tested:
 
@@ -1678,13 +1725,13 @@ Impact:
 
 Next:
 
-- Step 18 cleanup/docs, then Step 19 � usage data ingestion and simulator usage generation.
+- Step 18 cleanup/docs, then Step 19 ï¿½ usage data ingestion and simulator usage generation.
 
 ---
 
-## Step 19 Progress � 2026-05-16
+## Step 19 Progress ï¿½ 2026-05-16
 
-### Step 19A/19B � Simulator Usage Ingestion Service and ISP Admin Trigger Endpoint
+### Step 19A/19B ï¿½ Simulator Usage Ingestion Service and ISP Admin Trigger Endpoint
 
 Completed and tested:
 
@@ -1729,13 +1776,13 @@ Testing:
 
 Next step:
 
-- Step 19C � connected device ingestion/update from simulator data, including device connection logs for new/seen devices.
+- Step 19C ï¿½ connected device ingestion/update from simulator data, including device connection logs for new/seen devices.
 
 ---
 
-## Step 19 Progress — 2026-05-16
+## Step 19 Progress â€” 2026-05-16
 
-### Step 19C — Simulator Connected Device Ingestion
+### Step 19C â€” Simulator Connected Device Ingestion
 
 Completed and tested:
 
@@ -1774,7 +1821,7 @@ Testing:
 
 Next step:
 
-- Step 19D — combine simulator device ingestion and usage ingestion into a single demo ingestion flow, or add ISP Admin visibility for device connection logs.
+- Step 19D â€” combine simulator device ingestion and usage ingestion into a single demo ingestion flow, or add ISP Admin visibility for device connection logs.
 
 ---
 
@@ -3578,3 +3625,4 @@ Next steps:
 4. Add alert mark-as-read.
 5. Add recommendation-to-plan-change-request action if needed for demo.
 6. Then proceed to deployment/demo readiness.
+

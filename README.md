@@ -1,4 +1,51 @@
-﻿# PulseFi Backend
+﻿<!-- PULSEFI_SYNC_START -->
+## Current Synchronized PulseFi Checkpoint - 2026-05-20
+
+Current phase: **Step 29A - Mobile App integration / App User React Native MVP**.
+
+The backend MVP is already complete through the main Platform Admin, ISP Admin, App User /me, simulator, usage, alerts, predictions, recommendations, reports, hardening, API contract, and admin-web integration checkpoints.
+
+The current active development focus is now the **mobile app**:
+
+- App User login works normally after the latest fixes.
+- Continue building the React Native / Expo App User mobile app.
+- Mobile app should use App User accounts with ccount_type: "app_user".
+- Mobile authenticated routes must use /api/v1/me/....
+- Do not build App User screens inside the admin web app.
+- Admin web remains for Platform Admin and ISP Admin only.
+- Backend changes during mobile work should be limited to:
+  - API blockers found by the mobile app
+  - response-shape mismatches
+  - small safety fixes
+  - API contract updates when behavior changes
+
+Important current mobile endpoint groups:
+
+- POST /api/v1/auth/login
+- GET /api/v1/auth/me
+- GET /api/v1/me/summary
+- GET /api/v1/me/subscriptions
+- GET /api/v1/me/routers
+- GET /api/v1/me/devices
+- GET /api/v1/me/usage/summary
+- GET /api/v1/me/usage/records
+- GET /api/v1/me/usage/devices
+- GET /api/v1/me/alerts
+- GET /api/v1/me/predictions
+- GET /api/v1/me/recommendations
+- GET /api/v1/me/plan-change-requests
+- GET /api/v1/me/device-policies
+
+Mobile app source reminder:
+
+- Local mobile app path: C:\PulseFi\pulsefi-mobile-app
+- Backend path: C:\PulseFi\backend
+- Admin web path: C:\PulseFi\pulsefi-admin-web
+
+Future assistants must treat this mobile app phase as the current step unless GitHub/local docs show a newer committed checkpoint.
+<!-- PULSEFI_SYNC_END -->
+
+# PulseFi Backend
 
 PulseFi is a Smart Network Monitoring and Optimization System built for internet users, ISP administrators, and platform administrators.
 
@@ -1931,3 +1978,4 @@ Notes:
 - The automatic run is idempotent for the current day.
 - It reuses existing predictions and recommendations instead of duplicating them every scheduler tick.
 - For production/multi-worker deployment, move scheduling to a dedicated worker, cron job, or queue system.
+
