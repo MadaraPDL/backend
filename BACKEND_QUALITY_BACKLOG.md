@@ -1970,6 +1970,11 @@ Required:
 - Done: backend token/session role decides Platform Admin vs ISP Admin routing.
 - Done: no visible role switch in production.
 - Done: App User product preview remains design-only under `npm run dev:design`.
+- Done: admin settings identity updates now have a backend contract:
+  `POST /api/v1/auth/me/profile-update-challenge` starts MFA verification and
+  `PATCH /api/v1/auth/me/identity` updates email/username after MFA succeeds.
+- Done: password reset requests now send a reset link email instead of relying
+  on a manual token-copy flow; DEBUG can return a local reset URL for testing.
 
 ### P2 — Tests needed
 Add or expand tests for:

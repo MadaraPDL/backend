@@ -217,7 +217,7 @@ Authentication design:
 
 ### Email Delivery Configuration
 
-PulseFi invitation emails use SMTP when `EMAIL_DELIVERY_ENABLED=True`.
+PulseFi invitation and password reset emails use SMTP when `EMAIL_DELIVERY_ENABLED=True`.
 
 Required SMTP settings for real delivery:
 
@@ -235,9 +235,12 @@ Invitation email behavior:
 
 - Platform Admin ISP Admin invitations send through SMTP when email delivery is enabled.
 - ISP Admin App User invitations send through SMTP when email delivery is enabled.
+- Password reset requests send a reset link through SMTP when an account exists.
 - `dev_invitation_token` is only populated in API responses while `DEBUG=True`.
 - Production responses must not expose invitation tokens.
 - Invitation links use `/accept-invitation?token=...`; frontends should read the token once, remove it from the URL, and submit it only in the accept-invitation POST body.
+- Password reset links use `/reset-password?token=...`; frontends should read the token once, remove it from the URL, and submit it only in the reset-password POST body.
+- Admin settings email/username changes use `POST /api/v1/auth/me/profile-update-challenge` and `PATCH /api/v1/auth/me/identity` so the logged-in account verifies the change with MFA before database updates are applied.
 
 ---
 

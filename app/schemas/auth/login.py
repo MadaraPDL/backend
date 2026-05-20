@@ -29,4 +29,5 @@ class AuthTokenResponse(BaseModel):
     account_id: UUID
     full_name: str
     email: EmailStr
+    username: str | None = None
     role: str | None = None

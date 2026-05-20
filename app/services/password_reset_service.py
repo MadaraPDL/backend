@@ -1,5 +1,6 @@
 ﻿from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select, update
@@ -11,6 +12,16 @@ from app.models.app_user import AppUser
 from app.models.password_reset_token import PasswordResetToken
 from app.schemas.auth import AccountType
 from app.services.account_service import Account, get_account_by_identifier
+
+PASSWORD_RESET_EXPIRY_MINUTES = 30
+
+
+@dataclass(frozen=True)
+class PasswordResetTokenResult:
+    raw_token: str
+    email: str
+    full_name: str | None
+    expires_in_minutes: int = PASSWORD_RESET_EXPIRY_MINUTES
 
 
 def _account_token_filter(
@@ -52,7 +63,7 @@ async def create_password_reset_token(
     db: AsyncSession,
     account_type: AccountType,
     identifier: str,
-) -> str | None:
+) -> PasswordResetTokenResult | None:
     account = await get_account_by_identifier(
         db=db,
         account_type=account_type,
@@ -80,7 +91,7 @@ async def create_password_reset_token(
             admin_id=account.id,
             app_user_id=None,
             token_hash=token_hash,
-            expires_at=now + timedelta(minutes=30),
+            expires_at=now + timedelta(minutes=PASSWORD_RESET_EXPIRY_MINUTES),
         )
     else:
         reset_token = PasswordResetToken(
@@ -88,13 +99,17 @@ async def create_password_reset_token(
             admin_id=None,
             app_user_id=account.id,
             token_hash=token_hash,
-            expires_at=now + timedelta(minutes=30),
+            expires_at=now + timedelta(minutes=PASSWORD_RESET_EXPIRY_MINUTES),
         )
 
     db.add(reset_token)
     await db.flush()
 
-    return raw_token
+    return PasswordResetTokenResult(
+        raw_token=raw_token,
+        email=account.email,
+        full_name=account.full_name,
+    )
 
 
 async def get_password_reset_token(

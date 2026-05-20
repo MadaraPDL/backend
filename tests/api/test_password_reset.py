@@ -1,4 +1,5 @@
-﻿import app.api.v1.endpoints.auth.password_reset as password_reset_endpoint
+import app.api.v1.endpoints.auth.password_reset as password_reset_endpoint
+from app.services.password_reset_service import PasswordResetTokenResult
 
 
 def valid_forgot_password_payload():
@@ -8,12 +9,24 @@ def valid_forgot_password_payload():
     }
 
 
-def test_forgot_password_returns_dev_token_in_debug(api_client, monkeypatch):
+def test_forgot_password_sends_reset_link_and_returns_dev_url_in_debug(
+    api_client,
+    monkeypatch,
+):
+    sent_messages = []
+
     def fake_email_guard():
         return None
 
     async def fake_create_password_reset_token(*args, **kwargs):
-        return "fake-reset-token"
+        return PasswordResetTokenResult(
+            raw_token="fake-reset-token",
+            email="admin@test.com",
+            full_name="Admin User",
+        )
+
+    async def fake_send_password_reset_email(**kwargs):
+        sent_messages.append(kwargs)
 
     monkeypatch.setattr(
         password_reset_endpoint,
@@ -25,6 +38,12 @@ def test_forgot_password_returns_dev_token_in_debug(api_client, monkeypatch):
         password_reset_endpoint,
         "create_password_reset_token",
         fake_create_password_reset_token,
+    )
+
+    monkeypatch.setattr(
+        password_reset_endpoint,
+        "send_password_reset_email",
+        fake_send_password_reset_email,
     )
 
     monkeypatch.setattr(
@@ -43,7 +62,15 @@ def test_forgot_password_returns_dev_token_in_debug(api_client, monkeypatch):
     body = response.json()
 
     assert "password reset link will be sent" in body["message"]
-    assert body["dev_reset_token"] == "fake-reset-token"
+    assert body["dev_reset_url"].endswith("/reset-password?token=fake-reset-token")
+    assert sent_messages == [
+        {
+            "to_email": "admin@test.com",
+            "full_name": "Admin User",
+            "raw_token": "fake-reset-token",
+            "expires_in_minutes": 30,
+        }
+    ]
 
 
 def test_forgot_password_blocks_when_email_delivery_guard_blocks(api_client, monkeypatch):
@@ -77,4 +104,3 @@ def test_forgot_password_blocks_when_email_delivery_guard_blocks(api_client, mon
 
     assert response.status_code == 503
     assert "Email delivery is not configured" in response.json()["message"]
-

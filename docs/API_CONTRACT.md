@@ -59,6 +59,8 @@ Important:
 | POST | `/api/v1/auth/invitations/accept` | Shared Auth | Public or token-flow endpoint | `AcceptInvitationRequest` | 201, 422, 429 | Accept Account Invitation |
 | POST | `/api/v1/auth/login` | Shared Auth | Public or token-flow endpoint | `LoginRequest` | 200, 422, 429 | Login |
 | GET | `/api/v1/auth/me` | Mobile App | App User JWT | `None` | 200 | Get Me |
+| PATCH | `/api/v1/auth/me/identity` | Shared Auth | Current account JWT | `UpdateCurrentUserIdentityRequest` | 200, 401, 409, 422, 429 | Update current account email and username after MFA verification |
+| POST | `/api/v1/auth/me/profile-update-challenge` | Shared Auth | Current account JWT | `None` | 200, 400, 422, 429 | Start MFA verification for account settings changes |
 | POST | `/api/v1/auth/mfa/setup/confirm` | Shared Auth | Check endpoint dependency | `MFASetupConfirmRequest` | 200, 422, 429 | Confirm Mfa Setup |
 | POST | `/api/v1/auth/mfa/verify` | Shared Auth | Public or token-flow endpoint | `MFAVerifyRequest` | 200, 422, 429 | Verify Mfa |
 | POST | `/api/v1/auth/password/forgot` | Shared Auth | Public or token-flow endpoint | `ForgotPasswordRequest` | 200, 422, 429 | Forgot Password |
@@ -147,6 +149,10 @@ Important:
 - MFA-required accounts should follow the MFA response flow.
 - Store JWT securely on the client side.
 - Send JWT using `Authorization: Bearer <token>`.
+- Account settings identity changes use a two-step MFA flow:
+  - `POST /api/v1/auth/me/profile-update-challenge`
+  - `PATCH /api/v1/auth/me/identity`
+- Password reset emails send a reset link built from `FRONTEND_ADMIN_URL` and `/reset-password?token=...`; production responses must not expose raw reset tokens.
 
 ### Platform Admin Dashboard
 
@@ -174,6 +180,7 @@ Important:
 
 - `POST /api/v1/platform-admin/isps/{isp_id}/admin-invitations` sends the ISP Admin invitation email through the configured SMTP transport when `EMAIL_DELIVERY_ENABLED=True`.
 - `POST /api/v1/isp-admin/user-invitations` sends the App User invitation email through the configured SMTP transport when `EMAIL_DELIVERY_ENABLED=True`.
+- `POST /api/v1/auth/password/forgot` sends a password reset link through the configured SMTP transport when an account exists.
 - SMTP configuration uses `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `SMTP_USE_TLS`, and `SMTP_USE_SSL`.
 - Invitation accept links are built from `FRONTEND_ADMIN_URL`.
 - `dev_invitation_token` is a local development helper and is only populated when `DEBUG=True`; production responses must not expose invitation tokens.
@@ -247,6 +254,8 @@ Affected endpoints:
 - POST /api/v1/auth/password/forgot
 - POST /api/v1/auth/password/reset
 - POST /api/v1/auth/invitations/accept
+- POST /api/v1/auth/me/profile-update-challenge
+- PATCH /api/v1/auth/me/identity
 
 When the limit is exceeded, the API returns:
 

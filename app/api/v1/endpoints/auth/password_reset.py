@@ -1,10 +1,9 @@
 ﻿from __future__ import annotations
 
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.api.dependencies import rate_limit, require_email_delivery_for_production
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.core.config import settings
 from app.db.session import get_db
 from app.schemas.auth import (
@@ -13,6 +12,10 @@ from app.schemas.auth import (
     ResetPasswordRequest,
     ResetPasswordResponse,
 )
+from app.services.email.email_service import (
+    build_password_reset_url,
+    send_password_reset_email,
+)
 from app.services.password_reset_service import (
     create_password_reset_token,
     reset_password_with_token,
@@ -20,42 +23,50 @@ from app.services.password_reset_service import (
 
 router = APIRouter(prefix="/password")
 
+
 @router.post(
     "/forgot",
     response_model=ForgotPasswordResponse,
-    dependencies=[Depends(rate_limit("auth_password_forgot", max_attempts=5, window_seconds=900))],
+    dependencies=[
+        Depends(rate_limit("auth_password_forgot", max_attempts=5, window_seconds=900))
+    ],
 )
-
 async def forgot_password(
     request: ForgotPasswordRequest,
     db: AsyncSession = Depends(get_db),
-): 
+):
     require_email_delivery_for_production()
 
-    raw_token = await create_password_reset_token(
+    reset_result = await create_password_reset_token(
         db=db,
         account_type=request.account_type,
         identifier=request.identifier,
     )
 
-    if raw_token is not None:
+    if reset_result is not None:
+        await send_password_reset_email(
+            to_email=reset_result.email,
+            full_name=reset_result.full_name,
+            raw_token=reset_result.raw_token,
+            expires_in_minutes=reset_result.expires_in_minutes,
+        )
         await db.commit()
 
     else:
         await db.rollback()
 
-    response = {
+    response: dict[str, str] = {
         "message": (
-
-        "if an account exists for the provided identifier," 
-        "a password reset link will be sent to the associated email address."
+            "If an account exists for the provided identifier, "
+            "a password reset link will be sent to the associated email address."
         )
     }
-    
-    # Development-only helper until real email sending is added.
-    # Never return reset tokens in production.
-    if settings.DEBUG and raw_token is not None:
-        response["dev_reset_token"] = raw_token
+
+    # Development-only helper. Never return reset tokens or reset URLs in production.
+    if settings.DEBUG and reset_result is not None:
+        response["dev_reset_url"] = build_password_reset_url(
+            raw_token=reset_result.raw_token,
+        )
 
     return response
 
@@ -63,9 +74,10 @@ async def forgot_password(
 @router.post(
     "/reset",
     response_model=ResetPasswordResponse,
-    dependencies=[Depends(rate_limit("auth_password_reset", max_attempts=5, window_seconds=900))],
+    dependencies=[
+        Depends(rate_limit("auth_password_reset", max_attempts=5, window_seconds=900))
+    ],
 )
-
 async def reset_password(
     request: ResetPasswordRequest,
     db: AsyncSession = Depends(get_db),
@@ -82,10 +94,9 @@ async def reset_password(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired password reset token.",
         )
-    
+
     await db.commit()
 
     return {
         "message": "Password has been reset successfully. You can now log in with your new password.",
     }
-

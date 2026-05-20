@@ -42,6 +42,8 @@ class FakeDB:
 def _admin_account():
     return SimpleNamespace(
         id=uuid4(),
+        email="admin@test.com",
+        full_name="Admin User",
         password_hash="old-hash",
         password_changed_at=None,
     )
@@ -59,13 +61,16 @@ async def test_create_password_reset_token_invalidates_existing_active_tokens(mo
     monkeypatch.setattr(service, "generate_secure_token", lambda: "raw-token")
     monkeypatch.setattr(service, "hash_token", lambda raw_token: f"hashed-{raw_token}")
 
-    raw_token = await service.create_password_reset_token(
+    result = await service.create_password_reset_token(
         db=db,
         account_type="admin",
         identifier="admin@test.com",
     )
 
-    assert raw_token == "raw-token"
+    assert result is not None
+    assert result.raw_token == "raw-token"
+    assert result.email == account.email
+    assert result.full_name == account.full_name
     assert len(db.executed) == 1
     assert len(db.added) == 1
     assert isinstance(db.added[0], PasswordResetToken)

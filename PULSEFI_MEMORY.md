@@ -3495,3 +3495,22 @@ Manual smoke test still required:
 - Platform Admin login, theme toggle, Overview, ISPs, ISP Admin Accounts, System Health.
 - ISP Admin login, theme toggle, Overview, Users, App User Invitations, ISP Admin Invitations, Plans, Subscriptions, Routers, Intelligence, Monitoring, Operations, Network.
 - End-to-end invitation flow: ISP Admin invites another ISP Admin, invitee accepts, new ISP Admin logs in and sees same-ISP scoped dashboard.
+
+## Admin Settings and Reset Link Checkpoint
+
+Backend:
+- Added reset-link email delivery for `POST /api/v1/auth/password/forgot`.
+- Password reset links use `FRONTEND_ADMIN_URL/reset-password?token=...`.
+- Production responses do not expose raw reset tokens or reset URLs.
+- DEBUG responses may include `dev_reset_url` for local testing.
+- Added authenticated settings identity flow:
+  - `POST /api/v1/auth/me/profile-update-challenge`
+  - `PATCH /api/v1/auth/me/identity`
+- Email/username updates require MFA verification before database updates.
+- No database migration was needed.
+
+Frontend:
+- Settings is now a full dashboard page for Platform Admin and ISP Admin instead of a topbar popover.
+- Settings includes theme switching, session details, email/username update with 2FA, password reset email request, shortcuts, and logout.
+- Login forgot-password sends a reset email.
+- `/reset-password?token=...` opens the reset page, reads the token once, removes it from the URL, and submits the reset token only to the reset endpoint.

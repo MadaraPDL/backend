@@ -21,9 +21,9 @@ class ForgotPasswordResponse(BaseModel):
         "a password reset link will be sent."
     )
 
-    # Development-only helper until real email sending is added.
+    # Development-only helper for local reset-link testing.
     # Do not return this in production.
-    dev_reset_token: str | None = None
+    dev_reset_url: str | None = None
 
 
 class ResetPasswordRequest(BaseModel):

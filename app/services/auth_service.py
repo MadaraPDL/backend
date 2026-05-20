@@ -37,6 +37,7 @@ def build_auth_token_response(
         "account_id": account.id,
         "full_name": account.full_name,
         "email": account.email,
+        "username": account.username,
         "role": getattr(account, "role", None) if account_type == "admin" else None,
     }
 
