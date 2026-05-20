@@ -59,6 +59,8 @@ The mobile app currently exposes:
 - Device detail fetches device record and device usage totals from detail endpoints.
 - Alert detail panel on the Alerts screen.
 - Alert detail fetches the full alert record from the alert detail endpoint.
+- Insights detail panels for predictions, recommendations, and plan-change requests.
+- Insights detail panels fetch full records from prediction, recommendation, and plan-change request detail endpoints.
 
 Current mobile API helpers include calls for:
 
@@ -76,9 +78,12 @@ Current mobile API helpers include calls for:
 - `GET /api/v1/me/alerts/{alert_id}`
 - `PATCH /api/v1/me/alerts/{alert_id}/read`
 - `GET /api/v1/me/predictions`
+- `GET /api/v1/me/predictions/{prediction_id}`
 - `GET /api/v1/me/recommendations`
+- `GET /api/v1/me/recommendations/{recommendation_id}`
 - `POST /api/v1/me/recommendations/{recommendation_id}/plan-change-request`
 - `GET /api/v1/me/plan-change-requests`
+- `GET /api/v1/me/plan-change-requests/{request_id}`
 - `GET /api/v1/me/device-policies`
 - `POST /api/v1/me/device-policies`
 - `PATCH /api/v1/me/device-policies/{policy_id}/execute`
@@ -110,17 +115,14 @@ Implemented frontend work:
 
 Backend endpoints already available:
 
-- `GET /api/v1/me/predictions/{prediction_id}`
-- `GET /api/v1/me/recommendations/{recommendation_id}`
-- `GET /api/v1/me/plan-change-requests/{request_id}`
 - `GET /api/v1/me/device-policies/{policy_id}`
 
 Needed frontend work:
 
 - Device detail panel is completed in mobile Step 33A.
 - Alert detail panel is completed in mobile Step 33B.
-- Still add tap-to-open detail screens or bottom sheets for predictions, recommendations, policies, and plan-change requests.
-- Show full prediction, recommendation, policy, and request details.
+- Prediction, recommendation, and plan-change request detail panels are completed in mobile Step 33C.
+- Still add device policy detail support using `GET /api/v1/me/device-policies/{policy_id}`.
 - Keep details scoped to the logged-in App User only.
 
 4. Manual plan-change request creation
@@ -240,7 +242,7 @@ Do not start these unless needed for demo or deployment:
 
 ## Recommended Next Frontend Steps
 
-1. Add Mobile detail screens for alerts/devices/insights/policies.
+1. Add mobile device policy detail support.
 2. Add manual plan-change request flow.
 3. Run admin web endpoint coverage review.
 4. Add missing admin web detail panels/modals where needed.
