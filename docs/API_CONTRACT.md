@@ -448,3 +448,14 @@ Optional query:
 
 Only pending invitations can be revoked.
 
+### Network / RADIUS / Router Integration Direction
+
+PulseFi should target local ISPs/resellers that receive bandwidth from an upstream provider but manage customers through their own RADIUS/API/router control point.
+
+- RADIUS/API is the source for official customer usage, subscription state, plan/profile changes, suspend/reactivate actions, and billing-driven access control.
+- Router/CPE adapters are the source for optional per-device visibility, live device rates, device counters, trust/untrust, bandwidth limit, and priority actions.
+- Simulator endpoints represent this integration layer for demo and local development.
+- Official subscription usage and estimated per-device usage must be labelled separately in frontend UX.
+- ISP Admin alert views should focus on operational/admin-visible alerts, not every private App User alert.
+
+See `docs/NETWORK_INTEGRATION_DIRECTION.md` for the full architecture note.

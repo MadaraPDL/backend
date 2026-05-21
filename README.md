@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-20
 
-Current phase: **Step 38B complete - Admin web API helper coverage**.
+Current phase: **Step 39A complete - RADIUS/API/router integration direction documented**.
 
 Latest completed work:
 
@@ -22,6 +22,17 @@ Latest completed work:
 - Step 37A cleared stale plan-change success messages on refresh/load.
 - Step 38A reviewed admin web coverage against `docs/API_CONTRACT.md`.
 - Step 38B completed admin web API helper coverage for direct ISP detail, ISP Admin alert/detail, plan-change detail, usage-record detail, device-connection-log detail, router-action-log detail, and separate simulator ingestion actions.
+- Step 39A documented the real-world network integration direction: upstream bandwidth provider, local ISP server/router/RADIUS control point, RADIUS/API for official customer usage/subscriptions/actions, and router/CPE polling for optional per-device usage/actions.
+
+Current architecture direction:
+
+- PulseFi targets local ISPs/resellers that receive bandwidth from an upstream provider but manage customers through their own RADIUS/API/router control point.
+- RADIUS/API is the preferred source for official customer/subscription usage, plan/profile changes, billing-driven suspend/reactivate, and account state.
+- Router/CPE adapters are used for optional per-device visibility and device-level actions when the customer router exposes device data/control.
+- If a router exposes only live per-device rates, PulseFi can estimate per-device usage by polling and accumulating interval usage.
+- Official subscription usage and estimated per-device usage must be labelled separately in frontend UX.
+- Simulator endpoints represent the RADIUS/API/router integration layer for demo/local development.
+- ISP Admin should see billing/subscription/operational data, not every private App User alert.
 
 Current compatibility note:
 
@@ -37,10 +48,11 @@ Current repo paths:
 
 Current next recommended work:
 
-1. Add admin web detail panels for alert, usage record, device-connection log, router-action log, and plan-change request rows.
-2. Add mobile account/auth flows: forgot/reset password, invitation acceptance, email verification, MFA, and identity update.
-3. Add mobile usage filters and final polish.
-4. Update SE diagrams for mobile flows, trust/untrust devices, router capability checks, device policies, simulator ingestion, and plan-change review.
+1. Return to mobile correctness/polish before continuing admin UI expansion.
+2. Add mobile usage filters and clearly label official subscription usage vs estimated per-device usage direction.
+3. Add mobile account/auth flows if needed for demo.
+4. Later add Billing Center / ISP Integration Settings / RADIUS API adapter planning.
+5. Later add admin web detail panels.
 
 Rules that remain active:
 
@@ -48,12 +60,9 @@ Rules that remain active:
 - Every ISP Admin query must be scoped by `current_admin.isp_id`.
 - App User `/me` endpoints must use `get_current_app_user`.
 - App User mobile screens must not assume router actions are available; check router capabilities first.
-- App User device trust updates must be ownership-scoped to the current App User.
-- Manual App User plan-change requests must validate owned subscription and same-ISP active target plan.
-- Device policy deactivate/remove actions must remain ownership-scoped to the current App User.
-- Do not store raw router passwords until encrypted credential storage exists.
-- Router capability responses must clearly show simulator/demo mode.
-- Future assistants must treat Step 38B as the current documentation checkpoint unless docs show a newer checkpoint.
+- Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
+- Future ISP Admin alert visibility should be operational/admin-visible only; private App User alerts should stay App User scoped.
+- Future assistants must treat Step 39A as the current documentation checkpoint unless docs show a newer checkpoint.
 - Historical sections below may mention older steps; this synchronized block is the current source of truth.
 <!-- PULSEFI_SYNC_END -->
 
@@ -1991,4 +2000,13 @@ Notes:
 - It reuses existing predictions and recommendations instead of duplicating them every scheduler tick.
 - For production/multi-worker deployment, move scheduling to a dedicated worker, cron job, or queue system.
 
+## Network Integration Direction
 
+PulseFi targets local ISPs/resellers that receive bandwidth from an upstream provider but manage customers through their own RADIUS/API/router control point.
+
+- RADIUS/API is the preferred source for official customer usage, subscription state, plan/profile changes, billing status, suspend/reactivate actions, and quota/speed enforcement.
+- Router/CPE adapters are used for optional per-device usage, device trust/untrust, bandwidth limits, and priority actions when the customer router exposes that data/control.
+- If a router only exposes live per-device rates, PulseFi can estimate per-device usage by polling regularly and accumulating interval usage.
+- Simulator endpoints represent the RADIUS/API/router integration layer for local development and the FYP demo.
+
+Full detail: `docs/NETWORK_INTEGRATION_DIRECTION.md`.
