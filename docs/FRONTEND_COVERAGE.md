@@ -187,11 +187,20 @@ Needed frontend work:
 - Add forgot/reset password mobile-friendly flow if needed.
 - Add email/username update only through the backend challenge flow.
 
-## Admin Web: Coverage Review Needed
+## Admin Web: Coverage Status
 
-The admin web should be reviewed against the API contract endpoint by endpoint.
+Step 38A/38B reviewed the admin web against the backend API contract and completed the admin web API helper layer for demo-critical coverage.
 
 ### Platform Admin
+
+Current status: **mostly covered for demo**.
+
+Step 38B added/confirmed admin web API helper coverage for:
+
+- Direct ISP detail helper: `GET /api/v1/platform-admin/isps/{isp_id}`.
+- Existing ISP list/create/update helpers.
+- Existing ISP Admin invitation create/list/revoke helpers.
+- Existing ISP Admin list/detail/update helpers.
 
 Backend supports:
 
@@ -200,7 +209,7 @@ Backend supports:
 - ISP Admin invitation create/list/revoke.
 - ISP Admin list/detail/update.
 
-Coverage questions:
+Coverage questions after Step 38B:
 
 - Can the Platform Admin reach each workflow easily?
 - Are detail/update views clear enough for demo?
@@ -208,6 +217,19 @@ Coverage questions:
 - Is role routing still backend-derived?
 
 ### ISP Admin
+
+Current status: **API helper layer mostly covered for demo; detail UI panels still need final polish**.
+
+Step 38B added/confirmed admin web API helper coverage for:
+
+- Alert detail: `GET /api/v1/isp-admin/alerts/{alert_id}`.
+- Plan-change request detail: `GET /api/v1/isp-admin/plan-change-requests/{request_id}`.
+- Usage-record detail: `GET /api/v1/isp-admin/usage-records/{usage_record_id}`.
+- Device-connection-log detail: `GET /api/v1/isp-admin/device-connection-logs/{connection_log_id}`.
+- Router-action-log detail: `GET /api/v1/isp-admin/router-action-logs/{action_log_id}`.
+- Separate simulator usage ingestion.
+- Separate simulator device ingestion.
+- Full simulator ingestion with optional payload support.
 
 Backend supports:
 
@@ -229,7 +251,7 @@ Backend supports:
 - Plan-change requests list/detail/review.
 - Intelligence run endpoint.
 
-Coverage questions:
+Coverage questions after Step 38B:
 
 - Is each backend group visible in the dashboard?
 - Are important details accessible, not only list rows?

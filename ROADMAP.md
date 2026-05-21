@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-20
 
-Current phase: **Step 37A complete - Current mobile device policies and policy removal**.
+Current phase: **Step 38B complete - Admin web API helper coverage**.
 
 Latest completed work:
 
@@ -20,6 +20,8 @@ Latest completed work:
 - Step 37A updated mobile Devices so users see only current active bandwidth/priority policy per device.
 - Step 37A added Mobile Remove limit / Remove priority actions.
 - Step 37A cleared stale plan-change success messages on refresh/load.
+- Step 38A reviewed admin web coverage against `docs/API_CONTRACT.md`.
+- Step 38B completed admin web API helper coverage for direct ISP detail, ISP Admin alert/detail, plan-change detail, usage-record detail, device-connection-log detail, router-action-log detail, and separate simulator ingestion actions.
 
 Current compatibility note:
 
@@ -35,9 +37,9 @@ Current repo paths:
 
 Current next recommended work:
 
-1. Add mobile account/auth flows: forgot/reset password, invitation acceptance, email verification, MFA, and identity update.
-2. Continue mobile filters/search if more detail is needed for Usage records and policy lists.
-3. Run admin web endpoint coverage review against `docs/API_CONTRACT.md` and `docs/FRONTEND_COVERAGE.md`.
+1. Add admin web detail panels for alert, usage record, device-connection log, router-action log, and plan-change request rows.
+2. Add mobile account/auth flows: forgot/reset password, invitation acceptance, email verification, MFA, and identity update.
+3. Add mobile usage filters and final polish.
 4. Update SE diagrams for mobile flows, trust/untrust devices, router capability checks, device policies, simulator ingestion, and plan-change review.
 
 Rules that remain active:
@@ -51,7 +53,7 @@ Rules that remain active:
 - Device policy deactivate/remove actions must remain ownership-scoped to the current App User.
 - Do not store raw router passwords until encrypted credential storage exists.
 - Router capability responses must clearly show simulator/demo mode.
-- Future assistants must treat Step 37A as the current documentation checkpoint unless docs show a newer checkpoint.
+- Future assistants must treat Step 38B as the current documentation checkpoint unless docs show a newer checkpoint.
 - Historical sections below may mention older steps; this synchronized block is the current source of truth.
 <!-- PULSEFI_SYNC_END -->
 
