@@ -110,6 +110,32 @@ async def get_account_from_challenge(
     return await db.get(AppUser, challenge.app_user_id)
 
 
+async def has_available_backup_codes(
+    db: AsyncSession,
+    account: Account,
+    account_type: AccountType,
+) -> bool:
+    owner_filter = (
+        MFABackupCode.admin_id == account.id
+        if account_type == "admin"
+        else MFABackupCode.app_user_id == account.id
+    )
+
+    stmt = (
+        select(MFABackupCode.id)
+        .where(
+            MFABackupCode.account_type == account_type,
+            MFABackupCode.used_at.is_(None),
+            MFABackupCode.revoked_at.is_(None),
+            owner_filter,
+        )
+        .limit(1)
+    )
+
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none() is not None
+
+
 async def verify_backup_code(
     db: AsyncSession,
     account: Account,

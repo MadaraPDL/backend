@@ -1,4 +1,4 @@
-﻿# PulseFi Backend API Contract
+# PulseFi Backend API Contract
 
 Generated at: `2026-05-18`
 
@@ -533,3 +533,28 @@ Backup-code management still needs completed API/UI work:
 - Surface `backup_codes_available` during MFA login only when unused backup codes exist.
 <!-- PULSEFI_MFA_API_SYNC_END -->
 
+---
+
+## Step 40E MFA Login Fallback Contract Update - 2026-05-22
+
+Admin/App User login MFA behavior:
+
+- `POST /api/v1/auth/login` accepts only `account_type`, `identifier`, and `password` for normal login UX.
+- The login page must not ask users to choose an MFA method before password verification.
+- When MFA is required, the backend returns the preferred MFA challenge first.
+- `MFARequiredResponse` now includes:
+  - `active_methods`: list of active login MFA methods, currently `email` and/or `authenticator`
+  - `backup_codes_available`: boolean showing whether unused recovery codes exist
+- `PATCH /api/v1/auth/mfa/challenge-method` switches an active MFA challenge to another active method after password verification.
+- Backup codes are recovery codes only and must not be treated as `preferred_mfa_method`.
+- `preferred_mfa_method` remains limited to `email` or `authenticator`.
+- `dev_email_code` may appear only in local development when `DEBUG=True`.
+- Production must not expose OTP/dev codes.
+
+Admin web behavior:
+
+- Admin login asks only for identifier/email and password.
+- MFA fallback actions appear only after password succeeds.
+- “Send code to email” appears only when Email MFA is active.
+- “Use authenticator app” appears only when Authenticator MFA is active and not already the active challenge.
+- “Use backup code” appears only when `backup_codes_available=true`.

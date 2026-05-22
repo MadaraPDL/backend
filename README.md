@@ -1,7 +1,7 @@
-﻿<!-- PULSEFI_SYNC_START -->
+<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 40D MFA login/fallback design checkpoint**.
+Current phase: **Step 40E complete - MFA login fallback UX and response contract cleanup**.
 
 Latest completed backend work:
 
@@ -11,8 +11,9 @@ Latest completed backend work:
 - Backend keeps legacy `mfa_enabled` synchronized from active MFA method flags.
 - Backend sends email MFA login codes through the shared email service when Email MFA is selected and email delivery is enabled.
 - Backend supports verified MFA settings actions before enabling, disabling, or changing preferred MFA methods.
-- Backend supports selecting an MFA method during login at API level.
 - Backend supports switching an existing MFA challenge to another active method through the MFA challenge-method flow.
+- Step 40E updated `MFARequiredResponse` to expose `active_methods` and `backup_codes_available`.
+- Step 40E added backup-code availability detection for login MFA fallback display.
 - Backend already has `mfa_backup_codes` model and verification fallback support, but backup-code generation/regeneration APIs and UI are still pending.
 
 Latest completed admin web work:
@@ -22,7 +23,12 @@ Latest completed admin web work:
 - Admin Settings email verification sends a code first.
 - Admin Settings authenticator verification allows direct code entry.
 - Admin Settings MFA UI has been styled and committed.
-- A pre-login admin MFA method selector was added, but this is **not the final product UX** and must be reworked.
+- Step 40E removed the pre-login admin MFA method selector.
+- Admin login now asks only for identifier/email and password before MFA.
+- Admin MFA verification page now shows fallback actions after password succeeds.
+- Email fallback appears only when Email MFA is active.
+- Backup-code fallback appears only when unused backup codes exist.
+- MFA fallback UI was polished so it fits the PulseFi dark/light admin style.
 
 Current product decision for MFA login UX:
 
@@ -38,16 +44,10 @@ Current product decision for MFA login UX:
 
 Correct next recommended work:
 
-1. Clean/rework admin web so the pre-login MFA method selector is removed.
-2. Keep backend preferred-method login as the default login challenge behavior.
-3. Expose login MFA fallback availability clearly:
-   - email fallback availability
-   - backup-code availability
-4. Update admin MFA verification page to show fallback actions after password succeeds:
-   - “Send code to email” only if Email MFA is active
-   - “Use backup code” only if unused backup codes exist
-5. Add backup-code generation/regeneration endpoints and Admin Settings UI.
-6. Then continue with Mobile App User MFA verification.
+1. Add backup-code generation/regeneration endpoints.
+2. Add Admin Settings UI for viewing backup-code status and regenerating codes.
+3. Make backup-code display one-time only and store only hashes.
+4. Then continue with Mobile App User MFA verification.
 
 Rules that remain active:
 
@@ -2012,5 +2012,3 @@ PulseFi targets local ISPs/resellers that receive bandwidth from an upstream pro
 - Simulator endpoints represent the RADIUS/API/router integration layer for local development and the FYP demo.
 
 Full detail: `docs/NETWORK_INTEGRATION_DIRECTION.md`.
-
-

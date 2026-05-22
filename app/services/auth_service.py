@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import datetime, timezone
 
@@ -21,6 +21,7 @@ from app.services.mfa_service import (
     create_mfa_challenge,
     get_account_from_challenge,
     get_mfa_challenge_by_token,
+    has_available_backup_codes,
     is_mfa_challenge_active,
     verify_mfa_challenge_code,
 )
@@ -61,6 +62,7 @@ def _build_mfa_required_response(
     raw_challenge_token: str,
     method: MFAMethod,
     active_methods: list[MFAMethod],
+    backup_codes_available: bool,
     expires_at,
 ) -> dict:
     return {
@@ -68,7 +70,7 @@ def _build_mfa_required_response(
         "challenge_token": raw_challenge_token,
         "method": method,
         "active_methods": active_methods,
-        "backup_codes_available": False,
+        "backup_codes_available": backup_codes_available,
         "expires_at": expires_at,
         "message": "MFA verification is required to complete login.",
     }
@@ -99,10 +101,17 @@ async def _create_login_mfa_response(
             expires_in_minutes=10,
         )
 
+    backup_codes_available = await has_available_backup_codes(
+        db=db,
+        account=account,
+        account_type=account_type,
+    )
+
     return _build_mfa_required_response(
         raw_challenge_token=raw_challenge_token,
         method=method,
         active_methods=get_active_mfa_methods(account),
+        backup_codes_available=backup_codes_available,
         expires_at=challenge.expires_at,
     ), raw_email_code
 

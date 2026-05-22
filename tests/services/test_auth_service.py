@@ -133,9 +133,17 @@ async def test_login_requires_mfa_challenge_when_enabled(monkeypatch):
         fake_authenticate_account,
     )
 
+    async def fake_has_available_backup_codes(*args, **kwargs):
+        return False
+
     monkeypatch.setattr(
         "app.services.auth_service.create_mfa_challenge",
         fake_create_mfa_challenge,
+    )
+
+    monkeypatch.setattr(
+        "app.services.auth_service.has_available_backup_codes",
+        fake_has_available_backup_codes,
     )
 
     result = await start_login(
@@ -151,6 +159,8 @@ async def test_login_requires_mfa_challenge_when_enabled(monkeypatch):
 
     assert response_data["mfa_required"] is True
     assert response_data["challenge_token"] == "challenge-token"
+    assert response_data["active_methods"] == ["authenticator"]
+    assert response_data["backup_codes_available"] is False
 
 @pytest.mark.asyncio
 async def test_login_blocks_email_mfa_without_email_delivery_in_production(monkeypatch):

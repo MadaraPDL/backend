@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import datetime
 from uuid import UUID
@@ -12,6 +12,8 @@ class MFARequiredResponse(BaseModel):
     mfa_required: bool = True
     challenge_token: str
     method: MFAMethod
+    active_methods: list[MFAMethod] = Field(default_factory=list)
+    backup_codes_available: bool = False
     expires_at: datetime
     message: str = "MFA verification is required to complete login."
 
