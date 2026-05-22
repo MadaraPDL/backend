@@ -1,7 +1,7 @@
-<!-- PULSEFI_SYNC_START -->
-## Current Synchronized PulseFi Checkpoint - 2026-05-20
+﻿<!-- PULSEFI_SYNC_START -->
+## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 39A complete - RADIUS/API/router integration direction documented**.
+Current phase: **Step 39B complete - Mobile usage source filters and LAN API auto-detection**.
 
 Latest completed work:
 
@@ -23,6 +23,11 @@ Latest completed work:
 - Step 38A reviewed admin web coverage against `docs/API_CONTRACT.md`.
 - Step 38B completed admin web API helper coverage for direct ISP detail, ISP Admin alert/detail, plan-change detail, usage-record detail, device-connection-log detail, router-action-log detail, and separate simulator ingestion actions.
 - Step 39A documented the real-world network integration direction: upstream bandwidth provider, local ISP server/router/RADIUS control point, RADIUS/API for official customer usage/subscriptions/actions, and router/CPE polling for optional per-device usage/actions.
+- Step 39B added Mobile Usage filters for All / Official / Estimated records.
+- Step 39B labelled official subscription usage separately from estimated per-device router/CPE usage.
+- Step 39B improved mobile API error parsing for backend validation errors.
+- Step 39B added mobile LAN API auto-detection through Expo/web/native host detection when `EXPO_PUBLIC_API_BASE_URL` is not set.
+- Step 39B fixed mobile Devices TypeScript issues around missing style references and nullable router capability lookup.
 
 Current architecture direction:
 
@@ -33,12 +38,14 @@ Current architecture direction:
 - Official subscription usage and estimated per-device usage must be labelled separately in frontend UX.
 - Simulator endpoints represent the RADIUS/API/router integration layer for demo/local development.
 - ISP Admin should see billing/subscription/operational data, not every private App User alert.
+- Local LAN development should avoid committing fixed PC IP addresses; admin web and mobile should prefer dynamic host detection where possible.
 
 Current compatibility note:
 
 - Mobile High priority currently uses `priority_level = 5` because the local live database still has an older `chk_policy_priority` constraint.
 - Backend schema/service direction supports priority levels 1-10, but the live DB constraint migration requires the table owner/admin user.
 - Future production migration should remove `chk_policy_priority` and replace it with a 1-10 range constraint.
+- Backend local development may use wildcard CORS only when `DEBUG=True`; production must use explicit trusted origins.
 
 Current repo paths:
 
@@ -48,9 +55,9 @@ Current repo paths:
 
 Current next recommended work:
 
-1. Return to mobile correctness/polish before continuing admin UI expansion.
-2. Add mobile usage filters and clearly label official subscription usage vs estimated per-device usage direction.
-3. Add mobile account/auth flows if needed for demo.
+1. Run a full LAN demo smoke test across backend, admin web, and mobile.
+2. Add or polish mobile account/auth flows if needed for demo, especially MFA/setup messaging.
+3. Continue mobile correctness/polish before expanding admin UI further.
 4. Later add Billing Center / ISP Integration Settings / RADIUS API adapter planning.
 5. Later add admin web detail panels.
 
@@ -62,7 +69,7 @@ Rules that remain active:
 - App User mobile screens must not assume router actions are available; check router capabilities first.
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
 - Future ISP Admin alert visibility should be operational/admin-visible only; private App User alerts should stay App User scoped.
-- Future assistants must treat Step 39A as the current documentation checkpoint unless docs show a newer checkpoint.
+- Future assistants must treat Step 39B as the current documentation checkpoint unless docs show a newer checkpoint.
 - Historical sections below may mention older steps; this synchronized block is the current source of truth.
 <!-- PULSEFI_SYNC_END -->
 
@@ -1660,9 +1667,9 @@ Next:
 
 ---
 
-## Step 19 Progress — Usage Data Ingestion
+## Step 19 Progress â€” Usage Data Ingestion
 
-### Step 19A/19B — Completed
+### Step 19A/19B â€” Completed
 
 Completed:
 
@@ -2557,7 +2564,7 @@ Next backend work:
 
 
 
-## Current Roadmap Update — Admin Frontend/Auth Handoff
+## Current Roadmap Update â€” Admin Frontend/Auth Handoff
 
 ### Completed / In Progress
 - Admin frontend now has a separated design preview mode and real app mode.
@@ -2606,7 +2613,7 @@ Next backend work:
    - Usage prediction/recommendations.
    - Deployment and final presentation polish.
 
-## Current Backend Checkpoint — Automatic Intelligence
+## Current Backend Checkpoint â€” Automatic Intelligence
 
 Completed:
 - Added `POST /api/v1/isp-admin/intelligence/run`.
@@ -2678,3 +2685,4 @@ Planned future modules:
 3. RADIUS/API Adapter for official usage sync, profile changes, and account status updates.
 4. Router/CPE Adapter for connected devices, live per-device rates, counters, and device-level actions.
 5. Alert Visibility Hardening so ISP Admin sees operational alerts only.
+
