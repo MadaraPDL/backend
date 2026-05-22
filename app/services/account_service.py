@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from typing import TypeAlias
 
@@ -66,11 +66,49 @@ def get_default_mfa_method(account_type: AccountType) -> MFAMethod:
     return "authenticator" if account_type == "admin" else "email"
 
 
+def is_email_mfa_active(account: Account) -> bool:
+    return bool(getattr(account, "email_mfa_enabled", False))
+
+
+def is_authenticator_mfa_active(account: Account) -> bool:
+    return bool(getattr(account, "authenticator_mfa_enabled", False))
+
+
+def is_any_mfa_method_active(account: Account) -> bool:
+    return is_email_mfa_active(account) or is_authenticator_mfa_active(account)
+
+
+def get_active_mfa_methods(account: Account) -> list[MFAMethod]:
+    methods: list[MFAMethod] = []
+
+    if is_email_mfa_active(account):
+        methods.append("email")
+
+    if is_authenticator_mfa_active(account):
+        methods.append("authenticator")
+
+    return methods
+
+
+def sync_legacy_mfa_enabled(account: Account) -> None:
+    account.mfa_enabled = is_any_mfa_method_active(account)
+
+
 def get_account_mfa_method(
     account: Account,
     account_type: AccountType,
 ) -> MFAMethod:
-    if account.preferred_mfa_method in ("email", "authenticator"):
+    active_methods = get_active_mfa_methods(account)
+
+    if not active_methods:
+        return get_default_mfa_method(account_type)
+
+    if account.preferred_mfa_method in active_methods:
         return account.preferred_mfa_method
 
-    return get_default_mfa_method(account_type)
+    default_method = get_default_mfa_method(account_type)
+
+    if default_method in active_methods:
+        return default_method
+
+    return active_methods[0]

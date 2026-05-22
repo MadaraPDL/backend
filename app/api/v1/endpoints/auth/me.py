@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
@@ -14,6 +14,8 @@ from app.core.config import settings
 from app.db.session import get_db
 from app.schemas.auth import (
     CurrentUserResponse,
+    MFAStatusResponse,
+    PreferredMFAMethodRequest,
     ProfileUpdateChallengeResponse,
     UpdateCurrentUserIdentityRequest,
 )
@@ -26,6 +28,15 @@ from app.services.account_settings_service import (
     update_current_account_identity,
 )
 from app.services.email.email_service import send_profile_update_mfa_email
+from app.services.mfa_settings_service import (
+    CannotDisableLastMFAMethodError,
+    MFAMethodNotActiveError,
+    build_mfa_status,
+    disable_authenticator_mfa,
+    disable_email_mfa,
+    enable_email_mfa,
+    set_preferred_mfa_method,
+)
 
 router = APIRouter()
 
@@ -35,6 +46,109 @@ async def get_me(
     current: CurrentAccount = Depends(get_current_account),
 ) -> CurrentUserResponse:
     return _build_current_user_response(current)
+
+@router.get("/me/mfa/status", response_model=MFAStatusResponse)
+async def get_my_mfa_status(
+    current: CurrentAccount = Depends(get_current_account),
+) -> MFAStatusResponse:
+    return MFAStatusResponse(
+        **build_mfa_status(
+            account=current.account,
+            account_type=current.account_type,
+        )
+    )
+
+
+@router.post("/me/mfa/email/enable", response_model=MFAStatusResponse)
+async def enable_my_email_mfa(
+    current: CurrentAccount = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+) -> MFAStatusResponse:
+    require_email_delivery_for_production()
+
+    enable_email_mfa(current.account)
+
+    await db.commit()
+
+    return MFAStatusResponse(
+        **build_mfa_status(
+            account=current.account,
+            account_type=current.account_type,
+        )
+    )
+
+
+@router.patch("/me/mfa/email/disable", response_model=MFAStatusResponse)
+async def disable_my_email_mfa(
+    current: CurrentAccount = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+) -> MFAStatusResponse:
+    try:
+        disable_email_mfa(current.account)
+        await db.commit()
+    except CannotDisableLastMFAMethodError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+
+    return MFAStatusResponse(
+        **build_mfa_status(
+            account=current.account,
+            account_type=current.account_type,
+        )
+    )
+
+
+@router.patch("/me/mfa/authenticator/disable", response_model=MFAStatusResponse)
+async def disable_my_authenticator_mfa(
+    current: CurrentAccount = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+) -> MFAStatusResponse:
+    try:
+        disable_authenticator_mfa(current.account)
+        await db.commit()
+    except CannotDisableLastMFAMethodError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+
+    return MFAStatusResponse(
+        **build_mfa_status(
+            account=current.account,
+            account_type=current.account_type,
+        )
+    )
+
+
+@router.patch("/me/mfa/preferred-method", response_model=MFAStatusResponse)
+async def update_my_preferred_mfa_method(
+    request: PreferredMFAMethodRequest,
+    current: CurrentAccount = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+) -> MFAStatusResponse:
+    try:
+        set_preferred_mfa_method(
+            account=current.account,
+            method=request.method,
+        )
+        await db.commit()
+    except MFAMethodNotActiveError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+
+    return MFAStatusResponse(
+        **build_mfa_status(
+            account=current.account,
+            account_type=current.account_type,
+        )
+    )
 
 
 @router.post(
@@ -157,3 +271,4 @@ def _build_current_user_response(current: CurrentAccount) -> CurrentUserResponse
         mfa_required=account.mfa_required,
         preferred_mfa_method=account.preferred_mfa_method,
     )
+
