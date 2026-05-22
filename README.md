@@ -1,7 +1,7 @@
-<!-- PULSEFI_SYNC_START -->
+﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 41C complete - production email hardening and dev verification-code UI hidden by default**.
+Current phase: **Step 41D complete - deployment readiness docs and env example added**.
 
 Latest completed backend work:
 
@@ -20,6 +20,8 @@ Latest completed backend work:
   - email delivery requires `SMTP_HOST`, `SMTP_FROM_EMAIL`, and `FRONTEND_ADMIN_URL`
   - `SMTP_USE_TLS` and `SMTP_USE_SSL` cannot both be enabled
 - Step 41B added backend tests for production/email config validation.
+- Step 41D added .env.example with safe placeholders.
+- Step 41D added docs/DEPLOYMENT_READINESS.md with local/demo/production checklist.
 
 Latest completed admin web work:
 
@@ -2027,3 +2029,10 @@ PulseFi targets local ISPs/resellers that receive bandwidth from an upstream pro
 - Simulator endpoints represent the RADIUS/API/router integration layer for local development and the FYP demo.
 
 Full detail: `docs/NETWORK_INTEGRATION_DIRECTION.md`.
+---
+
+## Deployment Readiness
+
+For local/demo/production configuration rules, see [docs/DEPLOYMENT_READINESS.md](docs/DEPLOYMENT_READINESS.md).
+
+Use [.env.example](.env.example) as the safe placeholder template. Never commit real .env files or secrets.

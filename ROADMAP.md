@@ -1,7 +1,7 @@
-<!-- PULSEFI_SYNC_START -->
+﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 41C complete - production email hardening and dev verification-code UI hidden by default**.
+Current phase: **Step 41D complete - deployment readiness docs and env example added**.
 
 Latest completed backend work:
 
@@ -20,6 +20,8 @@ Latest completed backend work:
   - email delivery requires `SMTP_HOST`, `SMTP_FROM_EMAIL`, and `FRONTEND_ADMIN_URL`
   - `SMTP_USE_TLS` and `SMTP_USE_SSL` cannot both be enabled
 - Step 41B added backend tests for production/email config validation.
+- Step 41D added .env.example with safe placeholders.
+- Step 41D added docs/DEPLOYMENT_READINESS.md with local/demo/production checklist.
 
 Latest completed admin web work:
 
@@ -1673,9 +1675,9 @@ Next:
 
 ---
 
-## Step 19 Progress â€” Usage Data Ingestion
+## Step 19 Progress Ã¢â‚¬â€ Usage Data Ingestion
 
-### Step 19A/19B â€” Completed
+### Step 19A/19B Ã¢â‚¬â€ Completed
 
 Completed:
 
@@ -2570,7 +2572,7 @@ Next backend work:
 
 
 
-## Current Roadmap Update â€” Admin Frontend/Auth Handoff
+## Current Roadmap Update Ã¢â‚¬â€ Admin Frontend/Auth Handoff
 
 ### Completed / In Progress
 - Admin frontend now has a separated design preview mode and real app mode.
@@ -2619,7 +2621,7 @@ Next backend work:
    - Usage prediction/recommendations.
    - Deployment and final presentation polish.
 
-## Current Backend Checkpoint â€” Automatic Intelligence
+## Current Backend Checkpoint Ã¢â‚¬â€ Automatic Intelligence
 
 Completed:
 - Added `POST /api/v1/isp-admin/intelligence/run`.

@@ -1,7 +1,7 @@
-<!-- PULSEFI_SYNC_START -->
+﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 41C complete - production email hardening and dev verification-code UI hidden by default**.
+Current phase: **Step 41D complete - deployment readiness docs and env example added**.
 
 Latest completed backend work:
 
@@ -20,6 +20,8 @@ Latest completed backend work:
   - email delivery requires `SMTP_HOST`, `SMTP_FROM_EMAIL`, and `FRONTEND_ADMIN_URL`
   - `SMTP_USE_TLS` and `SMTP_USE_SSL` cannot both be enabled
 - Step 41B added backend tests for production/email config validation.
+- Step 41D added .env.example with safe placeholders.
+- Step 41D added docs/DEPLOYMENT_READINESS.md with local/demo/production checklist.
 
 Latest completed admin web work:
 
@@ -1993,7 +1995,7 @@ Impact:
 - No database change.
 - Password reset flow is safer before frontend integration.
 
-## Current Backend Quality Backlog â€” Auth/UI Integration Issues
+## Current Backend Quality Backlog Ã¢â‚¬â€ Auth/UI Integration Issues
 
 Status update - 2026-05-18:
 
@@ -2004,7 +2006,7 @@ Status update - 2026-05-18:
 - Step 27C follow-up: page load now validates existing admin tokens with `GET /api/v1/auth/me`; invalid, expired, or App User tokens clear the admin session and return to login.
 - Remaining production hardening: replace in-memory rate limiting with Redis/shared-store rate limiting before multi-worker deployment.
 
-### P1 â€” Admin login rate limit blocks local development
+### P1 Ã¢â‚¬â€ Admin login rate limit blocks local development
 Frontend login now sends the required `account_type: "admin"` field, but backend returns:
 - `429 rate_limited`
 - Message: `Too many attempts. Please try again later.`
@@ -2020,7 +2022,7 @@ Required:
   - Done: repeated failures return 429
   - Done: successful login attempt behavior after reset
 
-### P1 â€” Verify `/auth/me` role contract
+### P1 Ã¢â‚¬â€ Verify `/auth/me` role contract
 Frontend now falls back to `GET /api/v1/auth/me` to determine admin role.
 
 Required:
@@ -2032,7 +2034,7 @@ Required:
 - Done: Platform Admin is distinguishable from ISP Admin by `role`.
 - Done in frontend: App User is not accepted in admin web login.
 
-### P1 â€” MFA-required flow incomplete in frontend
+### P1 Ã¢â‚¬â€ MFA-required flow incomplete in frontend
 Backend exposes:
 - `/api/v1/auth/mfa/verify`
 - `/api/v1/auth/mfa/setup/confirm`
@@ -2043,7 +2045,7 @@ Required:
 - Done: `mfa_required=true` and `mfa_enabled=false` returns `mfa_setup_required` and no access token.
 - Done: frontend setup flow calls `POST /api/v1/auth/mfa/setup/confirm`; setup-only flow cannot bypass token issuance.
 
-### P1 â€” Frontend/admin production routing
+### P1 Ã¢â‚¬â€ Frontend/admin production routing
 Current real frontend shell still uses design preview dashboard components as temporary dashboard views.
 
 Required:
@@ -2057,7 +2059,7 @@ Required:
 - Done: password reset requests now send a reset link email instead of relying
   on a manual token-copy flow; DEBUG can return a local reset URL for testing.
 
-### P2 â€” Tests needed
+### P2 Ã¢â‚¬â€ Tests needed
 Add or expand tests for:
 - admin login
 - `/auth/me`
