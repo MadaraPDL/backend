@@ -558,3 +558,34 @@ Admin web behavior:
 - “Send code to email” appears only when Email MFA is active.
 - “Use authenticator app” appears only when Authenticator MFA is active and not already the active challenge.
 - “Use backup code” appears only when `backup_codes_available=true`.
+
+---
+
+## Step 40F MFA Backup-Code Contract Update - 2026-05-22
+
+Backup-code endpoints:
+
+- `GET /api/v1/auth/me/mfa/backup-codes/status`
+  - Requires authenticated Admin/App User token.
+  - Returns:
+    - `account_type`
+    - `backup_codes_available`
+    - `available_backup_code_count`
+
+- `PATCH /api/v1/auth/me/mfa/backup-codes/regenerate`
+  - Requires authenticated Admin/App User token.
+  - Requires a verified MFA settings challenge:
+    - `challenge_token`
+    - `code`
+  - Revokes old unused backup codes.
+  - Creates a fresh set of backup codes.
+  - Stores only password-hashed backup-code values.
+  - Returns raw backup codes one time only in `backup_codes`.
+
+Security rules:
+
+- Backup codes are recovery codes only.
+- Backup codes must not become `preferred_mfa_method`.
+- `preferred_mfa_method` remains limited to `email` or `authenticator`.
+- Frontend must display generated backup codes as one-time-only secrets.
+- Production must never expose OTP/dev email codes.

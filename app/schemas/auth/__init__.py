@@ -1,4 +1,4 @@
-﻿from app.schemas.auth.common import AccountType, MFAMethod
+from app.schemas.auth.common import AccountType, MFAMethod
 from app.schemas.auth.current_user import (
     CurrentUserResponse,
     ProfileUpdateChallengeResponse,
@@ -15,6 +15,9 @@ from app.schemas.auth.mfa import (
     MFAVerifyRequest,
 )
 from app.schemas.auth.mfa_settings import (
+    MFABackupCodesRegenerateRequest,
+    MFABackupCodesRegenerateResponse,
+    MFABackupCodeStatusResponse,
     MFASettingsActionRequest,
     MFASettingsChallengeRequest,
     MFASettingsChallengeResponse,
@@ -38,6 +41,9 @@ __all__ = [
     "ForgotPasswordRequest",
     "ForgotPasswordResponse",
     "LoginRequest",
+    "MFABackupCodeStatusResponse",
+    "MFABackupCodesRegenerateRequest",
+    "MFABackupCodesRegenerateResponse",
     "MFAChallengeMethodRequest",
     "MFARequiredResponse",
     "MFAVerifyRequest",
@@ -55,5 +61,3 @@ __all__ = [
     "ProfileUpdateChallengeResponse",
     "UpdateCurrentUserIdentityRequest",
 ]
-
-

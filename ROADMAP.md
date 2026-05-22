@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 40E complete - MFA login fallback UX and response contract cleanup**.
+Current phase: **Step 40F complete - MFA backup-code generation/regeneration**.
 
 Latest completed backend work:
 
@@ -14,21 +14,28 @@ Latest completed backend work:
 - Backend supports switching an existing MFA challenge to another active method through the MFA challenge-method flow.
 - Step 40E updated `MFARequiredResponse` to expose `active_methods` and `backup_codes_available`.
 - Step 40E added backup-code availability detection for login MFA fallback display.
-- Backend already has `mfa_backup_codes` model and verification fallback support, but backup-code generation/regeneration APIs and UI are still pending.
+- Step 40F added backup-code status and regeneration endpoints:
+  - `GET /api/v1/auth/me/mfa/backup-codes/status`
+  - `PATCH /api/v1/auth/me/mfa/backup-codes/regenerate`
+- Step 40F stores only backup-code hashes.
+- Step 40F returns raw backup codes one time only after verified regeneration.
+- Step 40F revokes old unused backup codes during regeneration.
+- Step 40F added backend tests for backup-code status, regeneration, revocation, and hash-only storage.
 
 Latest completed admin web work:
 
 - Admin Settings shows Email MFA status, Authenticator MFA status, and preferred MFA method.
 - Admin Settings MFA actions require verification before enabling, disabling, or switching methods.
-- Admin Settings email verification sends a code first.
-- Admin Settings authenticator verification allows direct code entry.
-- Admin Settings MFA UI has been styled and committed.
 - Step 40E removed the pre-login admin MFA method selector.
 - Admin login now asks only for identifier/email and password before MFA.
 - Admin MFA verification page now shows fallback actions after password succeeds.
 - Email fallback appears only when Email MFA is active.
 - Backup-code fallback appears only when unused backup codes exist.
 - MFA fallback UI was polished so it fits the PulseFi dark/light admin style.
+- Step 40F added Admin Settings recovery backup-code UI.
+- Admin Settings can show backup-code availability/count.
+- Admin Settings can generate/regenerate backup codes after verified MFA challenge.
+- Generated backup codes are displayed one time and can be copied.
 
 Current product decision for MFA login UX:
 
@@ -44,10 +51,10 @@ Current product decision for MFA login UX:
 
 Correct next recommended work:
 
-1. Add backup-code generation/regeneration endpoints.
-2. Add Admin Settings UI for viewing backup-code status and regenerating codes.
-3. Make backup-code display one-time only and store only hashes.
-4. Then continue with Mobile App User MFA verification.
+1. Manually smoke test Admin Settings backup-code generation/regeneration.
+2. Continue with Mobile App User MFA verification and mobile MFA fallback UX.
+3. Later add App User mobile backup-code management if needed.
+4. Later add production hardening around email delivery, Redis/shared rate limits, and deployment settings.
 
 Rules that remain active:
 
@@ -57,6 +64,7 @@ Rules that remain active:
 - App User mobile screens must not assume router actions are available; check router capabilities first.
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
 - MFA settings actions must require verification before changing MFA state.
+- Backup codes must be shown only once and stored only as hashes.
 - Email MFA in local development may expose `dev_email_code` only when `DEBUG=True`.
 - Production must not expose OTP/dev codes.
 - Real email delivery requires `EMAIL_DELIVERY_ENABLED=True` and SMTP configuration.

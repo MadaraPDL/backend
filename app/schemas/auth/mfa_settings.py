@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import datetime
 from typing import Literal
@@ -49,3 +49,24 @@ class MFASettingsActionRequest(BaseModel):
     action: MFASettingsAction
     challenge_token: str = Field(..., min_length=20)
     code: str = Field(..., min_length=6, max_length=32)
+
+class MFABackupCodeStatusResponse(BaseModel):
+    account_type: AccountType
+    backup_codes_available: bool
+    available_backup_code_count: int
+
+
+class MFABackupCodesRegenerateRequest(BaseModel):
+    challenge_token: str = Field(..., min_length=20)
+    code: str = Field(..., min_length=6, max_length=32)
+
+
+class MFABackupCodesRegenerateResponse(BaseModel):
+    account_type: AccountType
+    backup_codes_available: bool
+    available_backup_code_count: int
+    backup_codes: list[str]
+    message: str = (
+        "Store these backup codes now. They are shown only once and only hashes "
+        "are stored by PulseFi."
+    )

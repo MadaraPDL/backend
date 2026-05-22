@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
@@ -14,6 +14,9 @@ from app.core.config import settings
 from app.db.session import get_db
 from app.schemas.auth import (
     CurrentUserResponse,
+    MFABackupCodesRegenerateRequest,
+    MFABackupCodesRegenerateResponse,
+    MFABackupCodeStatusResponse,
     MFASettingsActionRequest,
     MFASettingsChallengeRequest,
     MFASettingsChallengeResponse,
@@ -44,6 +47,10 @@ from app.services.mfa_settings_service import (
 )
 from app.services.account_service import is_authenticator_mfa_active
 from app.services.mfa_service import create_mfa_challenge
+from app.services.mfa_backup_code_service import (
+    build_backup_code_status,
+    regenerate_backup_codes,
+)
 
 router = APIRouter()
 
@@ -64,6 +71,60 @@ async def get_my_mfa_status(
             account_type=current.account_type,
         )
     )
+
+
+@router.get(
+    "/me/mfa/backup-codes/status",
+    response_model=MFABackupCodeStatusResponse,
+)
+async def get_my_mfa_backup_code_status(
+    current: CurrentAccount = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+) -> MFABackupCodeStatusResponse:
+    return MFABackupCodeStatusResponse(
+        **await build_backup_code_status(
+            db=db,
+            account=current.account,
+            account_type=current.account_type,
+        )
+    )
+
+
+@router.patch(
+    "/me/mfa/backup-codes/regenerate",
+    response_model=MFABackupCodesRegenerateResponse,
+    dependencies=[
+        Depends(rate_limit("auth_mfa_backup_codes_regenerate", max_attempts=5, window_seconds=900))
+    ],
+)
+async def regenerate_my_mfa_backup_codes(
+    request: MFABackupCodesRegenerateRequest,
+    current: CurrentAccount = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+) -> MFABackupCodesRegenerateResponse:
+    try:
+        backup_codes = await regenerate_backup_codes(
+            db=db,
+            account=current.account,
+            account_type=current.account_type,
+            challenge_token=request.challenge_token,
+            code=request.code,
+        )
+        await db.commit()
+    except InvalidMFASettingsChallengeError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        )
+
+    return MFABackupCodesRegenerateResponse(
+        account_type=current.account_type,
+        backup_codes_available=True,
+        available_backup_code_count=len(backup_codes),
+        backup_codes=backup_codes,
+    )
+
 
 @router.post(
     "/me/mfa/settings-challenge",
@@ -377,5 +438,3 @@ def _build_current_user_response(current: CurrentAccount) -> CurrentUserResponse
         mfa_required=account.mfa_required,
         preferred_mfa_method=account.preferred_mfa_method,
     )
-
-
