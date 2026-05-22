@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 40H verified - Admin web MFA polish and backup-code smoke test complete; mobile work paused until mobile phase**.
+Current phase: **Step 40I verified - Admin web and mobile button styling polished safely; mobile feature work remains paused except styling**.
 
 Latest completed backend work:
 
@@ -36,14 +36,24 @@ Latest completed admin web work:
 - Admin Settings can show backup-code availability/count.
 - Admin Settings can generate/regenerate backup codes after verified MFA challenge.
 - Generated backup codes are displayed one time and can be copied.
-- Step 40H changed admin web filled blue primary buttons to the outlined teal PulseFi button style.
 - Step 40H smoke test verified Admin Settings backup-code generation/regeneration end-to-end.
+- Step 40I polished the admin web button system safely with precise class targeting across Platform Admin and ISP Admin dashboards.
+- Admin web action buttons now use the outlined teal PulseFi style without global `button` overrides.
+- Admin web destructive actions stay red outlined, while sidebar/nav/icon buttons stay compact and readable.
+- Admin web settings rows, filters, form action rows, and table action cells were tightened so buttons do not stick to nearby text or stretch awkwardly.
+
+Latest completed mobile app styling work:
+
+- Mobile app button styling/component polish is complete for the important current screens.
+- Added reusable `PulseFiButton` variants for primary, secondary, danger, and ghost actions.
+- Mobile primary actions now use outlined teal PulseFi styling, destructive actions use red outlined styling, and ghost/secondary actions stay subtle.
+- Mobile filter chips, detail toggles, and action rows were adjusted so labels remain readable and do not stick to neighboring text.
 
 Mobile app status:
 
-- Mobile App User MFA work is paused until the project reaches the mobile phase.
-- Any local mobile MFA experiment should remain stashed or uncommitted unless the user explicitly resumes mobile work.
-- Do not continue mobile app changes until the user says to start mobile.
+- Mobile feature work is still paused except for button/style consistency work explicitly allowed by the user.
+- Mobile App User MFA feature work remains paused until the project reaches the mobile phase.
+- Do not continue mobile MFA or backend behavior changes from the mobile app until the user explicitly resumes mobile feature work.
 
 Current product decision for MFA login UX:
 
@@ -59,10 +69,10 @@ Current product decision for MFA login UX:
 
 Correct next recommended work:
 
-1. Continue backend/admin web only.
+1. Continue backend/admin web feature or hardening work.
 2. Polish admin web MFA/settings UX if needed.
-3. Continue the next backend/admin-web feature or hardening item.
-4. Later, when the user explicitly resumes mobile, continue Mobile App User MFA login/setup/security screens.
+3. Keep mobile feature work paused unless the user explicitly starts the mobile phase.
+4. Mobile styling maintenance is allowed only when explicitly scoped as UI/style consistency.
 
 Rules that remain active:
 
