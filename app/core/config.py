@@ -36,12 +36,18 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_settings(self) -> "Settings":
+        if self.SMTP_USE_TLS and self.SMTP_USE_SSL:
+            raise ValueError(
+                "SMTP_USE_TLS and SMTP_USE_SSL cannot both be enabled."
+            )
+
         if self.EMAIL_DELIVERY_ENABLED:
             missing_email_settings = [
                 name
                 for name, value in {
                     "SMTP_HOST": self.SMTP_HOST,
                     "SMTP_FROM_EMAIL": self.SMTP_FROM_EMAIL,
+                    "FRONTEND_ADMIN_URL": self.FRONTEND_ADMIN_URL,
                 }.items()
                 if not value
             ]
@@ -59,6 +65,16 @@ class Settings(BaseSettings):
 
         if self.DEBUG:
             return self
+
+        if not self.EMAIL_DELIVERY_ENABLED:
+            raise ValueError(
+                "EMAIL_DELIVERY_ENABLED must be true when DEBUG=False."
+            )
+
+        if _is_local_frontend_url(self.FRONTEND_ADMIN_URL):
+            raise ValueError(
+                "FRONTEND_ADMIN_URL must not point to localhost when DEBUG=False."
+            )
 
         if (
             len(self.SECRET_KEY) < 32
@@ -86,6 +102,14 @@ class Settings(BaseSettings):
         extra="ignore"
     )
     
+
+def _is_local_frontend_url(value: str) -> bool:
+    normalized = value.strip().lower()
+
+    return (
+        "://localhost" in normalized
+        or "://127.0.0.1" in normalized
+        or "://0.0.0.0" in normalized
+    )
+
 settings = Settings()
-
-
