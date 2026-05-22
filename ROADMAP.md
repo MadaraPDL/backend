@@ -1,19 +1,12 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 40I verified - Admin web and mobile button styling polished safely; mobile feature work remains paused except styling**.
+Current phase: **Step 41C complete - production email hardening and dev verification-code UI hidden by default**.
 
 Latest completed backend work:
 
 - Step 40B added multi-method MFA support for Admins and App Users.
-- Admins and App Users can now have Email MFA active, Authenticator MFA active, both active, or neither active.
-- Backend added `email_mfa_enabled` and `authenticator_mfa_enabled` on `admins` and `app_users`.
-- Backend keeps legacy `mfa_enabled` synchronized from active MFA method flags.
-- Backend sends email MFA login codes through the shared email service when Email MFA is selected and email delivery is enabled.
-- Backend supports verified MFA settings actions before enabling, disabling, or changing preferred MFA methods.
-- Backend supports switching an existing MFA challenge to another active method through the MFA challenge-method flow.
 - Step 40E updated `MFARequiredResponse` to expose `active_methods` and `backup_codes_available`.
-- Step 40E added backup-code availability detection for login MFA fallback display.
 - Step 40F added backup-code status and regeneration endpoints:
   - `GET /api/v1/auth/me/mfa/backup-codes/status`
   - `PATCH /api/v1/auth/me/mfa/backup-codes/regenerate`
@@ -21,58 +14,55 @@ Latest completed backend work:
 - Step 40F returns raw backup codes one time only after verified regeneration.
 - Step 40F revokes old unused backup codes during regeneration.
 - Step 40F added backend tests for backup-code status, regeneration, revocation, and hash-only storage.
+- Step 41B hardened production/email configuration validation:
+  - `DEBUG=False` requires `EMAIL_DELIVERY_ENABLED=True`
+  - `DEBUG=False` rejects localhost/127.0.0.1/0.0.0.0 `FRONTEND_ADMIN_URL`
+  - email delivery requires `SMTP_HOST`, `SMTP_FROM_EMAIL`, and `FRONTEND_ADMIN_URL`
+  - `SMTP_USE_TLS` and `SMTP_USE_SSL` cannot both be enabled
+- Step 41B added backend tests for production/email config validation.
 
 Latest completed admin web work:
 
 - Admin Settings shows Email MFA status, Authenticator MFA status, and preferred MFA method.
 - Admin Settings MFA actions require verification before enabling, disabling, or switching methods.
-- Step 40E removed the pre-login admin MFA method selector.
 - Admin login now asks only for identifier/email and password before MFA.
-- Admin MFA verification page now shows fallback actions after password succeeds.
+- Admin MFA verification page shows fallback actions only after password succeeds.
 - Email fallback appears only when Email MFA is active.
 - Backup-code fallback appears only when unused backup codes exist.
-- MFA fallback UI was polished so it fits the PulseFi dark/light admin style.
 - Step 40F added Admin Settings recovery backup-code UI.
 - Admin Settings can show backup-code availability/count.
 - Admin Settings can generate/regenerate backup codes after verified MFA challenge.
 - Generated backup codes are displayed one time and can be copied.
 - Step 40H smoke test verified Admin Settings backup-code generation/regeneration end-to-end.
 - Step 40I polished the admin web button system safely with precise class targeting across Platform Admin and ISP Admin dashboards.
-- Admin web action buttons now use the outlined teal PulseFi style without global `button` overrides.
-- Admin web destructive actions stay red outlined, while sidebar/nav/icon buttons stay compact and readable.
-- Admin web settings rows, filters, form action rows, and table action cells were tightened so buttons do not stick to nearby text or stretch awkwardly.
+- Step 41C hides dev verification/email code boxes by default in admin web.
+- Dev verification codes can be shown locally only when `VITE_SHOW_DEV_CODES=true`.
 
 Latest completed mobile app styling work:
 
 - Mobile app button styling/component polish is complete for the important current screens.
 - Added reusable `PulseFiButton` variants for primary, secondary, danger, and ghost actions.
-- Mobile primary actions now use outlined teal PulseFi styling, destructive actions use red outlined styling, and ghost/secondary actions stay subtle.
-- Mobile filter chips, detail toggles, and action rows were adjusted so labels remain readable and do not stick to neighboring text.
+- Mobile feature work remains paused except explicitly scoped styling.
 
 Mobile app status:
 
-- Mobile feature work is still paused except for button/style consistency work explicitly allowed by the user.
 - Mobile App User MFA feature work remains paused until the project reaches the mobile phase.
 - Do not continue mobile MFA or backend behavior changes from the mobile app until the user explicitly resumes mobile feature work.
 
-Current product decision for MFA login UX:
+Current production/security decision:
 
-- The login page must only ask for identifier/email and password.
-- The user/admin must **not** choose default/email/authenticator before password verification.
-- After password succeeds, backend must use `preferred_mfa_method` automatically and show that MFA challenge first.
-- The MFA verification page should show fallback options under a “Try another way” / “Having trouble?” style section.
-- Email fallback must appear only when `email_mfa_enabled=true`.
-- Backup-code fallback must appear only when unused backup codes exist.
-- Backup code is a recovery method, not a preferred MFA method.
-- `preferred_mfa_method` must remain only `email` or `authenticator`.
-- Backup codes must not be added to `preferred_mfa_method`.
+- Production must use real email delivery.
+- Production must not expose OTP/dev verification codes.
+- Production must not use localhost `FRONTEND_ADMIN_URL`.
+- Local development may expose backend `dev_email_code` only when backend `DEBUG=True`.
+- Admin web must hide dev-code UI unless `VITE_SHOW_DEV_CODES=true`.
 
 Correct next recommended work:
 
-1. Continue backend/admin web feature or hardening work.
-2. Polish admin web MFA/settings UX if needed.
-3. Keep mobile feature work paused unless the user explicitly starts the mobile phase.
-4. Mobile styling maintenance is allowed only when explicitly scoped as UI/style consistency.
+1. Continue backend/admin web hardening.
+2. Add/update deployment readiness documentation and `.env.example`.
+3. Add a production checklist for SMTP, CORS, frontend URL, secret key, encryption key, and debug mode.
+4. Keep mobile feature work paused unless explicitly resumed.
 
 Rules that remain active:
 
