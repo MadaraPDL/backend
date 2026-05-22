@@ -1,65 +1,53 @@
 ﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 39B complete - Mobile usage source filters and LAN API auto-detection**.
+Current phase: **Step 40D MFA login/fallback design checkpoint**.
 
-Latest completed work:
+Latest completed backend work:
 
-- Step 31A/31B added Mobile Subscriptions/Plans inside the More tab.
-- Step 32A added Mobile Routers inside the More tab with router capabilities.
-- Step 33A added Mobile Device detail panel using device and device-usage detail endpoints.
-- Step 33B added Mobile Alert detail panel.
-- Step 33C added Mobile Insights detail panels for predictions, recommendations, and plan-change requests.
-- Step 34A added backend App User device trust update endpoint: `PATCH /api/v1/me/devices/{device_id}/trust`.
-- Step 34B added Mobile Trust device / Mark untrusted action.
-- Step 34C added Mobile Device Policy detail panel using `GET /api/v1/me/device-policies/{policy_id}`.
-- Step 35A added backend App User available plans endpoint: `GET /api/v1/me/plans`.
-- Step 35B added Mobile Manual Plan Request screen using `POST /api/v1/me/plan-change-requests`.
-- Step 36A added mobile filters/search for Alerts, Devices, Recommendations, and Plan Change Requests.
-- Step 37A added backend App User device policy deactivate endpoint: `PATCH /api/v1/me/device-policies/{policy_id}/deactivate`.
-- Step 37A updated mobile Devices so users see only current active bandwidth/priority policy per device.
-- Step 37A added Mobile Remove limit / Remove priority actions.
-- Step 37A cleared stale plan-change success messages on refresh/load.
-- Step 38A reviewed admin web coverage against `docs/API_CONTRACT.md`.
-- Step 38B completed admin web API helper coverage for direct ISP detail, ISP Admin alert/detail, plan-change detail, usage-record detail, device-connection-log detail, router-action-log detail, and separate simulator ingestion actions.
-- Step 39A documented the real-world network integration direction: upstream bandwidth provider, local ISP server/router/RADIUS control point, RADIUS/API for official customer usage/subscriptions/actions, and router/CPE polling for optional per-device usage/actions.
-- Step 39B added Mobile Usage filters for All / Official / Estimated records.
-- Step 39B labelled official subscription usage separately from estimated per-device router/CPE usage.
-- Step 39B improved mobile API error parsing for backend validation errors.
-- Step 39B added mobile LAN API auto-detection through Expo/web/native host detection when `EXPO_PUBLIC_API_BASE_URL` is not set.
-- Step 39B fixed mobile Devices TypeScript issues around missing style references and nullable router capability lookup.
+- Step 40B added multi-method MFA support for Admins and App Users.
+- Admins and App Users can now have Email MFA active, Authenticator MFA active, both active, or neither active.
+- Backend added `email_mfa_enabled` and `authenticator_mfa_enabled` on `admins` and `app_users`.
+- Backend keeps legacy `mfa_enabled` synchronized from active MFA method flags.
+- Backend sends email MFA login codes through the shared email service when Email MFA is selected and email delivery is enabled.
+- Backend supports verified MFA settings actions before enabling, disabling, or changing preferred MFA methods.
+- Backend supports selecting an MFA method during login at API level.
+- Backend supports switching an existing MFA challenge to another active method through the MFA challenge-method flow.
+- Backend already has `mfa_backup_codes` model and verification fallback support, but backup-code generation/regeneration APIs and UI are still pending.
 
-Current architecture direction:
+Latest completed admin web work:
 
-- PulseFi targets local ISPs/resellers that receive bandwidth from an upstream provider but manage customers through their own RADIUS/API/router control point.
-- RADIUS/API is the preferred source for official customer/subscription usage, plan/profile changes, billing-driven suspend/reactivate, and account state.
-- Router/CPE adapters are used for optional per-device visibility and device-level actions when the customer router exposes device data/control.
-- If a router exposes only live per-device rates, PulseFi can estimate per-device usage by polling and accumulating interval usage.
-- Official subscription usage and estimated per-device usage must be labelled separately in frontend UX.
-- Simulator endpoints represent the RADIUS/API/router integration layer for demo/local development.
-- ISP Admin should see billing/subscription/operational data, not every private App User alert.
-- Local LAN development should avoid committing fixed PC IP addresses; admin web and mobile should prefer dynamic host detection where possible.
+- Admin Settings shows Email MFA status, Authenticator MFA status, and preferred MFA method.
+- Admin Settings MFA actions require verification before enabling, disabling, or switching methods.
+- Admin Settings email verification sends a code first.
+- Admin Settings authenticator verification allows direct code entry.
+- Admin Settings MFA UI has been styled and committed.
+- A pre-login admin MFA method selector was added, but this is **not the final product UX** and must be reworked.
 
-Current compatibility note:
+Current product decision for MFA login UX:
 
-- Mobile High priority currently uses `priority_level = 5` because the local live database still has an older `chk_policy_priority` constraint.
-- Backend schema/service direction supports priority levels 1-10, but the live DB constraint migration requires the table owner/admin user.
-- Future production migration should remove `chk_policy_priority` and replace it with a 1-10 range constraint.
-- Backend local development may use wildcard CORS only when `DEBUG=True`; production must use explicit trusted origins.
+- The login page must only ask for identifier/email and password.
+- The user/admin must **not** choose default/email/authenticator before password verification.
+- After password succeeds, backend must use `preferred_mfa_method` automatically and show that MFA challenge first.
+- The MFA verification page should show fallback options under a “Try another way” / “Having trouble?” style section.
+- Email fallback must appear only when `email_mfa_enabled=true`.
+- Backup-code fallback must appear only when unused backup codes exist.
+- Backup code is a recovery method, not a preferred MFA method.
+- `preferred_mfa_method` must remain only `email` or `authenticator`.
+- Backup codes must not be added to `preferred_mfa_method`.
 
-Current repo paths:
+Correct next recommended work:
 
-- Backend: `C:\PulseFi\backend`
-- Admin web: `C:\PulseFi\pulsefi-admin-web`
-- Mobile app: `C:\PulseFi\pulsefi-mobile-app`
-
-Current next recommended work:
-
-1. Run a full LAN demo smoke test across backend, admin web, and mobile.
-2. Add or polish mobile account/auth flows if needed for demo, especially MFA/setup messaging.
-3. Continue mobile correctness/polish before expanding admin UI further.
-4. Later add Billing Center / ISP Integration Settings / RADIUS API adapter planning.
-5. Later add admin web detail panels.
+1. Clean/rework admin web so the pre-login MFA method selector is removed.
+2. Keep backend preferred-method login as the default login challenge behavior.
+3. Expose login MFA fallback availability clearly:
+   - email fallback availability
+   - backup-code availability
+4. Update admin MFA verification page to show fallback actions after password succeeds:
+   - “Send code to email” only if Email MFA is active
+   - “Use backup code” only if unused backup codes exist
+5. Add backup-code generation/regeneration endpoints and Admin Settings UI.
+6. Then continue with Mobile App User MFA verification.
 
 Rules that remain active:
 
@@ -68,8 +56,11 @@ Rules that remain active:
 - App User `/me` endpoints must use `get_current_app_user`.
 - App User mobile screens must not assume router actions are available; check router capabilities first.
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
-- Future ISP Admin alert visibility should be operational/admin-visible only; private App User alerts should stay App User scoped.
-- Future assistants must treat Step 39B as the current documentation checkpoint unless docs show a newer checkpoint.
+- MFA settings actions must require verification before changing MFA state.
+- Email MFA in local development may expose `dev_email_code` only when `DEBUG=True`.
+- Production must not expose OTP/dev codes.
+- Real email delivery requires `EMAIL_DELIVERY_ENABLED=True` and SMTP configuration.
+- Future assistants must treat this synchronized block as the current PulseFi source of truth unless a newer block exists.
 - Historical sections below may mention older steps; this synchronized block is the current source of truth.
 <!-- PULSEFI_SYNC_END -->
 
@@ -2088,4 +2079,5 @@ Follow-up:
 - Add counter reset handling when router byte counters go backwards after reboot/reset.
 - Add alert visibility so ISP Admin sees operational alerts only, while App User keeps private app alerts.
 - Keep simulator as the demo/local adapter representing RADIUS/API/router integrations.
+
 

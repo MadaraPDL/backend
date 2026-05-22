@@ -1,4 +1,4 @@
-# PulseFi Backend API Contract
+﻿# PulseFi Backend API Contract
 
 Generated at: `2026-05-18`
 
@@ -459,3 +459,77 @@ PulseFi should target local ISPs/resellers that receive bandwidth from an upstre
 - ISP Admin alert views should focus on operational/admin-visible alerts, not every private App User alert.
 
 See `docs/NETWORK_INTEGRATION_DIRECTION.md` for the full architecture note.
+
+<!-- PULSEFI_MFA_API_SYNC_START -->
+## MFA Login and Settings Contract Checkpoint - 2026-05-22
+
+### Current MFA model
+
+PulseFi supports multi-method MFA for Admin and App User accounts.
+
+Account MFA state:
+
+- `email_mfa_enabled`: Email MFA is active.
+- `authenticator_mfa_enabled`: Authenticator-app MFA is active.
+- `mfa_enabled`: legacy compatibility flag, synchronized from active MFA methods.
+- `preferred_mfa_method`: default login MFA method. Valid values remain `email` or `authenticator`.
+
+Backup codes are recovery credentials, not preferred MFA methods.
+
+### Login UX contract
+
+The frontend must not ask users to choose MFA method before password verification.
+
+Correct flow:
+
+1. User submits identifier/email and password.
+2. Backend verifies password.
+3. Backend starts MFA using the account's `preferred_mfa_method`.
+4. MFA verification screen may show fallback actions only after password succeeds.
+
+Fallback rules:
+
+- Email fallback is available only when Email MFA is active.
+- Backup-code fallback is available only when unused backup codes exist.
+- Backup code entry should be shown as recovery, not as a preferred MFA method.
+
+### Relevant auth endpoints
+
+Existing / current endpoints:
+
+- `POST /api/v1/auth/login`
+  - Starts login.
+  - Uses preferred MFA method by default.
+  - API may accept an optional selected MFA method, but product UX should not expose a pre-login selector.
+
+- `POST /api/v1/auth/mfa/verify`
+  - Completes MFA login.
+  - Accepts email OTP, authenticator code, or backup code if backup codes exist.
+
+- `PATCH /api/v1/auth/mfa/challenge-method`
+  - Switches an existing MFA challenge to another active MFA method.
+  - Intended for post-password fallback such as "Send code to email."
+  - Must not be used to show a pre-password method picker.
+
+- `GET /api/v1/auth/me/mfa/status`
+  - Returns active MFA methods and preferred method for the authenticated account.
+
+- `POST /api/v1/auth/me/mfa/settings-challenge`
+  - Starts verification before sensitive MFA settings actions.
+
+- `PATCH /api/v1/auth/me/mfa/settings-action`
+  - Applies MFA settings action only after valid verification.
+
+### Pending contract work
+
+Backup-code management still needs completed API/UI work:
+
+- Generate backup codes.
+- Show generated backup codes once.
+- Store only hashed backup codes.
+- Count unused backup codes.
+- Regenerate backup codes after verification.
+- Revoke old backup codes when regenerated.
+- Surface `backup_codes_available` during MFA login only when unused backup codes exist.
+<!-- PULSEFI_MFA_API_SYNC_END -->
+
