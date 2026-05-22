@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -109,6 +109,17 @@ class Admin(Base):
         server_default=text("true"),
     )
 
+    email_mfa_enabled: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        server_default=text("false"),
+    )
+
+    authenticator_mfa_enabled: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        server_default=text("false"),
+    )
     mfa_secret: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
@@ -204,3 +215,4 @@ class Admin(Base):
         "MFASetupChallenge",
         back_populates="admin",
     )
+
