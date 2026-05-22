@@ -14,6 +14,9 @@ from app.schemas.auth.mfa import (
     MFAVerifyRequest,
 )
 from app.schemas.auth.mfa_settings import (
+    MFASettingsActionRequest,
+    MFASettingsChallengeRequest,
+    MFASettingsChallengeResponse,
     MFAStatusResponse,
     PreferredMFAMethodRequest,
 )
@@ -36,6 +39,9 @@ __all__ = [
     "LoginRequest",
     "MFARequiredResponse",
     "MFAVerifyRequest",
+    "MFASettingsActionRequest",
+    "MFASettingsChallengeRequest",
+    "MFASettingsChallengeResponse",
     "MFAStatusResponse",
     "PreferredMFAMethodRequest",
     "ResetPasswordRequest",
@@ -47,3 +53,4 @@ __all__ = [
     "ProfileUpdateChallengeResponse",
     "UpdateCurrentUserIdentityRequest",
 ]
+

@@ -1,8 +1,20 @@
 ﻿from __future__ import annotations
 
-from pydantic import BaseModel
+from datetime import datetime
+from typing import Literal
+
+from pydantic import BaseModel, Field
 
 from app.schemas.auth.common import AccountType, MFAMethod
+
+
+MFASettingsAction = Literal[
+    "enable_email",
+    "disable_email",
+    "disable_authenticator",
+    "prefer_email",
+    "prefer_authenticator",
+]
 
 
 class MFAStatusResponse(BaseModel):
@@ -19,3 +31,21 @@ class MFAStatusResponse(BaseModel):
 
 class PreferredMFAMethodRequest(BaseModel):
     method: MFAMethod
+
+
+class MFASettingsChallengeRequest(BaseModel):
+    method: MFAMethod
+
+
+class MFASettingsChallengeResponse(BaseModel):
+    challenge_token: str
+    method: MFAMethod
+    expires_at: datetime
+    message: str
+    dev_email_code: str | None = None
+
+
+class MFASettingsActionRequest(BaseModel):
+    action: MFASettingsAction
+    challenge_token: str = Field(..., min_length=20)
+    code: str = Field(..., min_length=6, max_length=32)

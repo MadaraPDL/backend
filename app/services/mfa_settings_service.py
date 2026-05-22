@@ -1,10 +1,14 @@
 ﻿from __future__ import annotations
 
 from datetime import datetime, timezone
+from uuid import UUID
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.admin import Admin
 from app.models.app_user import AppUser
 from app.schemas.auth import AccountType, MFAMethod
+from app.schemas.auth.mfa_settings import MFASettingsAction
 from app.services.account_service import (
     Account,
     get_account_mfa_method,
@@ -12,6 +16,10 @@ from app.services.account_service import (
     is_authenticator_mfa_active,
     is_email_mfa_active,
     sync_legacy_mfa_enabled,
+)
+from app.services.mfa_service import (
+    get_mfa_challenge_by_token,
+    verify_mfa_challenge_code,
 )
 
 
@@ -21,6 +29,10 @@ class CannotDisableLastMFAMethodError(RuntimeError):
 
 class MFAMethodNotActiveError(RuntimeError):
     """Raised when a requested preferred MFA method is not active."""
+
+
+class InvalidMFASettingsChallengeError(RuntimeError):
+    """Raised when an MFA settings challenge is invalid for the current account."""
 
 
 def build_mfa_status(
@@ -61,6 +73,10 @@ def build_mfa_status(
 
 def _touch_account(account: Admin | AppUser) -> None:
     account.updated_at = datetime.now(timezone.utc)
+
+
+def _get_account_id(account: Account) -> UUID:
+    return account.id
 
 
 def enable_email_mfa(account: Account) -> None:
@@ -134,3 +150,77 @@ def set_preferred_mfa_method(
     account.preferred_mfa_method = method
     sync_legacy_mfa_enabled(account)
     _touch_account(account)
+
+
+async def verify_mfa_settings_challenge(
+    *,
+    db: AsyncSession,
+    account: Account,
+    account_type: AccountType,
+    challenge_token: str,
+    code: str,
+) -> None:
+    challenge = await get_mfa_challenge_by_token(
+        db=db,
+        raw_challenge_token=challenge_token,
+    )
+
+    if challenge is None:
+        raise InvalidMFASettingsChallengeError("Invalid or expired MFA challenge.")
+
+    if challenge.account_type != account_type:
+        raise InvalidMFASettingsChallengeError("Invalid or expired MFA challenge.")
+
+    if account_type == "admin":
+        if challenge.admin_id != _get_account_id(account):
+            raise InvalidMFASettingsChallengeError("Invalid or expired MFA challenge.")
+    else:
+        if challenge.app_user_id != _get_account_id(account):
+            raise InvalidMFASettingsChallengeError("Invalid or expired MFA challenge.")
+
+    verified_account = await verify_mfa_challenge_code(
+        db=db,
+        challenge=challenge,
+        code=code,
+    )
+
+    if verified_account is None or verified_account.id != account.id:
+        raise InvalidMFASettingsChallengeError("Invalid or expired MFA challenge.")
+
+
+async def apply_verified_mfa_settings_action(
+    *,
+    db: AsyncSession,
+    account: Account,
+    account_type: AccountType,
+    action: MFASettingsAction,
+    challenge_token: str,
+    code: str,
+) -> None:
+    await verify_mfa_settings_challenge(
+        db=db,
+        account=account,
+        account_type=account_type,
+        challenge_token=challenge_token,
+        code=code,
+    )
+
+    if action == "enable_email":
+        enable_email_mfa(account)
+        return
+
+    if action == "disable_email":
+        disable_email_mfa(account)
+        return
+
+    if action == "disable_authenticator":
+        disable_authenticator_mfa(account)
+        return
+
+    if action == "prefer_email":
+        set_preferred_mfa_method(account=account, method="email")
+        return
+
+    if action == "prefer_authenticator":
+        set_preferred_mfa_method(account=account, method="authenticator")
+        return

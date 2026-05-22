@@ -14,6 +14,9 @@ from app.core.config import settings
 from app.db.session import get_db
 from app.schemas.auth import (
     CurrentUserResponse,
+    MFASettingsActionRequest,
+    MFASettingsChallengeRequest,
+    MFASettingsChallengeResponse,
     MFAStatusResponse,
     PreferredMFAMethodRequest,
     ProfileUpdateChallengeResponse,
@@ -30,13 +33,17 @@ from app.services.account_settings_service import (
 from app.services.email.email_service import send_profile_update_mfa_email
 from app.services.mfa_settings_service import (
     CannotDisableLastMFAMethodError,
+    InvalidMFASettingsChallengeError,
     MFAMethodNotActiveError,
+    apply_verified_mfa_settings_action,
     build_mfa_status,
     disable_authenticator_mfa,
     disable_email_mfa,
     enable_email_mfa,
     set_preferred_mfa_method,
 )
+from app.services.account_service import is_authenticator_mfa_active
+from app.services.mfa_service import create_mfa_challenge
 
 router = APIRouter()
 
@@ -51,6 +58,105 @@ async def get_me(
 async def get_my_mfa_status(
     current: CurrentAccount = Depends(get_current_account),
 ) -> MFAStatusResponse:
+    return MFAStatusResponse(
+        **build_mfa_status(
+            account=current.account,
+            account_type=current.account_type,
+        )
+    )
+
+@router.post(
+    "/me/mfa/settings-challenge",
+    response_model=MFASettingsChallengeResponse,
+    dependencies=[
+        Depends(rate_limit("auth_mfa_settings_challenge", max_attempts=5, window_seconds=900))
+    ],
+)
+async def create_my_mfa_settings_challenge(
+    request: MFASettingsChallengeRequest,
+    current: CurrentAccount = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+) -> MFASettingsChallengeResponse:
+    if request.method == "email":
+        require_email_delivery_for_production()
+
+    if request.method == "authenticator" and not is_authenticator_mfa_active(
+        current.account
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Authenticator MFA is not active for this account.",
+        )
+
+    challenge, raw_challenge_token, raw_email_code = await create_mfa_challenge(
+        db=db,
+        account=current.account,
+        account_type=current.account_type,
+        method=request.method,
+    )
+
+    if request.method == "email" and raw_email_code is not None:
+        await send_profile_update_mfa_email(
+            to_email=current.account.email,
+            full_name=current.account.full_name,
+            code=raw_email_code,
+            expires_in_minutes=10,
+        )
+
+    await db.commit()
+
+    response = MFASettingsChallengeResponse(
+        challenge_token=raw_challenge_token,
+        method=request.method,
+        expires_at=challenge.expires_at,
+        message=(
+            "Enter the code from your authenticator app to continue."
+            if request.method == "authenticator"
+            else "Enter the verification code sent to your email to continue."
+        ),
+    )
+
+    if settings.DEBUG and raw_email_code is not None:
+        response.dev_email_code = raw_email_code
+
+    return response
+
+
+@router.patch(
+    "/me/mfa/settings-action",
+    response_model=MFAStatusResponse,
+    dependencies=[
+        Depends(rate_limit("auth_mfa_settings_action", max_attempts=5, window_seconds=900))
+    ],
+)
+async def apply_my_mfa_settings_action(
+    request: MFASettingsActionRequest,
+    current: CurrentAccount = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+) -> MFAStatusResponse:
+    try:
+        await apply_verified_mfa_settings_action(
+            db=db,
+            account=current.account,
+            account_type=current.account_type,
+            action=request.action,
+            challenge_token=request.challenge_token,
+            code=request.code,
+        )
+        await db.commit()
+    except InvalidMFASettingsChallengeError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        )
+    except (CannotDisableLastMFAMethodError, MFAMethodNotActiveError) as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        )
+
     return MFAStatusResponse(
         **build_mfa_status(
             account=current.account,
@@ -271,4 +377,5 @@ def _build_current_user_response(current: CurrentAccount) -> CurrentUserResponse
         mfa_required=account.mfa_required,
         preferred_mfa_method=account.preferred_mfa_method,
     )
+
 
