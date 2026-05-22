@@ -602,3 +602,17 @@ Current active work should remain backend/admin-web focused:
 - Admin Settings supports backup-code status and verified generation/regeneration.
 - Backend supports backup-code status/regeneration and login fallback availability.
 - Mobile app changes should not continue unless explicitly resumed.
+
+---
+
+## Step 40H Admin Backup-Code Smoke Test Result - 2026-05-22
+
+Manual admin web smoke test completed:
+
+- Admin Settings backup-code status loads.
+- Backup-code generation/regeneration works after verified MFA challenge.
+- Old unused backup codes are revoked during regeneration.
+- Raw generated backup codes are shown one time only.
+- Copy-all backup-code UX works.
+- Refreshing Settings hides raw codes and keeps only count/status.
+- Mobile app work remains paused until the mobile phase.

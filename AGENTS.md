@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 40H complete - Admin web MFA polish; mobile work paused until mobile phase**.
+Current phase: **Step 40H verified - Admin web MFA polish and backup-code smoke test complete; mobile work paused until mobile phase**.
 
 Latest completed backend work:
 
@@ -37,6 +37,7 @@ Latest completed admin web work:
 - Admin Settings can generate/regenerate backup codes after verified MFA challenge.
 - Generated backup codes are displayed one time and can be copied.
 - Step 40H changed admin web filled blue primary buttons to the outlined teal PulseFi button style.
+- Step 40H smoke test verified Admin Settings backup-code generation/regeneration end-to-end.
 
 Mobile app status:
 
@@ -59,8 +60,8 @@ Current product decision for MFA login UX:
 Correct next recommended work:
 
 1. Continue backend/admin web only.
-2. Manually smoke test Admin Settings backup-code generation/regeneration.
-3. Polish admin web MFA/settings UX if needed.
+2. Polish admin web MFA/settings UX if needed.
+3. Continue the next backend/admin-web feature or hardening item.
 4. Later, when the user explicitly resumes mobile, continue Mobile App User MFA login/setup/security screens.
 
 Rules that remain active:
