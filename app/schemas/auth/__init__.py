@@ -8,6 +8,7 @@ from app.schemas.auth.email_verification import VerifyEmailRequest, VerifyEmailR
 from app.schemas.auth.invitation import AcceptInvitationRequest, AcceptInvitationResponse
 from app.schemas.auth.login import AuthTokenResponse, LoginRequest
 from app.schemas.auth.mfa import (
+    MFAChallengeMethodRequest,
     MFARequiredResponse,
     MFASetupConfirmRequest,
     MFASetupRequiredResponse,
@@ -37,6 +38,7 @@ __all__ = [
     "ForgotPasswordRequest",
     "ForgotPasswordResponse",
     "LoginRequest",
+    "MFAChallengeMethodRequest",
     "MFARequiredResponse",
     "MFAVerifyRequest",
     "MFASettingsActionRequest",
@@ -53,4 +55,5 @@ __all__ = [
     "ProfileUpdateChallengeResponse",
     "UpdateCurrentUserIdentityRequest",
 ]
+
 

@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from datetime import datetime
 from uuid import UUID
@@ -49,3 +49,7 @@ class MFASetupConfirmRequest(BaseModel):
         max_length=20,
         description="Authenticator app code from the newly configured MFA secret.",
     )
+
+class MFAChallengeMethodRequest(BaseModel):
+    challenge_token: str = Field(..., min_length=20)
+    method: MFAMethod

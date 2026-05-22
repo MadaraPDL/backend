@@ -1,5 +1,7 @@
 ﻿from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -9,6 +11,7 @@ from app.services.account_service import (
     Account,
     authenticate_account,
     get_account_mfa_method,
+    get_active_mfa_methods,
     is_any_mfa_method_active,
     is_mfa_method_active,
     sync_legacy_mfa_enabled,
@@ -16,7 +19,9 @@ from app.services.account_service import (
 from app.services.email.email_service import send_login_mfa_email
 from app.services.mfa_service import (
     create_mfa_challenge,
+    get_account_from_challenge,
     get_mfa_challenge_by_token,
+    is_mfa_challenge_active,
     verify_mfa_challenge_code,
 )
 from app.services.mfa_setup_service import build_mfa_setup_response
@@ -49,6 +54,57 @@ def build_auth_token_response(
         "username": account.username,
         "role": getattr(account, "role", None) if account_type == "admin" else None,
     }
+
+
+def _build_mfa_required_response(
+    *,
+    raw_challenge_token: str,
+    method: MFAMethod,
+    active_methods: list[MFAMethod],
+    expires_at,
+) -> dict:
+    return {
+        "mfa_required": True,
+        "challenge_token": raw_challenge_token,
+        "method": method,
+        "active_methods": active_methods,
+        "backup_codes_available": False,
+        "expires_at": expires_at,
+        "message": "MFA verification is required to complete login.",
+    }
+
+
+async def _create_login_mfa_response(
+    *,
+    db: AsyncSession,
+    account: Account,
+    account_type: AccountType,
+    method: MFAMethod,
+) -> tuple[dict, str | None]:
+    if method == "email" and not settings.DEBUG and not settings.EMAIL_DELIVERY_ENABLED:
+        raise EmailDeliveryRequiredError
+
+    challenge, raw_challenge_token, raw_email_code = await create_mfa_challenge(
+        db=db,
+        account=account,
+        account_type=account_type,
+        method=method,
+    )
+
+    if method == "email" and raw_email_code is not None:
+        await send_login_mfa_email(
+            to_email=account.email,
+            full_name=account.full_name,
+            code=raw_email_code,
+            expires_in_minutes=10,
+        )
+
+    return _build_mfa_required_response(
+        raw_challenge_token=raw_challenge_token,
+        method=method,
+        active_methods=get_active_mfa_methods(account),
+        expires_at=challenge.expires_at,
+    ), raw_email_code
 
 
 async def start_login(
@@ -94,31 +150,48 @@ async def start_login(
             account_type=account_type,
         )
 
-    if method == "email" and not settings.DEBUG and not settings.EMAIL_DELIVERY_ENABLED:
-        raise EmailDeliveryRequiredError
-
-    challenge, raw_challenge_token, raw_email_code = await create_mfa_challenge(
+    return await _create_login_mfa_response(
         db=db,
         account=account,
         account_type=account_type,
         method=method,
     )
 
-    if method == "email" and raw_email_code is not None:
-        await send_login_mfa_email(
-            to_email=account.email,
-            full_name=account.full_name,
-            code=raw_email_code,
-            expires_in_minutes=10,
-        )
 
-    return {
-        "mfa_required": True,
-        "challenge_token": raw_challenge_token,
-        "method": method,
-        "expires_at": challenge.expires_at,
-        "message": "MFA verification is required to complete login.",
-    }, raw_email_code
+async def switch_mfa_challenge_method(
+    db: AsyncSession,
+    challenge_token: str,
+    method: MFAMethod,
+) -> tuple[dict, str | None] | None:
+    existing_challenge = await get_mfa_challenge_by_token(
+        db=db,
+        raw_challenge_token=challenge_token,
+    )
+
+    if existing_challenge is None or not is_mfa_challenge_active(existing_challenge):
+        return None
+
+    account = await get_account_from_challenge(
+        db=db,
+        challenge=existing_challenge,
+    )
+
+    if account is None:
+        return None
+
+    sync_legacy_mfa_enabled(account)
+
+    if not is_mfa_method_active(account, method):
+        raise MFAMethodNotAvailableError
+
+    existing_challenge.used_at = datetime.now(timezone.utc)
+
+    return await _create_login_mfa_response(
+        db=db,
+        account=account,
+        account_type=existing_challenge.account_type,
+        method=method,
+    )
 
 
 async def complete_mfa_login(
