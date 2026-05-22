@@ -188,6 +188,51 @@ PulseFi
         html_body=html_body,
     )
 
+async def send_login_mfa_email(
+    *,
+    to_email: str,
+    full_name: str | None,
+    code: str,
+    expires_in_minutes: int,
+) -> None:
+    display_name = full_name or to_email
+
+    text_body = f"""
+Hello {display_name},
+
+Use this PulseFi verification code to complete your login:
+
+{code}
+
+This code expires in {expires_in_minutes} minute(s).
+
+If you did not try to log in, secure your account immediately.
+
+PulseFi
+""".strip()
+
+    html_body = f"""
+<!doctype html>
+<html>
+  <body style="font-family: Arial, sans-serif; color: #102033;">
+    <h2>PulseFi Login Verification</h2>
+    <p>Hello {escape(display_name)},</p>
+    <p>Use this verification code to complete your login:</p>
+    <p style="font-size:24px;font-weight:bold;letter-spacing:4px;">{escape(code)}</p>
+    <p>This code expires in {expires_in_minutes} minute(s).</p>
+    <p>If you did not try to log in, secure your account immediately.</p>
+    <p>PulseFi</p>
+  </body>
+</html>
+""".strip()
+
+    await send_email(
+        to_email=to_email,
+        subject="PulseFi login verification code",
+        text_body=text_body,
+        html_body=html_body,
+    )
+
 
 async def send_isp_admin_invitation_email(
     *,
@@ -307,3 +352,4 @@ PulseFi
         text_body=text_body,
         html_body=html_body,
     )
+

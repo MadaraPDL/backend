@@ -1,4 +1,4 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,6 +16,7 @@ from app.services.mfa_service import (
     verify_mfa_challenge_code,
 )
 from app.services.mfa_setup_service import build_mfa_setup_response
+from app.services.email.email_service import send_login_mfa_email
 
 class EmailDeliveryRequiredError(RuntimeError):
     """Raised when an email-based auth flow is requested without email delivery."""
@@ -121,3 +122,4 @@ async def complete_mfa_login(
         account=account,
         account_type=challenge.account_type,
     )
+
