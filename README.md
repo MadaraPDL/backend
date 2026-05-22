@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 40F complete - MFA backup-code generation/regeneration**.
+Current phase: **Step 40G complete - Mobile App User MFA login verification and fallback UX**.
 
 Latest completed backend work:
 
@@ -37,6 +37,20 @@ Latest completed admin web work:
 - Admin Settings can generate/regenerate backup codes after verified MFA challenge.
 - Generated backup codes are displayed one time and can be copied.
 
+Latest completed mobile app work:
+
+- Step 40G added App User mobile MFA login response handling.
+- Mobile App User login now supports:
+  - normal token login
+  - MFA-required login
+  - MFA setup required response display
+- Mobile App User MFA verification now calls `POST /api/v1/auth/mfa/verify`.
+- Mobile App User MFA fallback now calls `PATCH /api/v1/auth/mfa/challenge-method`.
+- Mobile MFA screen can switch between active Email MFA and Authenticator MFA.
+- Mobile MFA screen shows backup-code fallback only when unused backup codes exist.
+- Mobile app installed/fixed `expo-font` because it is required by `@expo/vector-icons`.
+- Mobile checks passed with TypeScript and Expo Doctor after dependency cleanup.
+
 Current product decision for MFA login UX:
 
 - The login page must only ask for identifier/email and password.
@@ -51,9 +65,9 @@ Current product decision for MFA login UX:
 
 Correct next recommended work:
 
-1. Manually smoke test Admin Settings backup-code generation/regeneration.
-2. Continue with Mobile App User MFA verification and mobile MFA fallback UX.
-3. Later add App User mobile backup-code management if needed.
+1. Manually smoke test mobile App User MFA login on Expo/phone.
+2. Add mobile App User MFA setup flow if needed.
+3. Add mobile App User Settings/Security screen for MFA status and backup-code management if needed.
 4. Later add production hardening around email delivery, Redis/shared rate limits, and deployment settings.
 
 Rules that remain active:

@@ -589,3 +589,25 @@ Security rules:
 - `preferred_mfa_method` remains limited to `email` or `authenticator`.
 - Frontend must display generated backup codes as one-time-only secrets.
 - Production must never expose OTP/dev email codes.
+
+---
+
+## Step 40G Mobile App User MFA Login Consumer Note - 2026-05-22
+
+Mobile App User login behavior:
+
+- Mobile App User login uses `POST /api/v1/auth/login` with:
+  - `account_type: "app_user"`
+  - `identifier`
+  - `password`
+- If the response is a normal App User token, the mobile app stores the session and opens the app.
+- If the response is `MFARequiredResponse`, the mobile app opens an MFA verification screen.
+- Mobile App User MFA verification uses `POST /api/v1/auth/mfa/verify`.
+- Mobile App User MFA fallback method switching uses `PATCH /api/v1/auth/mfa/challenge-method`.
+- Mobile fallback buttons are based on:
+  - `active_methods`
+  - `backup_codes_available`
+- Backup-code fallback is recovery-only and does not change `preferred_mfa_method`.
+- If the backend returns `MFASetupRequiredResponse`, mobile currently explains that MFA setup is required before login can complete.
+
+No new backend endpoints were added in Step 40G.
