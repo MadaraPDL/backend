@@ -14,7 +14,11 @@ from app.schemas.auth import (
     MFARequiredResponse,
     MFASetupRequiredResponse,
 )
-from app.services.auth_service import EmailDeliveryRequiredError, start_login
+from app.services.auth_service import (
+    EmailDeliveryRequiredError,
+    MFAMethodNotAvailableError,
+    start_login,
+)
 
 router = APIRouter()
 
@@ -72,5 +76,6 @@ async def login(
 
     await db.commit()
     return response_data
+
 
 

@@ -1,10 +1,10 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
 
-from app.schemas.auth.common import AccountType
+from app.schemas.auth.common import AccountType, MFAMethod
 
 
 class LoginRequest(BaseModel):
@@ -31,3 +31,4 @@ class AuthTokenResponse(BaseModel):
     email: EmailStr
     username: str | None = None
     role: str | None = None
+

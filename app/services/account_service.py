@@ -67,11 +67,27 @@ def get_default_mfa_method(account_type: AccountType) -> MFAMethod:
 
 
 def is_email_mfa_active(account: Account) -> bool:
-    return bool(getattr(account, "email_mfa_enabled", False))
+    explicit_value = getattr(account, "email_mfa_enabled", None)
+
+    if explicit_value is not None:
+        return bool(explicit_value)
+
+    return bool(
+        getattr(account, "mfa_enabled", False)
+        and getattr(account, "preferred_mfa_method", None) == "email"
+    )
 
 
 def is_authenticator_mfa_active(account: Account) -> bool:
-    return bool(getattr(account, "authenticator_mfa_enabled", False))
+    explicit_value = getattr(account, "authenticator_mfa_enabled", None)
+
+    if explicit_value is not None:
+        return bool(explicit_value)
+
+    return bool(
+        getattr(account, "mfa_enabled", False)
+        and getattr(account, "preferred_mfa_method", None) == "authenticator"
+    )
 
 
 def is_any_mfa_method_active(account: Account) -> bool:
@@ -112,3 +128,13 @@ def get_account_mfa_method(
         return default_method
 
     return active_methods[0]
+
+def is_mfa_method_active(account: Account, method: MFAMethod) -> bool:
+    if method == "email":
+        return is_email_mfa_active(account)
+
+    if method == "authenticator":
+        return is_authenticator_mfa_active(account)
+
+    return False
+
