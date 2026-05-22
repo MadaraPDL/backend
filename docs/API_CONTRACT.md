@@ -592,22 +592,13 @@ Security rules:
 
 ---
 
-## Step 40G Mobile App User MFA Login Consumer Note - 2026-05-22
+## Step 40H Admin-Only Continuation Note - 2026-05-22
 
-Mobile App User login behavior:
+Mobile App User MFA implementation is paused until the project reaches the mobile phase.
 
-- Mobile App User login uses `POST /api/v1/auth/login` with:
-  - `account_type: "app_user"`
-  - `identifier`
-  - `password`
-- If the response is a normal App User token, the mobile app stores the session and opens the app.
-- If the response is `MFARequiredResponse`, the mobile app opens an MFA verification screen.
-- Mobile App User MFA verification uses `POST /api/v1/auth/mfa/verify`.
-- Mobile App User MFA fallback method switching uses `PATCH /api/v1/auth/mfa/challenge-method`.
-- Mobile fallback buttons are based on:
-  - `active_methods`
-  - `backup_codes_available`
-- Backup-code fallback is recovery-only and does not change `preferred_mfa_method`.
-- If the backend returns `MFASetupRequiredResponse`, mobile currently explains that MFA setup is required before login can complete.
+Current active work should remain backend/admin-web focused:
 
-No new backend endpoints were added in Step 40G.
+- Admin web uses post-password MFA fallback UX.
+- Admin Settings supports backup-code status and verified generation/regeneration.
+- Backend supports backup-code status/regeneration and login fallback availability.
+- Mobile app changes should not continue unless explicitly resumed.

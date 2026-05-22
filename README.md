@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 40G complete - Mobile App User MFA login verification and fallback UX**.
+Current phase: **Step 40H complete - Admin web MFA polish; mobile work paused until mobile phase**.
 
 Latest completed backend work:
 
@@ -36,20 +36,13 @@ Latest completed admin web work:
 - Admin Settings can show backup-code availability/count.
 - Admin Settings can generate/regenerate backup codes after verified MFA challenge.
 - Generated backup codes are displayed one time and can be copied.
+- Step 40H changed admin web filled blue primary buttons to the outlined teal PulseFi button style.
 
-Latest completed mobile app work:
+Mobile app status:
 
-- Step 40G added App User mobile MFA login response handling.
-- Mobile App User login now supports:
-  - normal token login
-  - MFA-required login
-  - MFA setup required response display
-- Mobile App User MFA verification now calls `POST /api/v1/auth/mfa/verify`.
-- Mobile App User MFA fallback now calls `PATCH /api/v1/auth/mfa/challenge-method`.
-- Mobile MFA screen can switch between active Email MFA and Authenticator MFA.
-- Mobile MFA screen shows backup-code fallback only when unused backup codes exist.
-- Mobile app installed/fixed `expo-font` because it is required by `@expo/vector-icons`.
-- Mobile checks passed with TypeScript and Expo Doctor after dependency cleanup.
+- Mobile App User MFA work is paused until the project reaches the mobile phase.
+- Any local mobile MFA experiment should remain stashed or uncommitted unless the user explicitly resumes mobile work.
+- Do not continue mobile app changes until the user says to start mobile.
 
 Current product decision for MFA login UX:
 
@@ -65,17 +58,16 @@ Current product decision for MFA login UX:
 
 Correct next recommended work:
 
-1. Manually smoke test mobile App User MFA login on Expo/phone.
-2. Add mobile App User MFA setup flow if needed.
-3. Add mobile App User Settings/Security screen for MFA status and backup-code management if needed.
-4. Later add production hardening around email delivery, Redis/shared rate limits, and deployment settings.
+1. Continue backend/admin web only.
+2. Manually smoke test Admin Settings backup-code generation/regeneration.
+3. Polish admin web MFA/settings UX if needed.
+4. Later, when the user explicitly resumes mobile, continue Mobile App User MFA login/setup/security screens.
 
 Rules that remain active:
 
 - ISP Admin endpoints must use `get_current_isp_admin`.
 - Every ISP Admin query must be scoped by `current_admin.isp_id`.
 - App User `/me` endpoints must use `get_current_app_user`.
-- App User mobile screens must not assume router actions are available; check router capabilities first.
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
 - MFA settings actions must require verification before changing MFA state.
 - Backup codes must be shown only once and stored only as hashes.
