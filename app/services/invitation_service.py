@@ -84,11 +84,16 @@ async def accept_invitation(
 
     now = datetime.now(timezone.utc)
 
-    selected_mfa_method = (
-        preferred_mfa_method
-        if preferred_mfa_method in ("email", "authenticator")
-        else get_default_mfa_method(invitation.account_type)
-    )
+    if invitation.account_type == "admin":
+        # Admin invitations require MFA setup after first login.
+        # Do not mark Email MFA as preferred before the email method is verified/enabled.
+        selected_mfa_method = get_default_mfa_method("admin")
+    else:
+        selected_mfa_method = (
+            preferred_mfa_method
+            if preferred_mfa_method in ("email", "authenticator")
+            else get_default_mfa_method(invitation.account_type)
+        )
 
     password_hash = hash_password(password)
 

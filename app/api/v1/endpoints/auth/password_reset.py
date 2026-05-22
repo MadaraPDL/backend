@@ -1,7 +1,7 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from app.api.dependencies import rate_limit, require_email_delivery_for_production
 from app.core.config import settings
@@ -33,6 +33,7 @@ router = APIRouter(prefix="/password")
 )
 async def forgot_password(
     request: ForgotPasswordRequest,
+    fastapi_request: Request,
     db: AsyncSession = Depends(get_db),
 ):
     require_email_delivery_for_production()
@@ -44,12 +45,19 @@ async def forgot_password(
     )
 
     if reset_result is not None:
-        await send_password_reset_email(
-            to_email=reset_result.email,
-            full_name=reset_result.full_name,
-            raw_token=reset_result.raw_token,
-            expires_in_minutes=reset_result.expires_in_minutes,
-        )
+        reset_email_kwargs = {
+            "to_email": reset_result.email,
+            "full_name": reset_result.full_name,
+            "raw_token": reset_result.raw_token,
+            "expires_in_minutes": reset_result.expires_in_minutes,
+        }
+
+        reset_origin = fastapi_request.headers.get("origin")
+
+        if reset_origin:
+            reset_email_kwargs["frontend_base_url"] = reset_origin
+
+        await send_password_reset_email(**reset_email_kwargs)
         await db.commit()
 
     else:
@@ -64,9 +72,13 @@ async def forgot_password(
 
     # Development-only helper. Never return reset tokens or reset URLs in production.
     if settings.DEBUG and reset_result is not None:
-        response["dev_reset_url"] = build_password_reset_url(
-            raw_token=reset_result.raw_token,
-        )
+        reset_url_kwargs = {"raw_token": reset_result.raw_token}
+        reset_origin = fastapi_request.headers.get("origin")
+
+        if reset_origin:
+            reset_url_kwargs["frontend_base_url"] = reset_origin
+
+        response["dev_reset_url"] = build_password_reset_url(**reset_url_kwargs)
 
     return response
 

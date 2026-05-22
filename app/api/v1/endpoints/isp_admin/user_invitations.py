@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import (
@@ -41,6 +41,7 @@ router = APIRouter(prefix="/user-invitations")
 )
 async def create_app_user_invitation_endpoint(
     request: AppUserInvitationCreateRequest,
+    fastapi_request: Request,
     db: AsyncSession = Depends(get_db),
     current_admin: Admin = Depends(get_current_isp_admin),
 ) -> AppUserInvitationResponse:
@@ -83,12 +84,19 @@ async def create_app_user_invitation_endpoint(
     )
 
     try:
-        await send_app_user_invitation_email(
-            to_email=invitation.email,
-            full_name=invitation.full_name,
-            raw_token=raw_token,
-            expires_in_days=request.expires_in_days,
-        )
+        invitation_email_kwargs = {
+            "to_email": invitation.email,
+            "full_name": invitation.full_name,
+            "raw_token": raw_token,
+            "expires_in_days": request.expires_in_days,
+        }
+
+        invitation_origin = fastapi_request.headers.get("origin")
+
+        if invitation_origin:
+            invitation_email_kwargs["frontend_base_url"] = invitation_origin
+
+        await send_app_user_invitation_email(**invitation_email_kwargs)
     except EmailDeliveryError as exc:
         await db.rollback()
         raise HTTPException(

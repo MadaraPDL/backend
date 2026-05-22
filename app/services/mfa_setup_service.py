@@ -12,7 +12,7 @@ from app.models.admin import Admin
 from app.models.app_user import AppUser
 from app.models.mfa_setup_challenge import MFASetupChallenge
 from app.schemas.auth.common import AccountType
-from app.services.account_service import Account
+from app.services.account_service import Account, sync_legacy_mfa_enabled
 from app.services.mfa_service import (
     generate_authenticator_secret,
     verify_authenticator_code,
@@ -216,8 +216,9 @@ async def complete_mfa_setup(
         return None
 
     account.mfa_secret = encrypt_text(authenticator_secret)
-    account.mfa_enabled = True
+    account.authenticator_mfa_enabled = True
     account.preferred_mfa_method = "authenticator"
+    sync_legacy_mfa_enabled(account)
     account.updated_at = datetime.now(timezone.utc)
 
     challenge.used_at = datetime.now(timezone.utc)

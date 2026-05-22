@@ -1,10 +1,10 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import asyncio
 import smtplib
 from email.message import EmailMessage
 from html import escape
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse, urlparse, urlparse
 
 from app.core.config import settings
 
@@ -76,19 +76,52 @@ async def send_email(
     await asyncio.to_thread(_send_message_blocking, message)
 
 
-def _build_accept_invitation_url(*, raw_token: str, account_type: str) -> str:
+def _normalize_frontend_base_url(value: str) -> str | None:
+    parsed = urlparse(value.strip())
+
+    if parsed.scheme not in {"http", "https"}:
+        return None
+
+    if not parsed.netloc:
+        return None
+
+    return f"{parsed.scheme}://{parsed.netloc}".rstrip("/")
+
+
+def resolve_frontend_base_url(frontend_base_url: str | None = None) -> str:
+    if getattr(settings, "DEBUG", False) and frontend_base_url:
+        normalized_url = _normalize_frontend_base_url(frontend_base_url)
+
+        if normalized_url:
+            return normalized_url
+
+    return settings.FRONTEND_ADMIN_URL.rstrip("/")
+
+
+def _build_accept_invitation_url(
+    *,
+    raw_token: str,
+    account_type: str,
+    frontend_base_url: str | None = None,
+) -> str:
     query = urlencode(
         {
             "token": raw_token,
             "account_type": account_type,
         }
     )
-    return f"{settings.FRONTEND_ADMIN_URL.rstrip('/')}/accept-invitation?{query}"
+    return (
+        f"{resolve_frontend_base_url(frontend_base_url)}/accept-invitation?{query}"
+    )
 
 
-def build_password_reset_url(*, raw_token: str) -> str:
+def build_password_reset_url(
+    *,
+    raw_token: str,
+    frontend_base_url: str | None = None,
+) -> str:
     query = urlencode({"token": raw_token})
-    return f"{settings.FRONTEND_ADMIN_URL.rstrip('/')}/reset-password?{query}"
+    return f"{resolve_frontend_base_url(frontend_base_url)}/reset-password?{query}"
 
 
 async def send_password_reset_email(
@@ -97,8 +130,12 @@ async def send_password_reset_email(
     full_name: str | None,
     raw_token: str,
     expires_in_minutes: int,
+    frontend_base_url: str | None = None,
 ) -> None:
-    reset_url = build_password_reset_url(raw_token=raw_token)
+    reset_url = build_password_reset_url(
+        raw_token=raw_token,
+        frontend_base_url=frontend_base_url,
+    )
     display_name = full_name or to_email
 
     text_body = f"""
@@ -241,10 +278,12 @@ async def send_isp_admin_invitation_email(
     isp_name: str,
     raw_token: str,
     expires_in_days: int,
+    frontend_base_url: str | None = None,
 ) -> None:
     accept_url = _build_accept_invitation_url(
         raw_token=raw_token,
         account_type="admin",
+        frontend_base_url=frontend_base_url,
     )
 
     display_name = full_name or to_email
@@ -302,10 +341,12 @@ async def send_app_user_invitation_email(
     full_name: str | None,
     raw_token: str,
     expires_in_days: int,
+    frontend_base_url: str | None = None,
 ) -> None:
     accept_url = _build_accept_invitation_url(
         raw_token=raw_token,
         account_type="app_user",
+        frontend_base_url=frontend_base_url,
     )
 
     display_name = full_name or to_email
@@ -352,4 +393,3 @@ PulseFi
         text_body=text_body,
         html_body=html_body,
     )
-
