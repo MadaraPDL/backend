@@ -1,25 +1,42 @@
 ﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-23
 
-Current phase: **Step 42D in progress - actionable ISP Admin reports**.
+Current phase: **Step 42F complete - final LAN presentation smoke test passed**.
 
 Latest completed work:
 - Step 41 admin auth/lifecycle/layout polish is complete.
 - Step 42A App User service request backend/mobile flow is complete.
 - Step 42B mobile MFA setup + service request polish is complete.
 - Step 42C LAN smoke test and router/service-line polish is complete.
-- Step 42D upgraded generated reports from simple counters/raw JSON into actionable report data.
+- Step 42D ISP Admin Operations context and actionable reports polish is complete.
+- Step 42E local demo data cleanup is complete.
+- Step 42F final backend + admin web + mobile LAN presentation smoke test passed.
 
-Step 42D report backend update:
-- Usage reports now include summary metrics, actionable insights, top service lines by usage, top routers by usage, and recent usage rows.
-- Alert reports now include summary metrics, actionable insights, alert breakdowns, and recent alert rows.
-- Raw report JSON remains available only as technical/debug detail in admin web.
-- Reports should be useful for ISP Admin decisions, not just generated records.
+Verified final demo state:
+- Backend runs on `0.0.0.0:8000`.
+- Admin web runs on `0.0.0.0:5173`.
+- Mobile app runs over LAN through Expo.
+- ISP Admin dashboard shows clean demo totals.
+- Main App User demo account has 3 independent service lines and 3 routers.
+- Multiple routers can use the same package/plan, but independent usage and requests use independent service-line rows.
+- Mobile Routers selection is shared with Plan Request.
+- Plan Request is locked to the selected router/service line.
+- ISP Admin Operations shows readable request context:
+  - App User,
+  - router,
+  - service line,
+  - current package,
+  - requested package,
+  - reason,
+  - status.
+- Generated usage/alert reports show readable summaries, insights, and tables.
+- Raw report JSON is hidden under technical details.
 
 Active rules:
 - ISP Admin endpoints must use `get_current_isp_admin`.
 - Every ISP Admin query must be scoped by `current_admin.isp_id`.
 - App User `/me` endpoints must use `get_current_app_user`.
+- Service requests remain pending until ISP Admin approval/rejection.
 - Package/plan reuse is allowed across multiple independent service lines.
 - Independent routers must use independent service-line rows when their usage/requests should be separate.
 - Generated reports should include readable insights and tables where possible.
@@ -28,8 +45,8 @@ Active rules:
 - `.env`, local tokens, SMTP passwords, JWT secrets, and database passwords must not be committed.
 
 Next recommended work:
-- Finish admin web rendering for actionable report insights/tables.
-- Final demo data cleanup/hiding old Step 16/17 test data from presentation views.
+- Step 43: prepare presentation/demo script and final supervisor walkthrough.
+- Optional: final UI wording polish and screenshots for slides.
 <!-- PULSEFI_SYNC_END -->
 
 ## Software Engineering Diagrams

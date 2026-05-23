@@ -371,3 +371,29 @@ Admin-facing rule:
 - The primary report view should show readable summary cards, insights, and tables.
 <!-- PULSEFI_STEP_42D_ACTIONABLE_REPORTS_END -->
 
+<!-- PULSEFI_STEP_42F_FINAL_LAN_SMOKE_START -->
+## Step 42F Final LAN Presentation Smoke Test - 2026-05-23
+
+Status:
+- Final LAN smoke test passed for backend, admin web, and mobile.
+
+Verified presentation flow:
+- ISP Admin dashboard loads with clean demo data.
+- Users page shows the main demo App User with 3 service lines and 3 routers.
+- Routers page shows independent routers/service lines:
+  - Home router / Gaming,
+  - work / Gaming,
+  - office / 450gb.
+- Mobile App User can select a router from Routers.
+- Mobile Plan Request stays locked to the selected router/service line.
+- App User can submit a service/package request with a reason.
+- ISP Admin Operations shows readable request context and reason.
+- ISP Admin can approve/reject requests.
+- Usage/Alert reports show readable summaries, insights, and tables.
+- Raw report JSON is hidden as technical detail.
+
+Demo data note:
+- Old Step 16/17/demo App User records were removed from the local presentation database.
+- Local DB cleanup is not a code change and does not require migration.
+<!-- PULSEFI_STEP_42F_FINAL_LAN_SMOKE_END -->
+
