@@ -1,4 +1,4 @@
-﻿<!-- PULSEFI_SYNC_START -->
+<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
 Current phase: **Step 41E complete - local auth links, MFA onboarding, and admin debug UI hardening**.
@@ -2709,3 +2709,74 @@ Planned future modules:
 3. RADIUS/API Adapter for official usage sync, profile changes, and account status updates.
 4. Router/CPE Adapter for connected devices, live per-device rates, counters, and device-level actions.
 5. Alert Visibility Hardening so ISP Admin sees operational alerts only.
+
+<!-- PULSEFI_STEP_41F_41G_START -->
+## Step 41F/41G Admin Lifecycle + UI Smoke Checkpoint - 2026-05-23
+
+Status:
+- Step 41E auth hardening was completed before this checkpoint.
+- Step 41F admin lifecycle UI polish is complete in the admin web repo.
+- Step 41G admin web smoke-test cleanup/polish is in progress/completed depending on final manual verification.
+- Mobile feature work remains paused until Step 42A.
+
+Admin web updates completed:
+- Removed fake global/topbar search controls from Platform Admin and ISP Admin dashboards.
+- Added authenticator QR code support to the admin MFA setup screen.
+- Improved MFA setup instructions:
+  - scan QR code first,
+  - use secret key manually if QR scan is unavailable,
+  - choose Time-based/TOTP if the authenticator app asks,
+  - delete the old PulseFi authenticator entry if re-setting up.
+- Added clear lifecycle action buttons instead of relying only on status dropdowns.
+- No hard-delete actions were added.
+
+Platform Admin lifecycle UI:
+- ISP lifecycle buttons:
+  - Reactivate ISP,
+  - Set inactive,
+  - Suspend ISP.
+- ISP Admin lifecycle buttons:
+  - Reactivate Admin,
+  - Set inactive,
+  - Suspend Admin.
+- Platform ISP Management scroll trap was fixed so scrolling can continue to ISP Admin invitation sections.
+- Platform/Admin overview and dashboard spacing were polished.
+
+ISP Admin lifecycle UI:
+- App User lifecycle buttons:
+  - Reactivate User,
+  - Set inactive,
+  - Suspend User.
+- Plan lifecycle buttons:
+  - Reactivate Plan,
+  - Archive Plan.
+- Router lifecycle buttons:
+  - Set active,
+  - Set inactive,
+  - Maintenance.
+- Subscription lifecycle buttons:
+  - Reactivate,
+  - Suspend,
+  - Cancel.
+- ISP Overview spacing/layout was polished for KPI cards, action center, needs-attention panel, and recent activity panels.
+
+Design/security decisions:
+- Lifecycle actions use existing backend status/update fields.
+- Plans use is_active as archive/reactivate behavior.
+- Invitations continue to use revoke, not delete.
+- No unsafe hard delete was added because historical subscriptions, usage, alerts, recommendations, reports, and ownership history must remain intact.
+- No visible local DEBUG token/reset URL/MFA dev-code UI should appear in admin web.
+- Mobile app was not changed in this checkpoint.
+
+Checks expected after this checkpoint:
+- Admin web:
+  - npm.cmd run lint
+  - npm.cmd run build
+  - git diff --check
+- Backend docs:
+  - git diff --check
+
+Next planned phase:
+- Step 41H: final admin/backend bug cleanup and demo-readiness verification.
+- Step 42A: mobile app source-of-truth check and missing-feature inventory.
+<!-- PULSEFI_STEP_41F_41G_END -->
