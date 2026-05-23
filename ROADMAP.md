@@ -1,7 +1,7 @@
 ﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-23
 
-Current phase: **Step 42F complete - final LAN presentation smoke test passed**.
+Current phase: **Step 43A complete - mobile selected-router context across main App User tabs**.
 
 Latest completed work:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -10,27 +10,19 @@ Latest completed work:
 - Step 42C LAN smoke test and router/service-line polish is complete.
 - Step 42D ISP Admin Operations context and actionable reports polish is complete.
 - Step 42E local demo data cleanup is complete.
-- Step 42F final backend + admin web + mobile LAN presentation smoke test passed.
+- Step 42F final LAN presentation smoke test passed.
+- Step 43A mobile selected-router context polish is complete.
 
-Verified final demo state:
-- Backend runs on `0.0.0.0:8000`.
-- Admin web runs on `0.0.0.0:5173`.
-- Mobile app runs over LAN through Expo.
-- ISP Admin dashboard shows clean demo totals.
-- Main App User demo account has 3 independent service lines and 3 routers.
-- Multiple routers can use the same package/plan, but independent usage and requests use independent service-line rows.
-- Mobile Routers selection is shared with Plan Request.
-- Plan Request is locked to the selected router/service line.
-- ISP Admin Operations shows readable request context:
-  - App User,
-  - router,
-  - service line,
-  - current package,
-  - requested package,
-  - reason,
-  - status.
-- Generated usage/alert reports show readable summaries, insights, and tables.
-- Raw report JSON is hidden under technical details.
+Step 43A completed:
+- Mobile now has a shared selected-router context across tabs.
+- Selecting a router in More → Routers updates Home, Usage, Devices, Alerts, and Plan Request.
+- Home shows the selected router, service line, package, and selected-router usage.
+- Usage shows selected router context and selected-router usage totals/records.
+- Devices filters device list and policy actions to the selected router.
+- Alerts filters alert list to the selected router/service line.
+- Plan Request remains locked to the selected router/service line.
+- Dark-mode policy execution button color issue was fixed.
+- Duplicate pending policy execute buttons were reduced to latest active pending policy per type.
 
 Active rules:
 - ISP Admin endpoints must use `get_current_isp_admin`.
@@ -39,14 +31,15 @@ Active rules:
 - Service requests remain pending until ISP Admin approval/rejection.
 - Package/plan reuse is allowed across multiple independent service lines.
 - Independent routers must use independent service-line rows when their usage/requests should be separate.
+- Mobile screens should make selected-router/service-line context clear.
 - Generated reports should include readable insights and tables where possible.
 - Do not expose local DEBUG tokens/codes in real admin web or mobile UI.
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
 - `.env`, local tokens, SMTP passwords, JWT secrets, and database passwords must not be committed.
 
 Next recommended work:
-- Step 43: prepare presentation/demo script and final supervisor walkthrough.
-- Optional: final UI wording polish and screenshots for slides.
+- Step 43B: mobile Insights screen polish for predictions/recommendations and recommendation-to-request flow.
+- Step 43C: final presentation/demo script and screenshots.
 <!-- PULSEFI_SYNC_END -->
 
 # PulseFi Backend Roadmap

@@ -397,3 +397,23 @@ Demo data note:
 - Local DB cleanup is not a code change and does not require migration.
 <!-- PULSEFI_STEP_42F_FINAL_LAN_SMOKE_END -->
 
+<!-- PULSEFI_STEP_43A_MOBILE_SELECTED_ROUTER_START -->
+## Step 43A Mobile Selected-Router Context Checkpoint - 2026-05-23
+
+Status:
+- Mobile selected-router context polish completed.
+
+Verified behavior:
+- Selecting a router in More → Routers updates the selected router globally.
+- Home shows selected router/service/package and selected-router usage.
+- Usage filters totals and records to the selected router.
+- Devices filters device list and policies to the selected router.
+- Alerts filters alerts to the selected router/service line.
+- Plan Request stays locked to the selected router/service line.
+- Device policy pending execute buttons are theme-aware in dark mode.
+- Duplicate pending execute actions are reduced to latest active pending action per policy type.
+
+Demo note:
+- Routers with no simulator ingestion may correctly show 0 usage/devices/alerts until the ISP Admin runs full simulator ingestion for that router.
+<!-- PULSEFI_STEP_43A_MOBILE_SELECTED_ROUTER_END -->
+
