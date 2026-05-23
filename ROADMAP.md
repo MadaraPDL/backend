@@ -2836,3 +2836,44 @@ Next:
 - Step 42B: mobile auth/session/MFA gap check.
 - Step 42C: mobile service request manual smoke test with backend + mobile over LAN.
 <!-- PULSEFI_STEP_42A_SERVICE_REQUESTS_END -->
+
+<!-- PULSEFI_STEP_42B_MOBILE_MFA_START -->
+## Step 42B Mobile MFA + Service Request UI Checkpoint - 2026-05-23
+
+Status:
+- Step 42A App User service request backend/mobile flow was completed before this checkpoint.
+- Mobile auth/session cleanup continued with App User MFA improvements.
+- Mobile App User service request screen was stabilized after display separator cleanup issues.
+
+Mobile updates:
+- Mobile App User login supports:
+  - normal credential login,
+  - MFA challenge verification,
+  - switching MFA method when the backend allows it,
+  - backup-code entry mode when available.
+- Mobile App User first-login authenticator setup now supports confirming MFA setup from the mobile app.
+- Mobile no longer renders local DEBUG email MFA codes.
+- Mobile service request screen supports:
+  - Change plan,
+  - Suspend subscription,
+  - Suspend account.
+- Mobile requires a reason and exact confirmation phrase before request submission.
+- Mobile plan/subscription display separators were normalized to plain ASCII separators.
+- Avoid global replacement of `?` characters in TSX files because it corrupts TypeScript ternary operators.
+
+Checks expected:
+- Mobile:
+  - npx.cmd tsc --noEmit
+  - npx.cmd expo-doctor
+  - git diff --check
+- Backend docs:
+  - git diff --check
+
+Next:
+- Step 42C: run backend + admin web + mobile over LAN and manually smoke-test:
+  - App User login,
+  - MFA challenge,
+  - MFA setup,
+  - service request creation,
+  - ISP Admin request review approval/rejection.
+<!-- PULSEFI_STEP_42B_MOBILE_MFA_END -->
