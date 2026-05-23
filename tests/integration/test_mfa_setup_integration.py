@@ -15,6 +15,7 @@ from app.services.mfa_setup_service import (
     complete_mfa_setup,
     get_mfa_setup_challenge_by_token,
 )
+from app.services.auth_service import start_login
 
 
 @pytest.mark.asyncio
@@ -73,6 +74,7 @@ async def test_mfa_setup_confirm_enables_mfa_with_real_db_rows(
 
     assert account_type == "admin"
     assert account.id == admin.id
+    assert account.authenticator_mfa_enabled is True
     assert account.mfa_enabled is True
     assert account.preferred_mfa_method == "authenticator"
     assert account.mfa_secret is not None
@@ -87,6 +89,22 @@ async def test_mfa_setup_confirm_enables_mfa_with_real_db_rows(
     assert challenge is not None
     assert challenge.used_at is not None
     assert challenge.authenticator_secret == ""
+
+    next_login_result = await start_login(
+        db=integration_db,
+        account_type="admin",
+        identifier=admin.email,
+        password="CorrectHorseBatteryStaple123!",
+    )
+
+    assert next_login_result is not None
+
+    next_login_response, next_raw_email_code = next_login_result
+
+    assert next_raw_email_code is None
+    assert next_login_response["mfa_required"] is True
+    assert next_login_response["method"] == "authenticator"
+    assert "mfa_setup_required" not in next_login_response
 
 
 @pytest.mark.asyncio

@@ -20,6 +20,7 @@ from app.schemas.isp_admin import (
 )
 from app.services.account_service import get_account_by_identifier
 from app.services.email import EmailDeliveryError, send_app_user_invitation_email
+from app.services.email.email_service import resolve_debug_frontend_base_url
 from app.services.isp_admin import (
     can_revoke_app_user_invitation,
     create_app_user_invitation,
@@ -91,7 +92,10 @@ async def create_app_user_invitation_endpoint(
             "expires_in_days": request.expires_in_days,
         }
 
-        invitation_origin = fastapi_request.headers.get("origin")
+        invitation_origin = resolve_debug_frontend_base_url(
+            fastapi_request.headers.get("origin"),
+            debug=getattr(settings, "DEBUG", False),
+        )
 
         if invitation_origin:
             invitation_email_kwargs["frontend_base_url"] = invitation_origin

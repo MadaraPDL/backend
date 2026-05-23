@@ -4,7 +4,7 @@ import asyncio
 import smtplib
 from email.message import EmailMessage
 from html import escape
-from urllib.parse import urlencode, urlparse, urlparse, urlparse
+from urllib.parse import urlencode, urlparse
 
 from app.core.config import settings
 
@@ -88,12 +88,24 @@ def _normalize_frontend_base_url(value: str) -> str | None:
     return f"{parsed.scheme}://{parsed.netloc}".rstrip("/")
 
 
-def resolve_frontend_base_url(frontend_base_url: str | None = None) -> str:
-    if getattr(settings, "DEBUG", False) and frontend_base_url:
-        normalized_url = _normalize_frontend_base_url(frontend_base_url)
+def resolve_debug_frontend_base_url(
+    frontend_base_url: str | None,
+    *,
+    debug: bool | None = None,
+) -> str | None:
+    debug_enabled = getattr(settings, "DEBUG", False) if debug is None else debug
 
-        if normalized_url:
-            return normalized_url
+    if not debug_enabled or not frontend_base_url:
+        return None
+
+    return _normalize_frontend_base_url(frontend_base_url)
+
+
+def resolve_frontend_base_url(frontend_base_url: str | None = None) -> str:
+    normalized_url = resolve_debug_frontend_base_url(frontend_base_url)
+
+    if normalized_url:
+        return normalized_url
 
     return settings.FRONTEND_ADMIN_URL.rstrip("/")
 

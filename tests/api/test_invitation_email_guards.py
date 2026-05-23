@@ -266,6 +266,257 @@ def test_platform_admin_invitation_sends_email_without_returning_token_in_produc
     assert "dev_invitation_token" not in response.json()
 
 
+def test_platform_admin_invitation_uses_debug_origin_for_email_link(
+    api_client,
+    monkeypatch,
+):
+    isp_id = uuid4()
+    platform_admin_id = uuid4()
+    sent_email = {}
+
+    async def override_admin():
+        return SimpleNamespace(
+            id=platform_admin_id,
+            role="platform_admin",
+            isp_id=None,
+        )
+
+    async def fake_get_isp_by_id(*args, **kwargs):
+        return SimpleNamespace(
+            id=isp_id,
+            name="Demo ISP",
+            status="active",
+        )
+
+    async def fake_get_account_by_identifier(*args, **kwargs):
+        return None
+
+    async def fake_get_pending_invitation(*args, **kwargs):
+        return None
+
+    def fake_require_email_delivery():
+        return None
+
+    async def fake_create_invitation(*args, **kwargs):
+        return (
+            fake_invitation(
+                account_type="admin",
+                admin_role="isp_admin",
+                isp_id=isp_id,
+                invited_by_admin_id=platform_admin_id,
+            ),
+            "raw-platform-token",
+        )
+
+    async def fake_send_isp_admin_invitation_email(**kwargs):
+        sent_email.update(kwargs)
+
+    app.dependency_overrides[get_current_admin] = override_admin
+    monkeypatch.setattr(admin_invitation_endpoint, "settings", SimpleNamespace(DEBUG=True))
+    monkeypatch.setattr(admin_invitation_endpoint, "get_isp_by_id", fake_get_isp_by_id)
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "get_account_by_identifier",
+        fake_get_account_by_identifier,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "get_pending_isp_admin_invitation",
+        fake_get_pending_invitation,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "require_email_delivery_for_production",
+        fake_require_email_delivery,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "create_isp_admin_invitation",
+        fake_create_invitation,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "send_isp_admin_invitation_email",
+        fake_send_isp_admin_invitation_email,
+    )
+
+    response = api_client.post(
+        f"/api/v1/platform-admin/isps/{isp_id}/admin-invitations",
+        json=invitation_payload(),
+        headers={"Origin": "http://192.168.1.10:5173"},
+    )
+
+    assert response.status_code == 201
+    assert sent_email["frontend_base_url"] == "http://192.168.1.10:5173"
+
+
+def test_platform_admin_invitation_does_not_pass_frontend_base_without_origin(
+    api_client,
+    monkeypatch,
+):
+    isp_id = uuid4()
+    platform_admin_id = uuid4()
+    sent_email = {}
+
+    async def override_admin():
+        return SimpleNamespace(
+            id=platform_admin_id,
+            role="platform_admin",
+            isp_id=None,
+        )
+
+    async def fake_get_isp_by_id(*args, **kwargs):
+        return SimpleNamespace(
+            id=isp_id,
+            name="Demo ISP",
+            status="active",
+        )
+
+    async def fake_get_account_by_identifier(*args, **kwargs):
+        return None
+
+    async def fake_get_pending_invitation(*args, **kwargs):
+        return None
+
+    def fake_require_email_delivery():
+        return None
+
+    async def fake_create_invitation(*args, **kwargs):
+        return (
+            fake_invitation(
+                account_type="admin",
+                admin_role="isp_admin",
+                isp_id=isp_id,
+                invited_by_admin_id=platform_admin_id,
+            ),
+            "raw-platform-token",
+        )
+
+    async def fake_send_isp_admin_invitation_email(**kwargs):
+        sent_email.update(kwargs)
+
+    app.dependency_overrides[get_current_admin] = override_admin
+    monkeypatch.setattr(admin_invitation_endpoint, "settings", SimpleNamespace(DEBUG=True))
+    monkeypatch.setattr(admin_invitation_endpoint, "get_isp_by_id", fake_get_isp_by_id)
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "get_account_by_identifier",
+        fake_get_account_by_identifier,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "get_pending_isp_admin_invitation",
+        fake_get_pending_invitation,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "require_email_delivery_for_production",
+        fake_require_email_delivery,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "create_isp_admin_invitation",
+        fake_create_invitation,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "send_isp_admin_invitation_email",
+        fake_send_isp_admin_invitation_email,
+    )
+
+    response = api_client.post(
+        f"/api/v1/platform-admin/isps/{isp_id}/admin-invitations",
+        json=invitation_payload(),
+    )
+
+    assert response.status_code == 201
+    assert "frontend_base_url" not in sent_email
+
+
+def test_platform_admin_invitation_ignores_origin_in_production(
+    api_client,
+    monkeypatch,
+):
+    isp_id = uuid4()
+    platform_admin_id = uuid4()
+    sent_email = {}
+
+    async def override_admin():
+        return SimpleNamespace(
+            id=platform_admin_id,
+            role="platform_admin",
+            isp_id=None,
+        )
+
+    async def fake_get_isp_by_id(*args, **kwargs):
+        return SimpleNamespace(
+            id=isp_id,
+            name="Demo ISP",
+            status="active",
+        )
+
+    async def fake_get_account_by_identifier(*args, **kwargs):
+        return None
+
+    async def fake_get_pending_invitation(*args, **kwargs):
+        return None
+
+    def fake_require_email_delivery():
+        return None
+
+    async def fake_create_invitation(*args, **kwargs):
+        return (
+            fake_invitation(
+                account_type="admin",
+                admin_role="isp_admin",
+                isp_id=isp_id,
+                invited_by_admin_id=platform_admin_id,
+            ),
+            "raw-platform-token",
+        )
+
+    async def fake_send_isp_admin_invitation_email(**kwargs):
+        sent_email.update(kwargs)
+
+    app.dependency_overrides[get_current_admin] = override_admin
+    monkeypatch.setattr(admin_invitation_endpoint, "settings", SimpleNamespace(DEBUG=False))
+    monkeypatch.setattr(admin_invitation_endpoint, "get_isp_by_id", fake_get_isp_by_id)
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "get_account_by_identifier",
+        fake_get_account_by_identifier,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "get_pending_isp_admin_invitation",
+        fake_get_pending_invitation,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "require_email_delivery_for_production",
+        fake_require_email_delivery,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "create_isp_admin_invitation",
+        fake_create_invitation,
+    )
+    monkeypatch.setattr(
+        admin_invitation_endpoint,
+        "send_isp_admin_invitation_email",
+        fake_send_isp_admin_invitation_email,
+    )
+
+    response = api_client.post(
+        f"/api/v1/platform-admin/isps/{isp_id}/admin-invitations",
+        json=invitation_payload(),
+        headers={"Origin": "http://192.168.1.10:5173"},
+    )
+
+    assert response.status_code == 201
+    assert "frontend_base_url" not in sent_email
+
+
 def test_isp_admin_user_invitation_sends_email_without_returning_token_in_production(
     api_client,
     monkeypatch,
@@ -343,3 +594,77 @@ def test_isp_admin_user_invitation_sends_email_without_returning_token_in_produc
         "expires_in_days": 7,
     }
     assert "dev_invitation_token" not in response.json()
+
+
+def test_isp_admin_user_invitation_uses_debug_origin_for_email_link(
+    api_client,
+    monkeypatch,
+):
+    isp_admin_id = uuid4()
+    isp_id = uuid4()
+    sent_email = {}
+
+    async def override_admin():
+        return SimpleNamespace(
+            id=isp_admin_id,
+            role="isp_admin",
+            isp_id=isp_id,
+        )
+
+    async def fake_get_account_by_identifier(*args, **kwargs):
+        return None
+
+    async def fake_get_pending_invitation(*args, **kwargs):
+        return None
+
+    def fake_require_email_delivery():
+        return None
+
+    async def fake_create_invitation(*args, **kwargs):
+        return (
+            fake_invitation(
+                isp_id=isp_id,
+                invited_by_admin_id=isp_admin_id,
+            ),
+            "raw-app-user-token",
+        )
+
+    async def fake_send_app_user_invitation_email(**kwargs):
+        sent_email.update(kwargs)
+
+    app.dependency_overrides[get_current_isp_admin] = override_admin
+    monkeypatch.setattr(user_invitation_endpoint, "settings", SimpleNamespace(DEBUG=True))
+    monkeypatch.setattr(
+        user_invitation_endpoint,
+        "get_account_by_identifier",
+        fake_get_account_by_identifier,
+    )
+    monkeypatch.setattr(
+        user_invitation_endpoint,
+        "get_pending_app_user_invitation",
+        fake_get_pending_invitation,
+    )
+    monkeypatch.setattr(
+        user_invitation_endpoint,
+        "require_email_delivery_for_production",
+        fake_require_email_delivery,
+    )
+    monkeypatch.setattr(
+        user_invitation_endpoint,
+        "create_app_user_invitation",
+        fake_create_invitation,
+    )
+    monkeypatch.setattr(
+        user_invitation_endpoint,
+        "send_app_user_invitation_email",
+        fake_send_app_user_invitation_email,
+    )
+
+    response = api_client.post(
+        "/api/v1/isp-admin/user-invitations",
+        json=invitation_payload(),
+        headers={"Origin": "http://192.168.1.10:5173"},
+    )
+
+    assert response.status_code == 201
+    assert sent_email["frontend_base_url"] == "http://192.168.1.10:5173"

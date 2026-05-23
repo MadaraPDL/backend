@@ -14,6 +14,7 @@ from app.schemas.auth import (
 )
 from app.services.email.email_service import (
     build_password_reset_url,
+    resolve_debug_frontend_base_url,
     send_password_reset_email,
 )
 from app.services.password_reset_service import (
@@ -27,6 +28,7 @@ router = APIRouter(prefix="/password")
 @router.post(
     "/forgot",
     response_model=ForgotPasswordResponse,
+    response_model_exclude_none=True,
     dependencies=[
         Depends(rate_limit("auth_password_forgot", max_attempts=5, window_seconds=900))
     ],
@@ -52,7 +54,10 @@ async def forgot_password(
             "expires_in_minutes": reset_result.expires_in_minutes,
         }
 
-        reset_origin = fastapi_request.headers.get("origin")
+        reset_origin = resolve_debug_frontend_base_url(
+            fastapi_request.headers.get("origin"),
+            debug=getattr(settings, "DEBUG", False),
+        )
 
         if reset_origin:
             reset_email_kwargs["frontend_base_url"] = reset_origin
@@ -73,7 +78,10 @@ async def forgot_password(
     # Development-only helper. Never return reset tokens or reset URLs in production.
     if settings.DEBUG and reset_result is not None:
         reset_url_kwargs = {"raw_token": reset_result.raw_token}
-        reset_origin = fastapi_request.headers.get("origin")
+        reset_origin = resolve_debug_frontend_base_url(
+            fastapi_request.headers.get("origin"),
+            debug=getattr(settings, "DEBUG", False),
+        )
 
         if reset_origin:
             reset_url_kwargs["frontend_base_url"] = reset_origin

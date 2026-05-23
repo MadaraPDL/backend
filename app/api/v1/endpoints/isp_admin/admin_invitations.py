@@ -2,7 +2,7 @@
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import (
@@ -20,6 +20,7 @@ from app.schemas.isp_admin.admin_invitations import (
 )
 from app.services.account_service import get_account_by_identifier
 from app.services.email import EmailDeliveryError, send_isp_admin_invitation_email
+from app.services.email.email_service import resolve_debug_frontend_base_url
 from app.services.isp_admin.admin_invitation_service import (
     can_revoke_isp_admin_invitation_for_isp,
     create_isp_admin_invitation_for_isp,
@@ -40,6 +41,7 @@ router = APIRouter(prefix="/admin-invitations")
 )
 async def create_isp_admin_invitation_endpoint(
     request: ISPAdminInvitationCreateRequest,
+    fastapi_request: Request,
     db: AsyncSession = Depends(get_db),
     current_admin: Admin = Depends(get_current_isp_admin),
 ) -> ISPAdminInvitationResponse:
@@ -82,13 +84,23 @@ async def create_isp_admin_invitation_endpoint(
     )
 
     try:
-        await send_isp_admin_invitation_email(
-            to_email=invitation.email,
-            full_name=invitation.full_name,
-            isp_name="your ISP",
-            raw_token=raw_token,
-            expires_in_days=request.expires_in_days,
+        invitation_email_kwargs = {
+            "to_email": invitation.email,
+            "full_name": invitation.full_name,
+            "isp_name": "your ISP",
+            "raw_token": raw_token,
+            "expires_in_days": request.expires_in_days,
+        }
+
+        invitation_origin = resolve_debug_frontend_base_url(
+            fastapi_request.headers.get("origin"),
+            debug=getattr(settings, "DEBUG", False),
         )
+
+        if invitation_origin:
+            invitation_email_kwargs["frontend_base_url"] = invitation_origin
+
+        await send_isp_admin_invitation_email(**invitation_email_kwargs)
     except EmailDeliveryError as exc:
         await db.rollback()
         raise HTTPException(

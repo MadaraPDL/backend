@@ -50,7 +50,7 @@ async def test_admin_invitation_accept_then_login_requires_mfa_setup(
         raw_token=raw_invitation_token,
         username=username,
         password=password,
-        preferred_mfa_method="authenticator",
+        preferred_mfa_method="email",
     )
 
     assert account is not None
@@ -60,6 +60,9 @@ async def test_admin_invitation_accept_then_login_requires_mfa_setup(
     assert account.isp_id == isp.id
     assert account.mfa_required is True
     assert account.mfa_enabled is False
+    assert account.email_mfa_enabled is False
+    assert account.authenticator_mfa_enabled is False
+    assert account.preferred_mfa_method == "authenticator"
     assert invitation.accepted_at is not None
 
     login_result = await start_login(

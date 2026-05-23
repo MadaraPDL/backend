@@ -5,6 +5,67 @@ import pytest
 import app.services.email.email_service as email_service
 
 
+def test_resolve_frontend_base_url_uses_valid_debug_origin(monkeypatch):
+    monkeypatch.setattr(
+        email_service,
+        "settings",
+        SimpleNamespace(
+            DEBUG=True,
+            FRONTEND_ADMIN_URL="http://localhost:5173",
+        ),
+    )
+
+    assert (
+        email_service.resolve_frontend_base_url("http://192.168.1.10:5173/some/path")
+        == "http://192.168.1.10:5173"
+    )
+
+
+def test_resolve_frontend_base_url_falls_back_without_origin(monkeypatch):
+    monkeypatch.setattr(
+        email_service,
+        "settings",
+        SimpleNamespace(
+            DEBUG=True,
+            FRONTEND_ADMIN_URL="http://localhost:5173",
+        ),
+    )
+
+    assert email_service.resolve_frontend_base_url(None) == "http://localhost:5173"
+
+
+def test_resolve_frontend_base_url_ignores_origin_in_production(monkeypatch):
+    monkeypatch.setattr(
+        email_service,
+        "settings",
+        SimpleNamespace(
+            DEBUG=False,
+            FRONTEND_ADMIN_URL="https://admin.pulsefi.example",
+        ),
+    )
+
+    assert (
+        email_service.resolve_frontend_base_url("http://192.168.1.10:5173")
+        == "https://admin.pulsefi.example"
+    )
+
+
+def test_resolve_frontend_base_url_rejects_invalid_origin(monkeypatch):
+    monkeypatch.setattr(
+        email_service,
+        "settings",
+        SimpleNamespace(
+            DEBUG=True,
+            FRONTEND_ADMIN_URL="http://localhost:5173",
+        ),
+    )
+
+    assert (
+        email_service.resolve_frontend_base_url("javascript:alert(1)")
+        == "http://localhost:5173"
+    )
+
+
 class FakeSMTP:
     instances = []
 

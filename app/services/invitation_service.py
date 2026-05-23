@@ -111,6 +111,8 @@ async def accept_invitation(
             password_changed_at=now,
             mfa_enabled=False,
             mfa_required=True,
+            email_mfa_enabled=False,
+            authenticator_mfa_enabled=False,
             preferred_mfa_method=selected_mfa_method,
         )
     else:
@@ -129,6 +131,8 @@ async def accept_invitation(
             password_changed_at=now,
             mfa_enabled=False,
             mfa_required=False,
+            email_mfa_enabled=False,
+            authenticator_mfa_enabled=False,
             preferred_mfa_method=selected_mfa_method,
         )
 
