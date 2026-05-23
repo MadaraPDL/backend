@@ -329,3 +329,27 @@ Checks completed before checkpoint:
 - Admin web lint/build.
 - Mobile TypeScript/Expo checks.
 <!-- PULSEFI_STEP_42C_ROUTER_SERVICE_LINE_END -->
+
+<!-- PULSEFI_STEP_42D_OPERATIONS_REPORTS_START -->
+## Step 42D Operations Context and Useful Reports Checkpoint - 2026-05-23
+
+Status:
+- ISP Admin Operations request context and report usefulness polish completed.
+
+Verified behavior:
+- Service request review now shows readable user/router/service/package context.
+- Request reasons are visible in the request table and detail panel.
+- Technical IDs are hidden behind technical details.
+- Generated reports are viewable from the admin web UI.
+- Usage reports include actionable insights and useful tables:
+  - top service lines by usage,
+  - top routers by usage,
+  - recent usage records.
+- Alert reports include actionable insights and useful alert rows.
+- Raw report JSON is no longer the primary admin-facing view.
+
+Checks required before commit:
+- Backend compileall and pytest.
+- Admin web lint/build.
+- `git diff --check` in changed repositories.
+<!-- PULSEFI_STEP_42D_OPERATIONS_REPORTS_END -->

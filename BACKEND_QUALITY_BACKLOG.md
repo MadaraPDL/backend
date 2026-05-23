@@ -1,29 +1,38 @@
 ﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-23
 
-Current phase: **Step 42C complete - LAN smoke test + router/service-line logic polish**.
+Current phase: **Step 42D complete - ISP Admin Operations context and useful reports polish**.
 
 Latest completed work:
 - Step 41 admin auth/lifecycle/layout polish is complete.
 - Step 42A App User service request backend/mobile flow is complete.
 - Step 42B mobile MFA setup + service request polish is complete.
 - Step 42C LAN smoke testing and router/service-line UX fixes are complete.
+- Step 42D ISP Admin Operations context and report usefulness polish is complete.
 
-Step 42C completed:
-- Backend, admin web, and mobile were tested over LAN.
-- App User login, MFA challenge/setup, service request creation, and ISP Admin review were smoke-tested.
-- Mobile no longer renders visible DEBUG MFA codes.
-- Service requests remain pending until ISP Admin approve/reject.
-- No direct user-side suspend/delete action was added.
-- Router/package/service-line logic was clarified:
-  - A package/plan can be reused by many routers.
-  - Each independent router should have its own `user_subscriptions` service-line row.
-  - Independent usage, devices, policies, and service requests are tied to the router/service line.
-- Admin Router Management now supports creating a new service line for an independent router while selecting the same package.
-- Admin App User Management shows service-line and router counts.
-- ISP Admin Operations shows request reasons more clearly.
-- Mobile Routers and Plan Request flows now share selected-router context.
-- Plan Request is locked to the selected router/service line to avoid confusing service selection.
+Step 42D completed:
+- ISP Admin Operations service requests now show readable context:
+  - App User,
+  - router,
+  - service line,
+  - current package,
+  - requested package,
+  - reason,
+  - status.
+- Technical IDs are hidden inside a technical details section instead of being the main review UI.
+- Generated reports are no longer just summary counters.
+- Usage reports now include:
+  - summary metrics,
+  - actionable insights,
+  - top service lines by usage,
+  - top routers by usage,
+  - recent usage records.
+- Alert reports now include:
+  - summary metrics,
+  - actionable insights,
+  - alert breakdowns,
+  - recent alert rows.
+- Raw report JSON is kept only as technical/debug detail, not the main admin-facing report.
 
 Active rules:
 - ISP Admin endpoints must use `get_current_isp_admin`.
@@ -32,13 +41,14 @@ Active rules:
 - Service requests remain pending until ISP Admin approval/rejection.
 - Package/plan reuse is allowed across multiple independent service lines.
 - Independent routers must use independent service-line rows when their usage/requests should be separate.
+- Generated reports should be useful to ISP Admins, not just raw JSON or KPI counts.
 - Do not expose local DEBUG tokens/codes in real admin web or mobile UI.
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
 - `.env`, local tokens, SMTP passwords, JWT secrets, and database passwords must not be committed.
 
 Next recommended work:
-- Improve ISP Admin Operations request context so requests show router/service/package labels instead of mostly IDs.
-- Continue final demo readiness and presentation polishing.
+- Final demo data cleanup/hiding old Step 16/17 test data from presentation views.
+- Final presentation readiness polish.
 <!-- PULSEFI_SYNC_END -->
 
 # PulseFi Backend Quality Improvement Backlog
@@ -2224,4 +2234,6 @@ Next:
   - service request creation,
   - ISP Admin request review approval/rejection.
 <!-- PULSEFI_STEP_42B_MOBILE_MFA_END -->
+
+
 

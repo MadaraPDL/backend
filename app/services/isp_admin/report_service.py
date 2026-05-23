@@ -13,6 +13,8 @@ from app.models.app_user import AppUser
 from app.models.device import Device
 from app.models.recommendation import Recommendation
 from app.models.report import Report
+from app.models.subscription_plan import SubscriptionPlan
+from app.models.user_subscription import UserSubscription
 from app.models.router import Router
 from app.models.router_action_log import RouterActionLog
 from app.models.usage_record import UsageRecord
@@ -83,6 +85,261 @@ async def _group_counts(db: AsyncSession, stmt) -> dict[str, int]:
     return counts
 
 
+def _iso(value) -> str | None:
+    if value is None:
+        return None
+
+    return value.isoformat()
+
+
+def _to_number_string(value) -> str:
+    if value is None:
+        return "0"
+
+    return str(value)
+
+
+def _insight(message: str, severity: str = "info") -> dict:
+    return {
+        "severity": severity,
+        "message": message,
+    }
+
+
+async def _recent_alert_rows(
+    *,
+    db: AsyncSession,
+    isp_id: UUID,
+    period_start: datetime | None,
+    period_end: datetime | None,
+    limit: int = 10,
+) -> list[dict]:
+    stmt = (
+        select(
+            Alert.id,
+            Alert.alert_type,
+            Alert.severity,
+            Alert.title,
+            Alert.message,
+            Alert.status,
+            Alert.created_at,
+            AppUser.full_name,
+            AppUser.email,
+            UserSubscription.subscription_label,
+        )
+        .select_from(Alert)
+        .join(AppUser, Alert.user_id == AppUser.id)
+        .join(UserSubscription, Alert.user_subscription_id == UserSubscription.id)
+        .where(AppUser.isp_id == isp_id)
+        .order_by(Alert.created_at.desc())
+        .limit(limit)
+    )
+    stmt = _apply_period_filter(stmt, Alert.created_at, period_start, period_end)
+
+    result = await db.execute(stmt)
+
+    return [
+        {
+            "alert_id": str(alert_id),
+            "user": full_name,
+            "email": email,
+            "service_line": subscription_label,
+            "type": alert_type,
+            "severity": severity,
+            "title": title,
+            "message": message,
+            "status": status,
+            "created_at": _iso(created_at),
+        }
+        for (
+            alert_id,
+            alert_type,
+            severity,
+            title,
+            message,
+            status,
+            created_at,
+            full_name,
+            email,
+            subscription_label,
+        ) in result.all()
+    ]
+
+
+async def _top_service_line_usage_rows(
+    *,
+    db: AsyncSession,
+    isp_id: UUID,
+    period_start: datetime | None,
+    period_end: datetime | None,
+    limit: int = 10,
+) -> list[dict]:
+    stmt = (
+        select(
+            AppUser.full_name,
+            AppUser.email,
+            UserSubscription.subscription_label,
+            SubscriptionPlan.plan_name,
+            func.coalesce(func.sum(UsageRecord.total_mb), 0).label("total_mb"),
+        )
+        .select_from(UsageRecord)
+        .join(AppUser, UsageRecord.user_id == AppUser.id)
+        .join(UserSubscription, UsageRecord.user_subscription_id == UserSubscription.id)
+        .join(SubscriptionPlan, UserSubscription.plan_id == SubscriptionPlan.id)
+        .where(AppUser.isp_id == isp_id)
+        .group_by(
+            AppUser.full_name,
+            AppUser.email,
+            UserSubscription.subscription_label,
+            SubscriptionPlan.plan_name,
+        )
+        .order_by(func.coalesce(func.sum(UsageRecord.total_mb), 0).desc())
+        .limit(limit)
+    )
+    stmt = _apply_period_filter(stmt, UsageRecord.record_start, period_start, period_end)
+
+    result = await db.execute(stmt)
+
+    rows = []
+    for full_name, email, service_line, plan_name, total_mb in result.all():
+        total_mb_decimal = Decimal(str(total_mb or 0))
+        rows.append(
+            {
+                "user": full_name,
+                "email": email,
+                "service_line": service_line,
+                "package": plan_name,
+                "total_mb": _to_number_string(total_mb_decimal),
+                "total_gb": _to_number_string(total_mb_decimal / Decimal("1024")),
+            }
+        )
+
+    return rows
+
+
+async def _top_router_usage_rows(
+    *,
+    db: AsyncSession,
+    isp_id: UUID,
+    period_start: datetime | None,
+    period_end: datetime | None,
+    limit: int = 10,
+) -> list[dict]:
+    stmt = (
+        select(
+            Router.router_name,
+            Router.router_model,
+            Router.router_ip,
+            AppUser.full_name,
+            UserSubscription.subscription_label,
+            SubscriptionPlan.plan_name,
+            func.coalesce(func.sum(UsageRecord.total_mb), 0).label("total_mb"),
+        )
+        .select_from(UsageRecord)
+        .join(Router, UsageRecord.router_id == Router.id)
+        .join(AppUser, UsageRecord.user_id == AppUser.id)
+        .join(UserSubscription, UsageRecord.user_subscription_id == UserSubscription.id)
+        .join(SubscriptionPlan, UserSubscription.plan_id == SubscriptionPlan.id)
+        .where(Router.isp_id == isp_id)
+        .group_by(
+            Router.router_name,
+            Router.router_model,
+            Router.router_ip,
+            AppUser.full_name,
+            UserSubscription.subscription_label,
+            SubscriptionPlan.plan_name,
+        )
+        .order_by(func.coalesce(func.sum(UsageRecord.total_mb), 0).desc())
+        .limit(limit)
+    )
+    stmt = _apply_period_filter(stmt, UsageRecord.record_start, period_start, period_end)
+
+    result = await db.execute(stmt)
+
+    rows = []
+    for router_name, router_model, router_ip, user_name, service_line, plan_name, total_mb in result.all():
+        total_mb_decimal = Decimal(str(total_mb or 0))
+        rows.append(
+            {
+                "router": router_name,
+                "model": router_model,
+                "ip": str(router_ip) if router_ip is not None else None,
+                "user": user_name,
+                "service_line": service_line,
+                "package": plan_name,
+                "total_mb": _to_number_string(total_mb_decimal),
+                "total_gb": _to_number_string(total_mb_decimal / Decimal("1024")),
+            }
+        )
+
+    return rows
+
+
+async def _recent_usage_rows(
+    *,
+    db: AsyncSession,
+    isp_id: UUID,
+    period_start: datetime | None,
+    period_end: datetime | None,
+    limit: int = 10,
+) -> list[dict]:
+    stmt = (
+        select(
+            UsageRecord.id,
+            UsageRecord.upload_mb,
+            UsageRecord.download_mb,
+            UsageRecord.total_mb,
+            UsageRecord.record_start,
+            UsageRecord.record_end,
+            UsageRecord.source,
+            Router.router_name,
+            AppUser.full_name,
+            UserSubscription.subscription_label,
+            SubscriptionPlan.plan_name,
+        )
+        .select_from(UsageRecord)
+        .join(Router, UsageRecord.router_id == Router.id)
+        .join(AppUser, UsageRecord.user_id == AppUser.id)
+        .join(UserSubscription, UsageRecord.user_subscription_id == UserSubscription.id)
+        .join(SubscriptionPlan, UserSubscription.plan_id == SubscriptionPlan.id)
+        .where(Router.isp_id == isp_id)
+        .order_by(UsageRecord.record_start.desc())
+        .limit(limit)
+    )
+    stmt = _apply_period_filter(stmt, UsageRecord.record_start, period_start, period_end)
+
+    result = await db.execute(stmt)
+
+    return [
+        {
+            "usage_id": str(usage_id),
+            "user": user_name,
+            "router": router_name,
+            "service_line": service_line,
+            "package": plan_name,
+            "upload_mb": _to_number_string(upload_mb),
+            "download_mb": _to_number_string(download_mb),
+            "total_mb": _to_number_string(total_mb),
+            "source": source,
+            "record_start": _iso(record_start),
+            "record_end": _iso(record_end),
+        }
+        for (
+            usage_id,
+            upload_mb,
+            download_mb,
+            total_mb,
+            record_start,
+            record_end,
+            source,
+            router_name,
+            user_name,
+            service_line,
+            plan_name,
+        ) in result.all()
+    ]
+
+
 async def _sum_usage_mb(
     *,
     db: AsyncSession,
@@ -122,9 +379,60 @@ async def _build_usage_report_data(
         period_end=period_end,
     )
 
+    summary = analytics_summary.model_dump(mode="json")
+    total_usage_gb = Decimal(str(summary.get("total_usage_gb") or 0))
+
+    insights = []
+
+    if total_usage_gb > 0:
+        insights.append(
+            _insight(
+                f"Total usage for this period is {total_usage_gb:.2f} GB.",
+                "info",
+            )
+        )
+    else:
+        insights.append(
+            _insight(
+                "No usage was recorded for this report period.",
+                "warning",
+            )
+        )
+
+    pending_requests = int(summary.get("pending_plan_change_requests") or 0)
+
+    if pending_requests:
+        insights.append(
+            _insight(
+                f"{pending_requests} pending service/package request(s) may need review.",
+                "warning",
+            )
+        )
+
     return {
         "summary_type": "usage_analytics_summary",
-        "summary": analytics_summary.model_dump(mode="json"),
+        "summary": summary,
+        "insights": insights,
+        "tables": {
+            "top_service_lines_by_usage": await _top_service_line_usage_rows(
+                db=db,
+                isp_id=isp_id,
+                period_start=period_start,
+                period_end=period_end,
+            ),
+            "top_routers_by_usage": await _top_router_usage_rows(
+                db=db,
+                isp_id=isp_id,
+                period_start=period_start,
+                period_end=period_end,
+            ),
+            "recent_usage_records": await _recent_usage_rows(
+                db=db,
+                isp_id=isp_id,
+                period_start=period_start,
+                period_end=period_end,
+            ),
+        },
     }
 
 
@@ -183,13 +491,54 @@ async def _build_alert_report_data(
     )
     severity_stmt = _apply_period_filter(severity_stmt, Alert.created_at, period_start, period_end)
 
+    total_alerts = await _count(db, total_stmt)
+    unread_alerts = await _count(db, unread_stmt)
+    critical_alerts = await _count(db, critical_stmt)
+    counts_by_type = await _group_counts(db, type_stmt)
+    counts_by_severity = await _group_counts(db, severity_stmt)
+
+    insights = []
+
+    if unread_alerts:
+        insights.append(
+            _insight(
+                f"{unread_alerts} unread alert(s) still need review.",
+                "warning",
+            )
+        )
+
+    if critical_alerts:
+        insights.append(
+            _insight(
+                f"{critical_alerts} critical alert(s) require immediate attention.",
+                "critical",
+            )
+        )
+
+    if not insights:
+        insights.append(
+            _insight(
+                "No critical alert pressure detected in this report period.",
+                "success",
+            )
+        )
+
     return {
         "summary_type": "alert_summary",
-        "total_alerts": await _count(db, total_stmt),
-        "unread_alerts": await _count(db, unread_stmt),
-        "critical_alerts": await _count(db, critical_stmt),
-        "counts_by_type": await _group_counts(db, type_stmt),
-        "counts_by_severity": await _group_counts(db, severity_stmt),
+        "total_alerts": total_alerts,
+        "unread_alerts": unread_alerts,
+        "critical_alerts": critical_alerts,
+        "counts_by_type": counts_by_type,
+        "counts_by_severity": counts_by_severity,
+        "insights": insights,
+        "tables": {
+            "recent_alerts": await _recent_alert_rows(
+                db=db,
+                isp_id=isp_id,
+                period_start=period_start,
+                period_end=period_end,
+            ),
+        },
     }
 
 
