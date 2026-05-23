@@ -1,4 +1,4 @@
-# PulseFi Deployment Readiness Checklist
+﻿# PulseFi Deployment Readiness Checklist
 
 This checklist is for moving PulseFi from local development/demo mode toward a safer production-style deployment.
 
@@ -353,3 +353,21 @@ Checks required before commit:
 - Admin web lint/build.
 - `git diff --check` in changed repositories.
 <!-- PULSEFI_STEP_42D_OPERATIONS_REPORTS_END -->
+
+<!-- PULSEFI_STEP_42D_ACTIONABLE_REPORTS_START -->
+## Step 42D Actionable Reports Checkpoint - 2026-05-23
+
+Status:
+- ISP Admin generated reports were upgraded from basic counters/raw JSON into actionable report data.
+
+Verified backend report behavior:
+- Usage reports include summary metrics, insights, top service lines by usage, top routers by usage, and recent usage records.
+- Alert reports include summary metrics, insights, breakdowns, and recent alert rows.
+- Report data remains stored in `reports.report_data`.
+- No database migration was required.
+
+Admin-facing rule:
+- Raw report JSON should be hidden under technical details.
+- The primary report view should show readable summary cards, insights, and tables.
+<!-- PULSEFI_STEP_42D_ACTIONABLE_REPORTS_END -->
+

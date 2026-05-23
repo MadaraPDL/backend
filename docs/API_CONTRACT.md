@@ -1,4 +1,4 @@
-# PulseFi Backend API Contract
+﻿# PulseFi Backend API Contract
 
 Generated at: `2026-05-18`
 
@@ -561,9 +561,9 @@ Admin web behavior:
 
 - Admin login asks only for identifier/email and password.
 - MFA fallback actions appear only after password succeeds.
-- “Send code to email” appears only when Email MFA is active.
-- “Use authenticator app” appears only when Authenticator MFA is active and not already the active challenge.
-- “Use backup code” appears only when `backup_codes_available=true`.
+- â€œSend code to emailâ€ appears only when Email MFA is active.
+- â€œUse authenticator appâ€ appears only when Authenticator MFA is active and not already the active challenge.
+- â€œUse backup codeâ€ appears only when `backup_codes_available=true`.
 
 ---
 
@@ -725,3 +725,22 @@ Next:
 `POST /api/v1/isp-admin/routers` and `PATCH /api/v1/isp-admin/routers/{router_id}` may return `409 Conflict` when the selected `user_subscription_id` service line already has another router.
 
 This does not block package reuse. Multiple independent service lines can use the same package/plan. The validation only prevents two independent routers from sharing one service-line row when their usage, policies, and service requests should stay separate.
+
+### Step 42D actionable report data
+
+Generated ISP Admin reports may now include actionable report sections inside `report_data`:
+
+- `summary`: KPI-style report metrics.
+- `insights`: list of admin-facing insight objects with `severity` and `message`.
+- `tables`: report-specific row tables for admin review.
+
+Usage reports may include:
+- `top_service_lines_by_usage`
+- `top_routers_by_usage`
+- `recent_usage_records`
+
+Alert reports may include:
+- `recent_alerts`
+
+Raw `report_data` remains available for technical inspection, but admin clients should render `summary`, `insights`, and `tables` as the primary user-facing report.
+
