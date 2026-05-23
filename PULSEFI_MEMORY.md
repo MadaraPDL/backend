@@ -1,7 +1,7 @@
 ﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-23
 
-Current phase: **Step 43B complete - mobile Insights selected-router polish**.
+Current phase: **Step 43C complete - App User mobile MFA settings and backup codes**.
 
 Latest completed work:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -13,19 +13,27 @@ Latest completed work:
 - Step 42F final LAN presentation smoke test passed.
 - Step 43A mobile selected-router context across Home/Usage/Devices/Alerts/Plan Request is complete.
 - Step 43B mobile Insights selected-router polish is complete.
+- Step 43C App User mobile MFA settings is complete.
 
-Step 43B completed:
-- Mobile Insights now follows the global selected-router context.
-- Predictions are filtered by selected router service line.
-- Recommendations are filtered by selected router service line.
-- Plan/service requests shown in Insights are filtered by selected router service line.
-- Insights screen shows selected router, service line, and package context.
-- Recommendation request wording now makes clear the request is for the selected router/service line.
+Step 43C completed:
+- App User Profile now has full MFA settings UI.
+- App User can start authenticator setup from Profile.
+- Authenticator setup shows QR code, manual setup key, and code confirmation.
+- App User can enable email MFA only after email-code verification.
+- App User can choose preferred MFA method.
+- App User can generate backup codes after MFA verification.
+- Backup codes are shown once after generation.
+- App User can deactivate one MFA method after MFA verification.
+- App User can choose email code or authenticator code for MFA deactivation when the method is active.
+- Backend now requires verified MFA challenge for email MFA enable and MFA method deactivation.
+- Backend blocks disabling the last MFA method when `mfa_required=true`.
 
 Active rules:
 - ISP Admin endpoints must use `get_current_isp_admin`.
 - Every ISP Admin query must be scoped by `current_admin.isp_id`.
 - App User `/me` endpoints must use `get_current_app_user`.
+- Current-account `/auth/me/...` endpoints must only affect the signed-in account.
+- MFA settings changes must require verification before sensitive enable/disable actions.
 - Service requests remain pending until ISP Admin approval/rejection.
 - Package/plan reuse is allowed across multiple independent service lines.
 - Independent routers must use independent service-line rows when their usage/requests should be separate.
@@ -36,8 +44,7 @@ Active rules:
 - `.env`, local tokens, SMTP passwords, JWT secrets, and database passwords must not be committed.
 
 Next recommended work:
-- Step 43C: mobile Profile/Settings final polish.
-- Step 43D: final presentation/demo script and screenshots.
+- Step 43D: final mobile smoke test and presentation script/screenshots.
 <!-- PULSEFI_SYNC_END -->
 
 # PulseFi Project Memory

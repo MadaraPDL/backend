@@ -435,3 +435,28 @@ Demo note:
 - Routers with no generated intelligence may correctly show no predictions/recommendations until ISP Admin runs intelligence generation for that router/service line.
 <!-- PULSEFI_STEP_43B_MOBILE_INSIGHTS_SELECTED_ROUTER_END -->
 
+<!-- PULSEFI_STEP_43C_APP_USER_MFA_SETTINGS_START -->
+## Step 43C App User Mobile MFA Settings Checkpoint - 2026-05-23
+
+Status:
+- App User mobile MFA settings completed.
+
+Verified behavior:
+- App User Profile shows live account and MFA status.
+- Authenticator setup can be started from mobile Profile.
+- Authenticator setup displays QR code and manual setup key.
+- Authenticator setup requires valid authenticator code confirmation.
+- Email MFA enable requires email-code verification before activation.
+- Backup code generation requires MFA verification.
+- Backup codes are shown once after generation.
+- App User can deactivate one MFA method after verification.
+- App User can choose authenticator or email verification for deactivation when active.
+- Backend blocks disabling the last active MFA method while `mfa_required=true`.
+- Direct backend MFA enable/disable actions are protected by verified MFA challenges.
+
+Checks required:
+- Backend compileall and pytest.
+- Mobile TypeScript check and Expo doctor.
+- `git diff --check` in changed repos.
+<!-- PULSEFI_STEP_43C_APP_USER_MFA_SETTINGS_END -->
+

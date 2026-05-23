@@ -227,3 +227,59 @@ async def complete_mfa_setup(
     await db.flush()
 
     return account, challenge.account_type
+
+async def complete_current_account_authenticator_setup(
+    *,
+    db: AsyncSession,
+    account: Account,
+    account_type: AccountType,
+    mfa_setup_token: str,
+    code: str,
+) -> bool:
+    challenge = await get_mfa_setup_challenge_by_token(
+        db=db,
+        raw_setup_token=mfa_setup_token,
+    )
+
+    if challenge is None:
+        return False
+
+    if not is_mfa_setup_challenge_active(challenge):
+        return False
+
+    if challenge.account_type != account_type:
+        return False
+
+    if account_type == "admin" and challenge.admin_id != account.id:
+        return False
+
+    if account_type == "app_user" and challenge.app_user_id != account.id:
+        return False
+
+    if account.status != "active":
+        return False
+
+    if account.authenticator_mfa_enabled:
+        return False
+
+    try:
+        authenticator_secret = decrypt_text(challenge.authenticator_secret)
+    except DecryptionError:
+        return False
+
+    if not verify_authenticator_code(authenticator_secret, code):
+        challenge.attempt_count += 1
+        await db.flush()
+        return False
+
+    account.mfa_secret = encrypt_text(authenticator_secret)
+    account.authenticator_mfa_enabled = True
+    account.preferred_mfa_method = "authenticator"
+    sync_legacy_mfa_enabled(account)
+    account.updated_at = datetime.now(timezone.utc)
+
+    challenge.used_at = datetime.now(timezone.utc)
+    challenge.authenticator_secret = ""
+
+    await db.flush()
+    return True

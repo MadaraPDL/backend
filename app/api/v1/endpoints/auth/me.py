@@ -20,6 +20,8 @@ from app.schemas.auth import (
     MFASettingsActionRequest,
     MFASettingsChallengeRequest,
     MFASettingsChallengeResponse,
+    MFASetupConfirmRequest,
+    MFASetupRequiredResponse,
     MFAStatusResponse,
     PreferredMFAMethodRequest,
     ProfileUpdateChallengeResponse,
@@ -51,8 +53,76 @@ from app.services.mfa_backup_code_service import (
     build_backup_code_status,
     regenerate_backup_codes,
 )
+from app.services.mfa_setup_service import (
+    build_mfa_setup_response,
+    complete_current_account_authenticator_setup,
+)
 
 router = APIRouter()
+
+
+@router.post(
+    "/me/mfa/authenticator/setup",
+    response_model=MFASetupRequiredResponse,
+    dependencies=[
+        Depends(rate_limit("auth_me_mfa_authenticator_setup", max_attempts=5, window_seconds=900))
+    ],
+)
+async def start_my_authenticator_mfa_setup(
+    current: CurrentAccount = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+) -> MFASetupRequiredResponse:
+    if current.account.authenticator_mfa_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Authenticator MFA is already active for this account.",
+        )
+
+    response_data = await build_mfa_setup_response(
+        db=db,
+        account=current.account,
+        account_type=current.account_type,
+    )
+
+    await db.commit()
+    return MFASetupRequiredResponse(**response_data)
+
+
+@router.post(
+    "/me/mfa/authenticator/setup/confirm",
+    response_model=MFAStatusResponse,
+    dependencies=[
+        Depends(rate_limit("auth_me_mfa_authenticator_setup_confirm", max_attempts=5, window_seconds=900))
+    ],
+)
+async def confirm_my_authenticator_mfa_setup(
+    request: MFASetupConfirmRequest,
+    current: CurrentAccount = Depends(get_current_account),
+    db: AsyncSession = Depends(get_db),
+) -> MFAStatusResponse:
+    completed = await complete_current_account_authenticator_setup(
+        db=db,
+        account=current.account,
+        account_type=current.account_type,
+        mfa_setup_token=request.mfa_setup_token,
+        code=request.code,
+    )
+
+    if not completed:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired authenticator setup token or code.",
+        )
+
+    await db.commit()
+
+    return MFAStatusResponse(
+        **build_mfa_status(
+            account=current.account,
+            account_type=current.account_type,
+        )
+    )
 
 
 @router.get("/me", response_model=CurrentUserResponse)
@@ -226,16 +296,48 @@ async def apply_my_mfa_settings_action(
     )
 
 
-@router.post("/me/mfa/email/enable", response_model=MFAStatusResponse)
+@router.post(
+    "/me/mfa/email/enable",
+    response_model=MFAStatusResponse,
+    dependencies=[
+        Depends(
+            rate_limit(
+                "auth_me_mfa_email_enable",
+                max_attempts=5,
+                window_seconds=900,
+            )
+        )
+    ],
+)
 async def enable_my_email_mfa(
+    request: MFASettingsActionRequest,
     current: CurrentAccount = Depends(get_current_account),
     db: AsyncSession = Depends(get_db),
 ) -> MFAStatusResponse:
     require_email_delivery_for_production()
 
-    enable_email_mfa(current.account)
+    if request.action != "enable_email":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This endpoint only accepts the enable_email action.",
+        )
 
-    await db.commit()
+    try:
+        await apply_verified_mfa_settings_action(
+            db=db,
+            account=current.account,
+            account_type=current.account_type,
+            action=request.action,
+            challenge_token=request.challenge_token,
+            code=request.code,
+        )
+        await db.commit()
+    except InvalidMFASettingsChallengeError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        )
 
     return MFAStatusResponse(
         **build_mfa_status(
@@ -245,14 +347,46 @@ async def enable_my_email_mfa(
     )
 
 
-@router.patch("/me/mfa/email/disable", response_model=MFAStatusResponse)
+@router.patch(
+    "/me/mfa/email/disable",
+    response_model=MFAStatusResponse,
+    dependencies=[
+        Depends(
+            rate_limit(
+                "auth_me_mfa_email_disable",
+                max_attempts=5,
+                window_seconds=900,
+            )
+        )
+    ],
+)
 async def disable_my_email_mfa(
+    request: MFASettingsActionRequest,
     current: CurrentAccount = Depends(get_current_account),
     db: AsyncSession = Depends(get_db),
 ) -> MFAStatusResponse:
+    if request.action != "disable_email":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This endpoint only accepts the disable_email action.",
+        )
+
     try:
-        disable_email_mfa(current.account)
+        await apply_verified_mfa_settings_action(
+            db=db,
+            account=current.account,
+            account_type=current.account_type,
+            action=request.action,
+            challenge_token=request.challenge_token,
+            code=request.code,
+        )
         await db.commit()
+    except InvalidMFASettingsChallengeError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        )
     except CannotDisableLastMFAMethodError as exc:
         await db.rollback()
         raise HTTPException(
@@ -268,14 +402,46 @@ async def disable_my_email_mfa(
     )
 
 
-@router.patch("/me/mfa/authenticator/disable", response_model=MFAStatusResponse)
+@router.patch(
+    "/me/mfa/authenticator/disable",
+    response_model=MFAStatusResponse,
+    dependencies=[
+        Depends(
+            rate_limit(
+                "auth_me_mfa_authenticator_disable",
+                max_attempts=5,
+                window_seconds=900,
+            )
+        )
+    ],
+)
 async def disable_my_authenticator_mfa(
+    request: MFASettingsActionRequest,
     current: CurrentAccount = Depends(get_current_account),
     db: AsyncSession = Depends(get_db),
 ) -> MFAStatusResponse:
+    if request.action != "disable_authenticator":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This endpoint only accepts the disable_authenticator action.",
+        )
+
     try:
-        disable_authenticator_mfa(current.account)
+        await apply_verified_mfa_settings_action(
+            db=db,
+            account=current.account,
+            account_type=current.account_type,
+            action=request.action,
+            challenge_token=request.challenge_token,
+            code=request.code,
+        )
         await db.commit()
+    except InvalidMFASettingsChallengeError as exc:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=str(exc),
+        )
     except CannotDisableLastMFAMethodError as exc:
         await db.rollback()
         raise HTTPException(
