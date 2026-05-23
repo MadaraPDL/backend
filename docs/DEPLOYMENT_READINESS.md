@@ -1,4 +1,4 @@
-﻿# PulseFi Deployment Readiness Checklist
+# PulseFi Deployment Readiness Checklist
 
 This checklist is for moving PulseFi from local development/demo mode toward a safer production-style deployment.
 
@@ -460,3 +460,73 @@ Checks required:
 - `git diff --check` in changed repos.
 <!-- PULSEFI_STEP_43C_APP_USER_MFA_SETTINGS_END -->
 
+<!-- PULSEFI_STEP_44_RENDER_NEON_DEPLOYMENT_START -->
+## Step 44 Render + Neon Deployment Checkpoint - 2026-05-23
+
+Status:
+- Deployment phase started.
+- Railway attempt was abandoned.
+- Current deployment stack:
+  - Neon PostgreSQL for database.
+  - Render Web Service for FastAPI backend.
+  - Vercel planned for admin web.
+  - Expo/EAS planned for mobile preview build later.
+
+Render backend:
+- Backend service was created on Render.
+- `/docs` opened successfully.
+- First deploy is intentionally demo-safe:
+  - `DEBUG=True`
+  - `EMAIL_DELIVERY_ENABLED=False`
+  - `ENABLE_INTELLIGENCE_SCHEDULER=False`
+- SMTP is not configured yet.
+- Email MFA/invitation/password reset email delivery will need SMTP later.
+- Authenticator MFA does not need SMTP.
+
+Render backend settings:
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- Health check path: `/`
+
+Required Render environment variables:
+- `APP_NAME=PulseFi API`
+- `APP_VERSION=0.1.0`
+- `DEBUG=True`
+- `API_V1_PREFIX=/api/v1`
+- `DATABASE_URL=<Neon connection string>`
+- `SECRET_KEY=<generated secret>`
+- `ALGORITHM=HS256`
+- `ACCESS_TOKEN_EXPIRE_MINUTES=60`
+- `BACKEND_CORS_ORIGINS=["http://localhost:5173","http://127.0.0.1:5173"]`
+- `EMAIL_DELIVERY_ENABLED=False`
+- `FRONTEND_ADMIN_URL=http://localhost:5173`
+- `DATA_ENCRYPTION_KEY=<generated Fernet key>`
+- `TRUSTED_PROXY_IPS=[]`
+- `ENABLE_INTELLIGENCE_SCHEDULER=False`
+- `INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES=60`
+
+Current blocker:
+- Neon connection strings include parameters that raw `asyncpg` rejects.
+- Migration attempts failed with:
+  - `connect() got an unexpected keyword argument 'sslmode'`
+  - `connect() got an unexpected keyword argument 'channel_binding'`
+
+Required code behavior before migrations:
+- `Settings.async_database_url()` must:
+  - convert `postgresql://` to `postgresql+asyncpg://`,
+  - convert `sslmode=require` to `ssl=require`,
+  - remove `channel_binding=require`.
+- `app/db/session.py` must use `settings.async_database_url()`.
+- `alembic/env.py` must use `settings.async_database_url()`.
+
+Next deployment steps:
+1. Verify/apply Neon async URL sanitizer.
+2. Run backend compile/checks.
+3. Run `alembic upgrade head` against Neon.
+4. Commit/push Neon URL fix.
+5. Let Render redeploy.
+6. Create first Platform Admin in Neon DB.
+7. Deploy admin web on Vercel with `VITE_API_BASE_URL=https://<render-backend>/api/v1`.
+8. Update Render `BACKEND_CORS_ORIGINS` and `FRONTEND_ADMIN_URL` after Vercel domain exists.
+9. Run post-deployment smoke test.
+<!-- PULSEFI_STEP_44_RENDER_NEON_DEPLOYMENT_END -->
