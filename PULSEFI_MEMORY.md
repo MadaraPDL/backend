@@ -1,7 +1,7 @@
 ﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-23
 
-Current phase: **Step 43A complete - mobile selected-router context across main App User tabs**.
+Current phase: **Step 43B complete - mobile Insights selected-router polish**.
 
 Latest completed work:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -11,18 +11,16 @@ Latest completed work:
 - Step 42D ISP Admin Operations context and actionable reports polish is complete.
 - Step 42E local demo data cleanup is complete.
 - Step 42F final LAN presentation smoke test passed.
-- Step 43A mobile selected-router context polish is complete.
+- Step 43A mobile selected-router context across Home/Usage/Devices/Alerts/Plan Request is complete.
+- Step 43B mobile Insights selected-router polish is complete.
 
-Step 43A completed:
-- Mobile now has a shared selected-router context across tabs.
-- Selecting a router in More → Routers updates Home, Usage, Devices, Alerts, and Plan Request.
-- Home shows the selected router, service line, package, and selected-router usage.
-- Usage shows selected router context and selected-router usage totals/records.
-- Devices filters device list and policy actions to the selected router.
-- Alerts filters alert list to the selected router/service line.
-- Plan Request remains locked to the selected router/service line.
-- Dark-mode policy execution button color issue was fixed.
-- Duplicate pending policy execute buttons were reduced to latest active pending policy per type.
+Step 43B completed:
+- Mobile Insights now follows the global selected-router context.
+- Predictions are filtered by selected router service line.
+- Recommendations are filtered by selected router service line.
+- Plan/service requests shown in Insights are filtered by selected router service line.
+- Insights screen shows selected router, service line, and package context.
+- Recommendation request wording now makes clear the request is for the selected router/service line.
 
 Active rules:
 - ISP Admin endpoints must use `get_current_isp_admin`.
@@ -38,8 +36,8 @@ Active rules:
 - `.env`, local tokens, SMTP passwords, JWT secrets, and database passwords must not be committed.
 
 Next recommended work:
-- Step 43B: mobile Insights screen polish for predictions/recommendations and recommendation-to-request flow.
-- Step 43C: final presentation/demo script and screenshots.
+- Step 43C: mobile Profile/Settings final polish.
+- Step 43D: final presentation/demo script and screenshots.
 <!-- PULSEFI_SYNC_END -->
 
 # PulseFi Project Memory

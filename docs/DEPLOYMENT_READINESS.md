@@ -417,3 +417,21 @@ Demo note:
 - Routers with no simulator ingestion may correctly show 0 usage/devices/alerts until the ISP Admin runs full simulator ingestion for that router.
 <!-- PULSEFI_STEP_43A_MOBILE_SELECTED_ROUTER_END -->
 
+<!-- PULSEFI_STEP_43B_MOBILE_INSIGHTS_SELECTED_ROUTER_START -->
+## Step 43B Mobile Insights Selected-Router Checkpoint - 2026-05-23
+
+Status:
+- Mobile Insights selected-router polish completed.
+
+Verified behavior:
+- Selecting a router in More → Routers updates Insights.
+- Insights shows selected router, service line, and package.
+- Predictions are filtered to the selected router service line.
+- Recommendations are filtered to the selected router service line.
+- Plan/service requests in Insights are filtered to the selected router service line.
+- Recommendation request action clearly says it creates a request for the selected router context.
+
+Demo note:
+- Routers with no generated intelligence may correctly show no predictions/recommendations until ISP Admin runs intelligence generation for that router/service line.
+<!-- PULSEFI_STEP_43B_MOBILE_INSIGHTS_SELECTED_ROUTER_END -->
+
