@@ -2780,3 +2780,59 @@ Next planned phase:
 - Step 41H: final admin/backend bug cleanup and demo-readiness verification.
 - Step 42A: mobile app source-of-truth check and missing-feature inventory.
 <!-- PULSEFI_STEP_41F_41G_END -->
+
+<!-- PULSEFI_STEP_42A_SERVICE_REQUESTS_START -->
+## Step 42A App User Service Requests Checkpoint - 2026-05-23
+
+Status:
+- Mobile phase started after Step 41 admin/auth/lifecycle polish.
+- Existing subscription change request system was extended instead of creating a duplicate request table.
+- App Users still do not directly change account/subscription status.
+- App Users submit requests; ISP Admin reviews and approves/rejects.
+
+Backend behavior:
+- Existing `/api/v1/me/plan-change-requests` flow now supports these request types:
+  - `upgrade`
+  - `downgrade`
+  - `suspend_subscription`
+  - `suspend_account`
+- `confirmation_text` is required to prevent accidental dangerous actions.
+- Confirmation phrases:
+  - `CHANGE PLAN`
+  - `SUSPEND SUBSCRIPTION`
+  - `SUSPEND ACCOUNT`
+- Plan change approval updates the subscription plan.
+- Suspend subscription approval sets the selected subscription status to `suspended`.
+- Suspend account approval sets the App User status to `suspended`.
+- ISP Admin review remains scoped by `current_admin.isp_id`.
+
+Mobile behavior:
+- The previous Manual Plan Change Request screen is now a broader Service Request screen.
+- Mobile App User can choose:
+  - Change plan,
+  - Suspend subscription,
+  - Suspend account.
+- Mobile requires a reason and exact confirmation phrase before submit.
+- Request is sent to the existing `/me/plan-change-requests` endpoint.
+- Mobile does not directly suspend the account or subscription.
+
+Safety/product decisions:
+- No direct user-side suspend action was added.
+- No hard delete was added.
+- All lifecycle-changing requests remain pending until ISP Admin approval.
+- This supports users who may want to change ISPs or temporarily suspend a subscription without accidental one-tap actions.
+
+Checks expected:
+- Backend:
+  - compileall app tests
+  - full pytest
+  - git diff --check
+- Mobile:
+  - npx.cmd tsc --noEmit
+  - npx.cmd expo-doctor
+  - git diff --check
+
+Next:
+- Step 42B: mobile auth/session/MFA gap check.
+- Step 42C: mobile service request manual smoke test with backend + mobile over LAN.
+<!-- PULSEFI_STEP_42A_SERVICE_REQUESTS_END -->
