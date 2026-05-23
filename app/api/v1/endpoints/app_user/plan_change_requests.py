@@ -41,7 +41,7 @@ async def create_my_plan_change_request_endpoint(
     if change_request is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Invalid subscription, requested plan, or recommendation",
+            detail="Invalid subscription, requested plan, recommendation, request type, or confirmation text",
         )
 
     return change_request

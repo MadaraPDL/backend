@@ -9,10 +9,16 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class MyPlanChangeRequestCreate(BaseModel):
     user_subscription_id: UUID
-    requested_plan_id: UUID
+    requested_plan_id: UUID | None = None
     recommendation_id: UUID | None = None
-    request_type: Literal["upgrade", "downgrade"]
+    request_type: Literal[
+        "upgrade",
+        "downgrade",
+        "suspend_subscription",
+        "suspend_account",
+    ]
     reason: str | None = Field(default=None, max_length=1000)
+    confirmation_text: str | None = Field(default=None, max_length=64)
 
 
 class MyRecommendationPlanChangeRequestCreate(BaseModel):

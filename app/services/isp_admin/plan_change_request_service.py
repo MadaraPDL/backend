@@ -126,17 +126,41 @@ async def review_plan_change_request_for_isp(
                 "Subscription plan changed after this request was created."
             )
 
-        requested_plan = await _get_active_requested_plan_for_isp(
-            db=db,
-            isp_id=current_admin.isp_id,
-            change_request=change_request,
-        )
+        if change_request.request_type in {"upgrade", "downgrade"}:
+            requested_plan = await _get_active_requested_plan_for_isp(
+                db=db,
+                isp_id=current_admin.isp_id,
+                change_request=change_request,
+            )
 
-        if requested_plan is None:
+            if requested_plan is None:
+                return None
+
+            subscription.plan_id = requested_plan.id
+            subscription.updated_at = now
+
+        elif change_request.request_type == "suspend_subscription":
+            subscription.status = "suspended"
+            subscription.updated_at = now
+
+        elif change_request.request_type == "suspend_account":
+            user_result = await db.execute(
+                select(AppUser).where(
+                    AppUser.id == change_request.user_id,
+                    AppUser.isp_id == current_admin.isp_id,
+                )
+            )
+            app_user = user_result.scalar_one_or_none()
+
+            if app_user is None:
+                return None
+
+            app_user.status = "suspended"
+            app_user.updated_at = now
+
+        else:
             return None
 
-        subscription.plan_id = requested_plan.id
-        subscription.updated_at = now
         change_request.status = "approved"
 
     elif request.decision == "reject":

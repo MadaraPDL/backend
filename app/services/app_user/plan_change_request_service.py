@@ -21,6 +21,25 @@ _RECOMMENDATION_TYPE_TO_REQUEST_TYPE = {
     "downgrade_plan": "downgrade",
 }
 
+_PLAN_CHANGE_REQUEST_TYPES = {"upgrade", "downgrade"}
+
+_CONFIRMATION_TEXT_BY_REQUEST_TYPE = {
+    "upgrade": "CHANGE PLAN",
+    "downgrade": "CHANGE PLAN",
+    "suspend_subscription": "SUSPEND SUBSCRIPTION",
+    "suspend_account": "SUSPEND ACCOUNT",
+}
+
+
+def _confirmation_matches(*, request_type: str, confirmation_text: str | None) -> bool:
+    expected = _CONFIRMATION_TEXT_BY_REQUEST_TYPE.get(request_type)
+
+    if expected is None:
+        return False
+
+    normalized_confirmation = (confirmation_text or "").strip().upper()
+    return normalized_confirmation == expected
+
 
 async def list_my_plan_change_requests(
     *,
@@ -91,6 +110,21 @@ async def _get_active_isp_plan(
     return result.scalar_one_or_none()
 
 
+async def _get_isp_plan_by_id(
+    *,
+    db: AsyncSession,
+    current_user: AppUser,
+    plan_id: UUID,
+) -> SubscriptionPlan | None:
+    stmt = select(SubscriptionPlan).where(
+        SubscriptionPlan.id == plan_id,
+        SubscriptionPlan.isp_id == current_user.isp_id,
+    )
+
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
+
+
 async def _get_owned_recommendation(
     *,
     db: AsyncSession,
@@ -122,6 +156,24 @@ async def _has_pending_request_for_recommendation(
     return result.scalar_one_or_none() is not None
 
 
+async def _has_pending_request_for_subscription(
+    *,
+    db: AsyncSession,
+    current_user: AppUser,
+    subscription_id: UUID,
+    request_type: str,
+) -> bool:
+    stmt = select(SubscriptionChangeRequest.id).where(
+        SubscriptionChangeRequest.user_id == current_user.id,
+        SubscriptionChangeRequest.user_subscription_id == subscription_id,
+        SubscriptionChangeRequest.request_type == request_type,
+        SubscriptionChangeRequest.status == "pending",
+    )
+
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none() is not None
+
+
 async def create_my_plan_change_request(
     *,
     db: AsyncSession,
@@ -137,19 +189,61 @@ async def create_my_plan_change_request(
     if subscription is None:
         return None
 
-    requested_plan = await _get_active_isp_plan(
-        db=db,
-        current_user=current_user,
-        plan_id=data.requested_plan_id,
-    )
-
-    if requested_plan is None:
+    if not _confirmation_matches(
+        request_type=data.request_type,
+        confirmation_text=data.confirmation_text,
+    ):
         return None
 
-    if subscription.plan_id == requested_plan.id:
+    if data.request_type in _PLAN_CHANGE_REQUEST_TYPES:
+        if data.requested_plan_id is None:
+            return None
+
+        requested_plan = await _get_active_isp_plan(
+            db=db,
+            current_user=current_user,
+            plan_id=data.requested_plan_id,
+        )
+
+        if requested_plan is None:
+            return None
+
+        if subscription.plan_id == requested_plan.id:
+            return None
+
+    elif data.request_type == "suspend_subscription":
+        if subscription.status == "suspended":
+            return None
+
+        requested_plan = await _get_isp_plan_by_id(
+            db=db,
+            current_user=current_user,
+            plan_id=subscription.plan_id,
+        )
+
+        if requested_plan is None:
+            return None
+
+    elif data.request_type == "suspend_account":
+        if current_user.status == "suspended":
+            return None
+
+        requested_plan = await _get_isp_plan_by_id(
+            db=db,
+            current_user=current_user,
+            plan_id=subscription.plan_id,
+        )
+
+        if requested_plan is None:
+            return None
+
+    else:
         return None
 
     if data.recommendation_id is not None:
+        if data.request_type not in _PLAN_CHANGE_REQUEST_TYPES:
+            return None
+
         recommendation = await _get_owned_recommendation(
             db=db,
             current_user=current_user,
@@ -187,6 +281,14 @@ async def create_my_plan_change_request(
             return None
 
         recommendation.status = "accepted"
+
+    if await _has_pending_request_for_subscription(
+        db=db,
+        current_user=current_user,
+        subscription_id=subscription.id,
+        request_type=data.request_type,
+    ):
+        return None
 
     change_request = SubscriptionChangeRequest(
         user_id=current_user.id,
