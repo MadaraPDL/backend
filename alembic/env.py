@@ -16,7 +16,7 @@ import app.models  # noqa: F401
 config = context.config
 
 # Use the same DATABASE_URL that FastAPI uses from .env.
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.async_database_url())
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -27,7 +27,7 @@ target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
     """Run migrations without opening a DB connection."""
-    url = settings.DATABASE_URL
+    url = settings.async_database_url()
 
     context.configure(
         url=url,
