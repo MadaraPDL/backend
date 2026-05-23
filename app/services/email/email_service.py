@@ -37,12 +37,22 @@ def _send_message_blocking(message: EmailMessage) -> None:
     if not settings.SMTP_HOST:
         raise EmailDeliveryError("SMTP_HOST is not configured.")
 
-    if settings.SMTP_USE_SSL:
-        smtp = smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, timeout=20)
-    else:
-        smtp = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=20)
+    smtp = None
 
     try:
+        if settings.SMTP_USE_SSL:
+            smtp = smtplib.SMTP_SSL(
+                settings.SMTP_HOST,
+                settings.SMTP_PORT,
+                timeout=20,
+            )
+        else:
+            smtp = smtplib.SMTP(
+                settings.SMTP_HOST,
+                settings.SMTP_PORT,
+                timeout=20,
+            )
+
         if settings.SMTP_USE_TLS and not settings.SMTP_USE_SSL:
             smtp.starttls()
 
@@ -50,10 +60,18 @@ def _send_message_blocking(message: EmailMessage) -> None:
             smtp.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
 
         smtp.send_message(message)
-    except Exception as exc:
-        raise EmailDeliveryError("Email delivery failed.") from exc
+    except OSError as exc:
+        raise EmailDeliveryError(
+            "SMTP server could not be reached from this deployment environment."
+        ) from exc
+    except smtplib.SMTPException as exc:
+        raise EmailDeliveryError("SMTP email delivery failed.") from exc
     finally:
-        smtp.quit()
+        if smtp is not None:
+            try:
+                smtp.quit()
+            except smtplib.SMTPException:
+                pass
 
 
 async def send_email(
