@@ -7,6 +7,9 @@ This checklist is for moving PulseFi from local development/demo mode toward a s
 - Step 41B hardened production email configuration validation.
 - Step 41C hides dev verification-code UI by default.
 - Step 41D adds this deployment checklist and a safe `.env.example`.
+- Step 41E uses valid request `Origin` values for local DEBUG email links only,
+  keeps production email links on `FRONTEND_ADMIN_URL`, removes visible admin-web
+  debug/token helper UI, and repairs authenticator MFA setup persistence.
 
 ## Local development mode
 
@@ -20,9 +23,15 @@ FRONTEND_ADMIN_URL=http://localhost:5173
 
 Local behavior:
 
-- Backend may return development-only `dev_email_code` values when `DEBUG=True`.
-- Admin web hides those codes by default.
-- Admin web shows dev-code boxes only if local frontend env includes `VITE_SHOW_DEV_CODES=true`.
+- Backend may return development-only helper fields such as `dev_email_code`,
+  `dev_invitation_token`, or `dev_reset_url` when `DEBUG=True`.
+- The real admin web must not render local DEBUG helper fields, token boxes, or
+  reset URLs.
+- `VITE_SHOW_DEV_CODES` is no longer used by the real admin web.
+- While `DEBUG=True`, invitation and password-reset emails may use the request
+  `Origin` as the admin-web base URL only when it is a valid `http` or `https`
+  origin with a host. Without a valid Origin, local links fall back to
+  `FRONTEND_ADMIN_URL`.
 - `.env` and frontend env files must stay uncommitted.
 
 ## Production-style requirements
@@ -57,11 +66,16 @@ SMTP_USE_SSL=False
 ## Email flow checklist
 
 - Invitation email links open the admin web invite acceptance page.
+- Local LAN invitation/password reset emails should use the LAN admin web URL
+  when requests come from that valid LAN Origin.
+- Production invitation/password reset emails ignore request Origin and use
+  `FRONTEND_ADMIN_URL`.
 - Password reset emails open `/reset-password?token=...`.
 - MFA email codes are delivered to the expected account email.
 - Email verification codes are delivered.
 - Production does not expose `dev_email_code`.
-- Admin web does not show dev-code UI unless `VITE_SHOW_DEV_CODES=true`.
+- Admin web does not show dev-code, token, reset-URL, local DEBUG, or manual
+  token helper UI.
 
 ## CORS checklist
 

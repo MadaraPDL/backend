@@ -155,7 +155,7 @@ Important:
 - Account settings identity changes use a two-step MFA flow:
   - `POST /api/v1/auth/me/profile-update-challenge`
   - `PATCH /api/v1/auth/me/identity`
-- Password reset emails send a reset link built from `FRONTEND_ADMIN_URL` and `/reset-password?token=...`; production responses must not expose raw reset tokens.
+- Password reset emails send a reset link built from the admin web base URL and `/reset-password?token=...`; production responses must not expose raw reset tokens or reset URLs.
 
 ### Platform Admin Dashboard
 
@@ -208,9 +208,15 @@ Backward compatibility:
 - `POST /api/v1/isp-admin/user-invitations` sends the App User invitation email through the configured SMTP transport when `EMAIL_DELIVERY_ENABLED=True`.
 - `POST /api/v1/auth/password/forgot` sends a password reset link through the configured SMTP transport when an account exists.
 - SMTP configuration uses `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_EMAIL`, `SMTP_FROM_NAME`, `SMTP_USE_TLS`, and `SMTP_USE_SSL`.
-- Invitation accept links are built from `FRONTEND_ADMIN_URL`.
+- Invitation accept links are built from a valid request `Origin` only while
+  `DEBUG=True`; otherwise they are built from `FRONTEND_ADMIN_URL`.
+- Password reset links follow the same rule: local DEBUG requests from a valid
+  `http` or `https` Origin can generate LAN admin-web links, while production
+  ignores Origin and uses `FRONTEND_ADMIN_URL`.
 - `dev_invitation_token` is a local development helper and is only populated when `DEBUG=True`; production responses must not expose invitation tokens.
 - The frontend should remove `token` from `/accept-invitation` URLs immediately after reading it and submit the token only in the `POST /api/v1/auth/invitations/accept` request body.
+- The real admin web must not render `dev_invitation_token`, `dev_email_code`,
+  `dev_reset_url`, local DEBUG helper boxes, or manual token-entry helpers.
 
 ---
 

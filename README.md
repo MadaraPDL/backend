@@ -1,7 +1,7 @@
 ﻿<!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-22
 
-Current phase: **Step 41D complete - deployment readiness docs and env example added**.
+Current phase: **Step 41E complete - local auth links, MFA onboarding, and admin debug UI hardening**.
 
 Latest completed backend work:
 
@@ -22,6 +22,13 @@ Latest completed backend work:
 - Step 41B added backend tests for production/email config validation.
 - Step 41D added .env.example with safe placeholders.
 - Step 41D added docs/DEPLOYMENT_READINESS.md with local/demo/production checklist.
+- Step 41E makes invitation and password-reset email links use a valid request
+  `Origin` only while `DEBUG=True`; production ignores `Origin` and uses
+  `FRONTEND_ADMIN_URL`.
+- Step 41E keeps accepted admin invitations in MFA setup-required state and
+  prevents Email MFA from becoming active before email-code verification.
+- Step 41E persists authenticator setup flags and adds a safe data-only backfill
+  for existing rows with an MFA secret plus legacy MFA enabled.
 
 Latest completed admin web work:
 
@@ -37,8 +44,12 @@ Latest completed admin web work:
 - Generated backup codes are displayed one time and can be copied.
 - Step 40H smoke test verified Admin Settings backup-code generation/regeneration end-to-end.
 - Step 40I polished the admin web button system safely with precise class targeting across Platform Admin and ISP Admin dashboards.
-- Step 41C hides dev verification/email code boxes by default in admin web.
-- Dev verification codes can be shown locally only when `VITE_SHOW_DEV_CODES=true`.
+- Step 41C hid dev verification/email code boxes by default in admin web.
+- Step 41E removes visible local DEBUG/token/dev helper UI from the real admin
+  web and removes `VITE_SHOW_DEV_CODES` behavior from the real app.
+- Step 41E keeps invitation acceptance to username/password only, adds reset-page
+  theme toggling, stabilizes auth page light/dark colors, and improves Platform
+  Admin error messages.
 
 Latest completed mobile app styling work:
 
@@ -56,14 +67,18 @@ Current production/security decision:
 - Production must use real email delivery.
 - Production must not expose OTP/dev verification codes.
 - Production must not use localhost `FRONTEND_ADMIN_URL`.
-- Local development may expose backend `dev_email_code` only when backend `DEBUG=True`.
-- Admin web must hide dev-code UI unless `VITE_SHOW_DEV_CODES=true`.
+- Local development may expose backend dev helper fields only when backend `DEBUG=True`.
+- Admin web must not render dev helper fields or local DEBUG boxes, even when
+  backend `DEBUG=True`.
+- `VITE_SHOW_DEV_CODES` is no longer used by the real admin web.
 
 Correct next recommended work:
 
 1. Continue backend/admin web hardening.
-2. Add/update deployment readiness documentation and `.env.example`.
-3. Add a production checklist for SMTP, CORS, frontend URL, secret key, encryption key, and debug mode.
+2. Run manual LAN smoke testing for Platform Admin invitations, password reset,
+   invitation acceptance, first-login authenticator setup, and later MFA verify.
+3. Keep production checklist, SMTP, CORS, frontend URL, secret key, encryption
+   key, and debug-mode docs aligned.
 4. Keep mobile feature work paused unless explicitly resumed.
 
 Rules that remain active:
@@ -74,7 +89,8 @@ Rules that remain active:
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
 - MFA settings actions must require verification before changing MFA state.
 - Backup codes must be shown only once and stored only as hashes.
-- Email MFA in local development may expose `dev_email_code` only when `DEBUG=True`.
+- Backend Email MFA in local development may expose `dev_email_code` only when
+  `DEBUG=True`, but the real admin web must not render it.
 - Production must not expose OTP/dev codes.
 - Real email delivery requires `EMAIL_DELIVERY_ENABLED=True` and SMTP configuration.
 - Future assistants must treat this synchronized block as the current PulseFi source of truth unless a newer block exists.
@@ -327,6 +343,7 @@ Invitation email behavior:
 - Production responses must not expose invitation tokens.
 - Invitation links use `/accept-invitation?token=...`; frontends should read the token once, remove it from the URL, and submit it only in the accept-invitation POST body.
 - Password reset links use `/reset-password?token=...`; frontends should read the token once, remove it from the URL, and submit it only in the reset-password POST body.
+- In local `DEBUG=True` development only, invitation and password reset emails may use the request `Origin` as the admin-web base URL when that Origin is a valid `http` or `https` URL with a host. In production, `Origin` is ignored and email links always use `FRONTEND_ADMIN_URL`.
 - Admin settings email/username changes use `POST /api/v1/auth/me/profile-update-challenge` and `PATCH /api/v1/auth/me/identity` so the logged-in account verifies the change with MFA before database updates are applied.
 
 ---
