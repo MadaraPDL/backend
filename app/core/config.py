@@ -1,5 +1,6 @@
 from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 class Settings(BaseSettings):
     APP_NAME: str = Field(default="PulseFi API", validation_alias=AliasChoices("APP_NAME", "app_name"))
@@ -97,20 +98,7 @@ class Settings(BaseSettings):
         return self
 
     def async_database_url(self) -> str:
-        database_url = self.DATABASE_URL
-
-        if database_url.startswith("postgresql://"):
-            database_url = database_url.replace(
-                "postgresql://",
-                "postgresql+asyncpg://",
-                1,
-            )
-
-        # Neon and many Postgres providers give sslmode=require.
-        # asyncpg expects ssl=require instead.
-        database_url = database_url.replace("sslmode=require", "ssl=require")
-
-        return database_url
+        return _sanitize_asyncpg_database_url(self.DATABASE_URL)
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -118,6 +106,51 @@ class Settings(BaseSettings):
         extra="ignore"
     )
     
+
+def _sanitize_asyncpg_database_url(database_url: str) -> str:
+    """Return a SQLAlchemy asyncpg URL that accepts Neon-style params."""
+    if database_url.startswith("postgresql://"):
+        database_url = database_url.replace(
+            "postgresql://",
+            "postgresql+asyncpg://",
+            1,
+        )
+
+    parsed = urlsplit(database_url)
+    if not parsed.query:
+        return database_url
+
+    sanitized_params: list[tuple[str, str]] = []
+    has_ssl_param = False
+
+    for key, value in parse_qsl(parsed.query, keep_blank_values=True):
+        normalized_key = key.lower()
+
+        if normalized_key == "channel_binding":
+            continue
+
+        if normalized_key == "ssl":
+            has_ssl_param = True
+            sanitized_params.append((key, value))
+            continue
+
+        if normalized_key == "sslmode":
+            if value.lower() == "require" and not has_ssl_param:
+                sanitized_params.append(("ssl", "require"))
+                has_ssl_param = True
+            continue
+
+        sanitized_params.append((key, value))
+
+    return urlunsplit(
+        (
+            parsed.scheme,
+            parsed.netloc,
+            parsed.path,
+            urlencode(sanitized_params, doseq=True),
+            parsed.fragment,
+        )
+    )
 
 def _is_local_frontend_url(value: str) -> bool:
     normalized = value.strip().lower()
