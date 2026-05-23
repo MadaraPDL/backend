@@ -530,3 +530,38 @@ Next deployment steps:
 8. Update Render `BACKEND_CORS_ORIGINS` and `FRONTEND_ADMIN_URL` after Vercel domain exists.
 9. Run post-deployment smoke test.
 <!-- PULSEFI_STEP_44_RENDER_NEON_DEPLOYMENT_END -->
+
+<!-- PULSEFI_STEP_44_DEPLOYMENT_START -->
+## Step 44 Deployment Checkpoint - 2026-05-23
+
+Status:
+- Neon PostgreSQL is the deployed database.
+- Render is the deployed backend host.
+- Vercel is the deployed admin web host.
+- Expo/EAS mobile deployment is still later.
+- Railway was abandoned.
+
+Completed:
+- Neon async database URL sanitizer was added through `Settings.async_database_url()`.
+- The sanitizer converts `postgresql://` to `postgresql+asyncpg://`.
+- The sanitizer converts Neon `sslmode=require` to asyncpg-compatible `ssl=require`.
+- The sanitizer removes `channel_binding=require`.
+- Alembic migration against Neon reached latest head.
+- First deployed Platform Admin was created in Neon.
+- Render backend redeployed.
+- Vercel admin web deployed with `VITE_API_BASE_URL` pointing to the Render backend `/api/v1`.
+- Admin login from a phone outside the local network worked.
+
+Current first-deploy settings:
+- `DEBUG=True`
+- `EMAIL_DELIVERY_ENABLED=False`
+- `ENABLE_INTELLIGENCE_SCHEDULER=False`
+- SMTP is intentionally off.
+- Authenticator MFA is the expected MFA path for this first deployment.
+
+Next:
+- Configure mobile app for deployed backend.
+- Enable SMTP later before production-style email flows.
+- Run final full smoke test after backend, admin web, and mobile are all deployed/configured.
+<!-- PULSEFI_STEP_44_DEPLOYMENT_END -->
+

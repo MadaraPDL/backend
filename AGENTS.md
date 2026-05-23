@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-23
 
-Current phase: **Step 44B in progress - Neon + Render backend deployment**.
+Current phase: **Step 44C complete - deployed admin web connected to Render backend**.
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -15,61 +15,32 @@ Completed before deployment:
 - Step 43B mobile Insights selected-router polish is complete.
 - Step 43C App User mobile MFA settings is complete.
 
-Step 43C completed:
-- App User Profile has full MFA settings UI.
-- App User can start authenticator setup from Profile.
-- Authenticator setup shows QR code, manual setup key, and code confirmation.
-- Email MFA enable requires email-code verification before activation.
-- App User can choose preferred MFA method.
-- App User can generate backup codes after MFA verification.
-- Backup codes are shown once after generation.
-- App User can deactivate one MFA method after MFA verification.
-- App User can choose email code or authenticator code for deactivation when the method is active.
-- Backend requires verified MFA challenge for email MFA enable and MFA method deactivation.
-- Backend blocks disabling the last MFA method when `mfa_required=true`.
+Deployment status:
+- Railway deployment was abandoned.
+- Current stack is:
+  - Neon PostgreSQL database.
+  - Render backend web service.
+  - Vercel admin web.
+  - Expo/EAS mobile later.
+- Neon async database URL handling was fixed for asyncpg:
+  - `postgresql://` is converted to `postgresql+asyncpg://`.
+  - `sslmode=require` is converted to `ssl=require`.
+  - `channel_binding=require` is removed.
+- `app/db/session.py` and `alembic/env.py` use `settings.async_database_url()`.
+- Alembic migration against Neon reached latest head.
+- First deployed Platform Admin was created in Neon.
+- Render backend was deployed successfully.
+- Vercel admin web was deployed successfully.
+- Vercel admin web uses `VITE_API_BASE_URL=https://<render-backend>/api/v1`.
+- Admin login from a phone outside the local network worked, confirming the deployed admin web can reach the deployed backend.
 
-Deployment direction:
-- Railway deployment was abandoned because setup/variables/database linking became confusing and slow.
-- New deployment stack:
-  - Database: Neon PostgreSQL.
-  - Backend: Render Web Service.
-  - Admin web: Vercel.
-  - Mobile: Expo/EAS preview build later.
-- Render backend was created and `/docs` opened successfully, meaning the FastAPI app can start.
-- First deployment variables are demo-safe:
-  - `DEBUG=True`
-  - `EMAIL_DELIVERY_ENABLED=False`
-  - `ENABLE_INTELLIGENCE_SCHEDULER=False`
-- SMTP is intentionally off for first deploy. Authenticator MFA works without SMTP. Email MFA/invitations/password-reset email need SMTP later.
-- Render backend uses:
-  - Build command: `pip install -r requirements.txt`
-  - Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-  - Health check path: `/`
-
-Current deployment blocker:
-- Neon connection strings use standard PostgreSQL URL params that `asyncpg` does not accept directly.
-- Alembic migration from local PC failed with:
-  - `TypeError: connect() got an unexpected keyword argument 'sslmode'`
-  - then `TypeError: connect() got an unexpected keyword argument 'channel_binding'`
-- Required fix:
-  - `Settings.async_database_url()` must convert `postgresql://` to `postgresql+asyncpg://`.
-  - It must convert query param `sslmode=require` into `ssl=require`.
-  - It must remove `channel_binding=require`.
-  - `app/db/session.py` and `alembic/env.py` must use `settings.async_database_url()`, not raw `settings.DATABASE_URL`.
-
-Next exact backend actions:
-1. Inspect `app/core/config.py`, `app/db/session.py`, and `alembic/env.py`.
-2. Verify/apply Neon URL sanitizer in `Settings.async_database_url()`.
-3. Run:
-   - `python -m compileall app tests`
-   - `git diff --check`
-4. Set `$env:DATABASE_URL` locally to the real Neon URL.
-5. Run `.\venv\Scripts\alembic.exe upgrade head`.
-6. Remove the temporary env var with `Remove-Item Env:\DATABASE_URL`.
-7. Commit and push Neon URL fix.
-8. Let Render redeploy.
-9. Create first deployed Platform Admin in Neon DB.
-10. Deploy admin web on Vercel with `VITE_API_BASE_URL=https://<render-backend>/api/v1`.
+Current first-deploy settings:
+- `DEBUG=True`
+- `EMAIL_DELIVERY_ENABLED=False`
+- `ENABLE_INTELLIGENCE_SCHEDULER=False`
+- SMTP is intentionally off for first deployment.
+- Authenticator MFA works without SMTP.
+- Email MFA, invitations, and password reset email delivery still need SMTP before production-style mode.
 
 Active rules:
 - Never commit `.env`, database URLs, JWT secrets, SMTP passwords, Neon passwords, Render secrets, or Vercel secrets.
@@ -78,19 +49,13 @@ Active rules:
 - App User `/me` endpoints must use `get_current_app_user`.
 - Current-account `/auth/me/...` endpoints must only affect the signed-in account.
 - MFA settings changes must require verification before sensitive enable/disable actions.
-- Service requests remain pending until ISP Admin approval/rejection.
-- Package/plan reuse is allowed across independent service lines.
-- Independent routers must use independent service-line rows when their usage/requests should be separate.
-- Mobile screens should make selected-router/service-line context clear.
-- Generated reports should include readable insights and tables where possible.
 - Do not expose local DEBUG tokens/codes in real admin web or mobile UI.
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
 
 Next recommended phase:
-- Continue Step 44B: finish Neon migrations and Render backend deployment.
-- Then Step 44C: deploy admin web on Vercel.
-- Then Step 44D: mobile deployed-backend configuration.
-- Step 43D full smoke test will be done after backend/admin/mobile are deployed.
+- Step 44D: configure mobile app to use the deployed backend.
+- Step 44E: enable SMTP later and switch toward production-style settings.
+- Step 43D final full smoke test remains intentionally postponed until backend, admin web, and mobile are all deployed/configured.
 <!-- PULSEFI_SYNC_END -->
 
 # AGENTS.md - PulseFi Backend Instructions
