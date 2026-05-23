@@ -30,6 +30,24 @@ async def get_subscription_for_router_assignment(
     return result.scalar_one_or_none()
 
 
+async def service_line_has_router_assignment(
+    db: AsyncSession,
+    isp_id: UUID,
+    user_subscription_id: UUID,
+    exclude_router_id: UUID | None = None,
+) -> bool:
+    stmt = select(Router.id).where(
+        Router.isp_id == isp_id,
+        Router.user_subscription_id == user_subscription_id,
+    )
+
+    if exclude_router_id is not None:
+        stmt = stmt.where(Router.id != exclude_router_id)
+
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none() is not None
+
+
 async def create_router_for_isp(
     db: AsyncSession,
     request: RouterCreateRequest,

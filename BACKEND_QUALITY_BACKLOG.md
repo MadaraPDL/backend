@@ -1,100 +1,44 @@
-<!-- PULSEFI_SYNC_START -->
-## Current Synchronized PulseFi Checkpoint - 2026-05-22
+﻿<!-- PULSEFI_SYNC_START -->
+## Current Synchronized PulseFi Checkpoint - 2026-05-23
 
-Current phase: **Step 41E complete - local auth links, MFA onboarding, and admin debug UI hardening**.
+Current phase: **Step 42C complete - LAN smoke test + router/service-line logic polish**.
 
-Latest completed backend work:
+Latest completed work:
+- Step 41 admin auth/lifecycle/layout polish is complete.
+- Step 42A App User service request backend/mobile flow is complete.
+- Step 42B mobile MFA setup + service request polish is complete.
+- Step 42C LAN smoke testing and router/service-line UX fixes are complete.
 
-- Step 40B added multi-method MFA support for Admins and App Users.
-- Step 40E updated `MFARequiredResponse` to expose `active_methods` and `backup_codes_available`.
-- Step 40F added backup-code status and regeneration endpoints:
-  - `GET /api/v1/auth/me/mfa/backup-codes/status`
-  - `PATCH /api/v1/auth/me/mfa/backup-codes/regenerate`
-- Step 40F stores only backup-code hashes.
-- Step 40F returns raw backup codes one time only after verified regeneration.
-- Step 40F revokes old unused backup codes during regeneration.
-- Step 40F added backend tests for backup-code status, regeneration, revocation, and hash-only storage.
-- Step 41B hardened production/email configuration validation:
-  - `DEBUG=False` requires `EMAIL_DELIVERY_ENABLED=True`
-  - `DEBUG=False` rejects localhost/127.0.0.1/0.0.0.0 `FRONTEND_ADMIN_URL`
-  - email delivery requires `SMTP_HOST`, `SMTP_FROM_EMAIL`, and `FRONTEND_ADMIN_URL`
-  - `SMTP_USE_TLS` and `SMTP_USE_SSL` cannot both be enabled
-- Step 41B added backend tests for production/email config validation.
-- Step 41D added .env.example with safe placeholders.
-- Step 41D added docs/DEPLOYMENT_READINESS.md with local/demo/production checklist.
-- Step 41E makes invitation and password-reset email links use a valid request
-  `Origin` only while `DEBUG=True`; production ignores `Origin` and uses
-  `FRONTEND_ADMIN_URL`.
-- Step 41E keeps accepted admin invitations in MFA setup-required state and
-  prevents Email MFA from becoming active before email-code verification.
-- Step 41E persists authenticator setup flags and adds a safe data-only backfill
-  for existing rows with an MFA secret plus legacy MFA enabled.
+Step 42C completed:
+- Backend, admin web, and mobile were tested over LAN.
+- App User login, MFA challenge/setup, service request creation, and ISP Admin review were smoke-tested.
+- Mobile no longer renders visible DEBUG MFA codes.
+- Service requests remain pending until ISP Admin approve/reject.
+- No direct user-side suspend/delete action was added.
+- Router/package/service-line logic was clarified:
+  - A package/plan can be reused by many routers.
+  - Each independent router should have its own `user_subscriptions` service-line row.
+  - Independent usage, devices, policies, and service requests are tied to the router/service line.
+- Admin Router Management now supports creating a new service line for an independent router while selecting the same package.
+- Admin App User Management shows service-line and router counts.
+- ISP Admin Operations shows request reasons more clearly.
+- Mobile Routers and Plan Request flows now share selected-router context.
+- Plan Request is locked to the selected router/service line to avoid confusing service selection.
 
-Latest completed admin web work:
-
-- Admin Settings shows Email MFA status, Authenticator MFA status, and preferred MFA method.
-- Admin Settings MFA actions require verification before enabling, disabling, or switching methods.
-- Admin login now asks only for identifier/email and password before MFA.
-- Admin MFA verification page shows fallback actions only after password succeeds.
-- Email fallback appears only when Email MFA is active.
-- Backup-code fallback appears only when unused backup codes exist.
-- Step 40F added Admin Settings recovery backup-code UI.
-- Admin Settings can show backup-code availability/count.
-- Admin Settings can generate/regenerate backup codes after verified MFA challenge.
-- Generated backup codes are displayed one time and can be copied.
-- Step 40H smoke test verified Admin Settings backup-code generation/regeneration end-to-end.
-- Step 40I polished the admin web button system safely with precise class targeting across Platform Admin and ISP Admin dashboards.
-- Step 41C hid dev verification/email code boxes by default in admin web.
-- Step 41E removes visible local DEBUG/token/dev helper UI from the real admin
-  web and removes `VITE_SHOW_DEV_CODES` behavior from the real app.
-- Step 41E keeps invitation acceptance to username/password only, adds reset-page
-  theme toggling, stabilizes auth page light/dark colors, and improves Platform
-  Admin error messages.
-
-Latest completed mobile app styling work:
-
-- Mobile app button styling/component polish is complete for the important current screens.
-- Added reusable `PulseFiButton` variants for primary, secondary, danger, and ghost actions.
-- Mobile feature work remains paused except explicitly scoped styling.
-
-Mobile app status:
-
-- Mobile App User MFA feature work remains paused until the project reaches the mobile phase.
-- Do not continue mobile MFA or backend behavior changes from the mobile app until the user explicitly resumes mobile feature work.
-
-Current production/security decision:
-
-- Production must use real email delivery.
-- Production must not expose OTP/dev verification codes.
-- Production must not use localhost `FRONTEND_ADMIN_URL`.
-- Local development may expose backend dev helper fields only when backend `DEBUG=True`.
-- Admin web must not render dev helper fields or local DEBUG boxes, even when
-  backend `DEBUG=True`.
-- `VITE_SHOW_DEV_CODES` is no longer used by the real admin web.
-
-Correct next recommended work:
-
-1. Continue backend/admin web hardening.
-2. Run manual LAN smoke testing for Platform Admin invitations, password reset,
-   invitation acceptance, first-login authenticator setup, and later MFA verify.
-3. Keep production checklist, SMTP, CORS, frontend URL, secret key, encryption
-   key, and debug-mode docs aligned.
-4. Keep mobile feature work paused unless explicitly resumed.
-
-Rules that remain active:
-
+Active rules:
 - ISP Admin endpoints must use `get_current_isp_admin`.
 - Every ISP Admin query must be scoped by `current_admin.isp_id`.
 - App User `/me` endpoints must use `get_current_app_user`.
+- Service requests remain pending until ISP Admin approval/rejection.
+- Package/plan reuse is allowed across multiple independent service lines.
+- Independent routers must use independent service-line rows when their usage/requests should be separate.
+- Do not expose local DEBUG tokens/codes in real admin web or mobile UI.
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
-- MFA settings actions must require verification before changing MFA state.
-- Backup codes must be shown only once and stored only as hashes.
-- Backend Email MFA in local development may expose `dev_email_code` only when
-  `DEBUG=True`, but the real admin web must not render it.
-- Production must not expose OTP/dev codes.
-- Real email delivery requires `EMAIL_DELIVERY_ENABLED=True` and SMTP configuration.
-- Future assistants must treat this synchronized block as the current PulseFi source of truth unless a newer block exists.
-- Historical sections below may mention older steps; this synchronized block is the current source of truth.
+- `.env`, local tokens, SMTP passwords, JWT secrets, and database passwords must not be committed.
+
+Next recommended work:
+- Improve ISP Admin Operations request context so requests show router/service/package labels instead of mostly IDs.
+- Continue final demo readiness and presentation polishing.
 <!-- PULSEFI_SYNC_END -->
 
 # PulseFi Backend Quality Improvement Backlog
@@ -2011,7 +1955,7 @@ Impact:
 - No database change.
 - Password reset flow is safer before frontend integration.
 
-## Current Backend Quality Backlog Ã¢â‚¬â€ Auth/UI Integration Issues
+## Current Backend Quality Backlog ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Auth/UI Integration Issues
 
 Status update - 2026-05-18:
 
@@ -2022,7 +1966,7 @@ Status update - 2026-05-18:
 - Step 27C follow-up: page load now validates existing admin tokens with `GET /api/v1/auth/me`; invalid, expired, or App User tokens clear the admin session and return to login.
 - Remaining production hardening: replace in-memory rate limiting with Redis/shared-store rate limiting before multi-worker deployment.
 
-### P1 Ã¢â‚¬â€ Admin login rate limit blocks local development
+### P1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Admin login rate limit blocks local development
 Frontend login now sends the required `account_type: "admin"` field, but backend returns:
 - `429 rate_limited`
 - Message: `Too many attempts. Please try again later.`
@@ -2038,7 +1982,7 @@ Required:
   - Done: repeated failures return 429
   - Done: successful login attempt behavior after reset
 
-### P1 Ã¢â‚¬â€ Verify `/auth/me` role contract
+### P1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Verify `/auth/me` role contract
 Frontend now falls back to `GET /api/v1/auth/me` to determine admin role.
 
 Required:
@@ -2050,7 +1994,7 @@ Required:
 - Done: Platform Admin is distinguishable from ISP Admin by `role`.
 - Done in frontend: App User is not accepted in admin web login.
 
-### P1 Ã¢â‚¬â€ MFA-required flow incomplete in frontend
+### P1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â MFA-required flow incomplete in frontend
 Backend exposes:
 - `/api/v1/auth/mfa/verify`
 - `/api/v1/auth/mfa/setup/confirm`
@@ -2061,7 +2005,7 @@ Required:
 - Done: `mfa_required=true` and `mfa_enabled=false` returns `mfa_setup_required` and no access token.
 - Done: frontend setup flow calls `POST /api/v1/auth/mfa/setup/confirm`; setup-only flow cannot bypass token issuance.
 
-### P1 Ã¢â‚¬â€ Frontend/admin production routing
+### P1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Frontend/admin production routing
 Current real frontend shell still uses design preview dashboard components as temporary dashboard views.
 
 Required:
@@ -2075,7 +2019,7 @@ Required:
 - Done: password reset requests now send a reset link email instead of relying
   on a manual token-copy flow; DEBUG can return a local reset URL for testing.
 
-### P2 Ã¢â‚¬â€ Tests needed
+### P2 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Tests needed
 Add or expand tests for:
 - admin login
 - `/auth/me`
@@ -2280,3 +2224,4 @@ Next:
   - service request creation,
   - ISP Admin request review approval/rejection.
 <!-- PULSEFI_STEP_42B_MOBILE_MFA_END -->
+

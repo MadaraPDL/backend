@@ -19,6 +19,7 @@ from app.services.isp_admin import (
     get_router_for_isp,
     get_subscription_for_router_assignment,
     list_routers_for_isp,
+    service_line_has_router_assignment,
     update_router_for_isp,
 )
 
@@ -46,6 +47,19 @@ async def create_router_endpoint(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User subscription not found",
+        )
+
+    if await service_line_has_router_assignment(
+        db=db,
+        isp_id=current_admin.isp_id,
+        user_subscription_id=request.user_subscription_id,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                "This service line already has a router. "
+                "Create a new service line using the same package for another independent router."
+            ),
         )
 
     router = await create_router_for_isp(
@@ -153,6 +167,20 @@ async def update_router_endpoint(
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User subscription not found",
+            )
+
+        if await service_line_has_router_assignment(
+            db=db,
+            isp_id=current_admin.isp_id,
+            user_subscription_id=request.user_subscription_id,
+            exclude_router_id=router.id,
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=(
+                    "This service line already has a router. "
+                    "Move this router to a different service line, or create a new service line using the same package."
+                ),
             )
 
     updated_router = await update_router_for_isp(

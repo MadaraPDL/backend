@@ -719,3 +719,9 @@ Next:
   - service request creation,
   - ISP Admin request review approval/rejection.
 <!-- PULSEFI_STEP_42B_MOBILE_MFA_END -->
+
+### Step 42C router service-line validation
+
+`POST /api/v1/isp-admin/routers` and `PATCH /api/v1/isp-admin/routers/{router_id}` may return `409 Conflict` when the selected `user_subscription_id` service line already has another router.
+
+This does not block package reuse. Multiple independent service lines can use the same package/plan. The validation only prevents two independent routers from sharing one service-line row when their usage, policies, and service requests should stay separate.

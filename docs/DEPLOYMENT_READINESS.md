@@ -304,3 +304,28 @@ Next:
   - service request creation,
   - ISP Admin request review approval/rejection.
 <!-- PULSEFI_STEP_42B_MOBILE_MFA_END -->
+
+<!-- PULSEFI_STEP_42C_ROUTER_SERVICE_LINE_START -->
+## Step 42C Router/Service-Line LAN Smoke Checkpoint - 2026-05-23
+
+Status:
+- LAN smoke test completed for backend, admin web, and mobile.
+- Router/service-line behavior was corrected for demo readiness.
+
+Verified behavior:
+- Multiple routers under the same App User can use the same package/plan.
+- Independent routers use separate `user_subscriptions` service-line rows.
+- Usage, devices, policies, and service requests remain independent per router/service line.
+- Mobile Plan Request stays locked to the selected router from the Routers screen.
+- ISP Admin can see service request reasons.
+- Admin web can create a new service line for a router using the same package.
+
+Demo data note:
+- Hussien Olliek test account was repaired so Home, work, and office routers are on independent service lines.
+- Old demo/test routers remain in the database and may affect total router counts unless filtered or removed before final presentation.
+
+Checks completed before checkpoint:
+- Backend compile/tests.
+- Admin web lint/build.
+- Mobile TypeScript/Expo checks.
+<!-- PULSEFI_STEP_42C_ROUTER_SERVICE_LINE_END -->

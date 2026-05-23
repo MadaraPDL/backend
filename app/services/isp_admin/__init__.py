@@ -1,4 +1,4 @@
-﻿from app.services.isp_admin.admin_invitation_service import (
+from app.services.isp_admin.admin_invitation_service import (
     can_revoke_isp_admin_invitation_for_isp,
     create_isp_admin_invitation_for_isp,
     get_isp_admin_invitation_for_isp,
@@ -48,6 +48,7 @@ from app.services.isp_admin.router_service import (
     get_router_for_isp,
     get_subscription_for_router_assignment,
     list_routers_for_isp,
+    service_line_has_router_assignment,
     update_router_for_isp,
 )
 from app.services.isp_admin.subscription_service import (
@@ -117,6 +118,7 @@ __all__ = [
     "list_recommendations_for_isp",
     "list_router_action_logs_for_isp",
     "list_routers_for_isp",
+    "service_line_has_router_assignment",
     "list_subscription_plans_for_isp",
     "list_usage_records_for_isp",
     "list_user_subscriptions_for_isp",

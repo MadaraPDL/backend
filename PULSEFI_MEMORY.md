@@ -1,108 +1,44 @@
-<!-- PULSEFI_SYNC_START -->
-## Current Synchronized PulseFi Checkpoint - 2026-05-22
+﻿<!-- PULSEFI_SYNC_START -->
+## Current Synchronized PulseFi Checkpoint - 2026-05-23
 
-Current phase: **Step 41E complete - local auth links, MFA onboarding, and admin debug UI hardening**.
+Current phase: **Step 42C complete - LAN smoke test + router/service-line logic polish**.
 
-Latest completed backend work:
+Latest completed work:
+- Step 41 admin auth/lifecycle/layout polish is complete.
+- Step 42A App User service request backend/mobile flow is complete.
+- Step 42B mobile MFA setup + service request polish is complete.
+- Step 42C LAN smoke testing and router/service-line UX fixes are complete.
 
-- Step 40B added multi-method MFA support for Admins and App Users.
-- Step 40E updated `MFARequiredResponse` to expose `active_methods` and `backup_codes_available`.
-- Step 40F added backup-code status and regeneration endpoints:
-  - `GET /api/v1/auth/me/mfa/backup-codes/status`
-  - `PATCH /api/v1/auth/me/mfa/backup-codes/regenerate`
-- Step 40F stores only backup-code hashes.
-- Step 40F returns raw backup codes one time only after verified regeneration.
-- Step 40F revokes old unused backup codes during regeneration.
-- Step 40F added backend tests for backup-code status, regeneration, revocation, and hash-only storage.
-- Step 41B hardened production/email configuration validation:
-  - `DEBUG=False` requires `EMAIL_DELIVERY_ENABLED=True`
-  - `DEBUG=False` rejects localhost/127.0.0.1/0.0.0.0 `FRONTEND_ADMIN_URL`
-  - email delivery requires `SMTP_HOST`, `SMTP_FROM_EMAIL`, and `FRONTEND_ADMIN_URL`
-  - `SMTP_USE_TLS` and `SMTP_USE_SSL` cannot both be enabled
-- Step 41B added backend tests for production/email config validation.
-- Step 41D added .env.example with safe placeholders.
-- Step 41D added docs/DEPLOYMENT_READINESS.md with local/demo/production checklist.
-- Step 41E makes invitation and password-reset email links use a valid request
-  `Origin` only while `DEBUG=True`; production ignores `Origin` and uses
-  `FRONTEND_ADMIN_URL`.
-- Step 41E keeps accepted admin invitations in MFA setup-required state:
-  `mfa_required=True`, `mfa_enabled=False`, no active Email MFA, and
-  authenticator setup required on first login.
-- Step 41E persists authenticator setup by setting
-  `authenticator_mfa_enabled=True`, `preferred_mfa_method="authenticator"`,
-  and syncing the legacy `mfa_enabled` flag.
-- Step 41E adds a safe data-only Alembic backfill for existing rows that have
-  an MFA secret plus legacy MFA enabled but lack `authenticator_mfa_enabled`.
+Step 42C completed:
+- Backend, admin web, and mobile were tested over LAN.
+- App User login, MFA challenge/setup, service request creation, and ISP Admin review were smoke-tested.
+- Mobile no longer renders visible DEBUG MFA codes.
+- Service requests remain pending until ISP Admin approve/reject.
+- No direct user-side suspend/delete action was added.
+- Router/package/service-line logic was clarified:
+  - A package/plan can be reused by many routers.
+  - Each independent router should have its own `user_subscriptions` service-line row.
+  - Independent usage, devices, policies, and service requests are tied to the router/service line.
+- Admin Router Management now supports creating a new service line for an independent router while selecting the same package.
+- Admin App User Management shows service-line and router counts.
+- ISP Admin Operations shows request reasons more clearly.
+- Mobile Routers and Plan Request flows now share selected-router context.
+- Plan Request is locked to the selected router/service line to avoid confusing service selection.
 
-Latest completed admin web work:
-
-- Admin Settings shows Email MFA status, Authenticator MFA status, and preferred MFA method.
-- Admin Settings MFA actions require verification before enabling, disabling, or switching methods.
-- Admin login now asks only for identifier/email and password before MFA.
-- Admin MFA verification page shows fallback actions only after password succeeds.
-- Email fallback appears only when Email MFA is active.
-- Backup-code fallback appears only when unused backup codes exist.
-- Step 40F added Admin Settings recovery backup-code UI.
-- Admin Settings can show backup-code availability/count.
-- Admin Settings can generate/regenerate backup codes after verified MFA challenge.
-- Generated backup codes are displayed one time and can be copied.
-- Step 40H smoke test verified Admin Settings backup-code generation/regeneration end-to-end.
-- Step 40I polished the admin web button system safely with precise class targeting across Platform Admin and ISP Admin dashboards.
-- Step 41C hid dev verification/email code boxes by default in admin web.
-- Step 41E removes visible local DEBUG/token/dev helper UI from the real admin
-  web, including invitation tokens, email codes, reset URLs, local debug text,
-  and manual token entry helpers.
-- Step 41E keeps invitation acceptance to username/password only and tells admins
-  MFA setup is required on first sign-in.
-- Step 41E adds the auth theme toggle to reset links and stabilizes light/dark
-  colors across login, invitation, MFA verification, MFA setup, and reset pages.
-- Step 41E improves Platform Admin-facing error messages for duplicate/conflict,
-  SMTP, rate-limit, validation, authorization, and network failures.
-
-Latest completed mobile app styling work:
-
-- Mobile app button styling/component polish is complete for the important current screens.
-- Added reusable `PulseFiButton` variants for primary, secondary, danger, and ghost actions.
-- Mobile feature work remains paused except explicitly scoped styling.
-
-Mobile app status:
-
-- Mobile App User MFA feature work remains paused until the project reaches the mobile phase.
-- Do not continue mobile MFA or backend behavior changes from the mobile app until the user explicitly resumes mobile feature work.
-
-Current production/security decision:
-
-- Production must use real email delivery.
-- Production must not expose OTP/dev verification codes.
-- Production must not use localhost `FRONTEND_ADMIN_URL`.
-- Local development may expose backend dev helper fields only when backend `DEBUG=True`.
-- Admin web must not render dev helper fields or local DEBUG boxes, even when
-  backend `DEBUG=True`.
-- `VITE_SHOW_DEV_CODES` is no longer used by the real admin web.
-
-Correct next recommended work:
-
-1. Continue backend/admin web hardening.
-2. Run manual LAN smoke testing for Platform Admin invitations, password reset,
-   invitation acceptance, first-login authenticator setup, and later MFA verify.
-3. Keep production checklist, SMTP, CORS, frontend URL, secret key, encryption
-   key, and debug-mode docs aligned.
-4. Keep mobile feature work paused unless explicitly resumed.
-
-Rules that remain active:
-
+Active rules:
 - ISP Admin endpoints must use `get_current_isp_admin`.
 - Every ISP Admin query must be scoped by `current_admin.isp_id`.
 - App User `/me` endpoints must use `get_current_app_user`.
+- Service requests remain pending until ISP Admin approval/rejection.
+- Package/plan reuse is allowed across multiple independent service lines.
+- Independent routers must use independent service-line rows when their usage/requests should be separate.
+- Do not expose local DEBUG tokens/codes in real admin web or mobile UI.
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
-- MFA settings actions must require verification before changing MFA state.
-- Backup codes must be shown only once and stored only as hashes.
-- Backend Email MFA in local development may expose `dev_email_code` only when
-  `DEBUG=True`, but the real admin web must not render it.
-- Production must not expose OTP/dev codes.
-- Real email delivery requires `EMAIL_DELIVERY_ENABLED=True` and SMTP configuration.
-- Future assistants must treat this synchronized block as the current PulseFi source of truth unless a newer block exists.
-- Historical sections below may mention older steps; this synchronized block is the current source of truth.
+- `.env`, local tokens, SMTP passwords, JWT secrets, and database passwords must not be committed.
+
+Next recommended work:
+- Improve ISP Admin Operations request context so requests show router/service/package labels instead of mostly IDs.
+- Continue final demo readiness and presentation polishing.
 <!-- PULSEFI_SYNC_END -->
 
 # PulseFi Project Memory
@@ -454,7 +390,7 @@ Current next step:
 
 ---
 
-## Latest Progress Update ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-14
+## Latest Progress Update ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-14
 
 Backend quality improvements completed:
 
@@ -506,9 +442,9 @@ Step 16F expected rule:
 
 ---
 
-## Step 16 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-14
+## Step 16 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-14
 
-### Step 16F ÃƒÂ¯Ã‚Â¿Ã‚Â½ ISP Admin Router Management Endpoints
+### Step 16F ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ ISP Admin Router Management Endpoints
 
 Completed and tested:
 
@@ -632,7 +568,7 @@ When helping with PulseFi, the assistant/Codex should follow these rules:
 
 ---
 
-## Step 16G ÃƒÂ¯Ã‚Â¿Ã‚Â½ ISP Admin Dashboard Summary
+## Step 16G ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ ISP Admin Dashboard Summary
 
 Completed and tested:
 
@@ -695,9 +631,9 @@ Current backend state:
 
 ---
 
-## Step 17 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-14
+## Step 17 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-14
 
-### Step 17A ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User Mobile Endpoint Foundation
+### Step 17A ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User Mobile Endpoint Foundation
 
 Completed and tested:
 
@@ -754,9 +690,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-14
+## Step 17 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-14
 
-### Step 17B ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User Subscription Endpoints
+### Step 17B ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User Subscription Endpoints
 
 Completed and tested:
 
@@ -807,9 +743,9 @@ Next Step 17 work:
 
 ---
 
-## Step 17 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-14
+## Step 17 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-14
 
-### Step 17C ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User Router and Device View Endpoints
+### Step 17C ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User Router and Device View Endpoints
 
 Completed and tested:
 
@@ -868,7 +804,7 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17D ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User usage endpoints.
+- Step 17D ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User usage endpoints.
 - Required usage behavior:
   - total usage for the logged-in user
   - download/upload/total usage
@@ -998,9 +934,9 @@ Then continue from the latest completed step.
 
 ---
 
-## Step 17 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-15
+## Step 17 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-15
 
-### Step 17E ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User Alert Endpoints
+### Step 17E ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User Alert Endpoints
 
 Completed and tested:
 
@@ -1031,13 +967,13 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17F ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User predictions and recommendations endpoints, or plan change request endpoints.
+- Step 17F ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User predictions and recommendations endpoints, or plan change request endpoints.
 
 ---
 
-## Step 17 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-15
+## Step 17 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-15
 
-### Step 17F ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User Prediction and Recommendation Endpoints
+### Step 17F ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User Prediction and Recommendation Endpoints
 
 Completed and tested:
 
@@ -1075,13 +1011,13 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17G ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User subscription plan change request endpoints.
+- Step 17G ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User subscription plan change request endpoints.
 
 ---
 
-## Step 17 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-15
+## Step 17 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-15
 
-### Step 17G ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User Plan Change Request Endpoints
+### Step 17G ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User Plan Change Request Endpoints
 
 Completed and tested:
 
@@ -1118,13 +1054,13 @@ Impact:
 
 Next Step 17 work:
 
-- Step 17H ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User device policy endpoints.
+- Step 17H ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User device policy endpoints.
 
 ---
 
-## Step 17 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-15
+## Step 17 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-15
 
-### Step 17H ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User Device Policy Endpoints
+### Step 17H ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User Device Policy Endpoints
 
 Completed and tested:
 
@@ -1160,7 +1096,7 @@ Impact:
 
 Next Backend Step:
 
-- Step 18 ÃƒÂ¯Ã‚Â¿Ã‚Â½ Router adapter and simulator layer.
+- Step 18 ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ Router adapter and simulator layer.
 
 
 ## Backend Quality Fixes Completed
@@ -1524,9 +1460,9 @@ Next backend step:
 
 ---
 
-## Step 18 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-16
+## Step 18 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-16
 
-### Step 18A/18B ÃƒÂ¯Ã‚Â¿Ã‚Â½ Router Adapter Interface and Simulator Adapter
+### Step 18A/18B ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ Router Adapter Interface and Simulator Adapter
 
 Completed and tested:
 
@@ -1563,13 +1499,13 @@ Impact:
 
 Next:
 
-- Step 18C ÃƒÂ¯Ã‚Â¿Ã‚Â½ Add service layer that uses the router adapter registry to apply pending device network policies and create router action logs.
+- Step 18C ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ Add service layer that uses the router adapter registry to apply pending device network policies and create router action logs.
 
 ---
 
-## Step 18 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-16
+## Step 18 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-16
 
-### Step 18C ÃƒÂ¯Ã‚Â¿Ã‚Â½ Router Policy Execution Service
+### Step 18C ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ Router Policy Execution Service
 
 Completed and tested:
 
@@ -1606,13 +1542,13 @@ Impact:
 
 Next:
 
-- Step 18D ÃƒÂ¯Ã‚Â¿Ã‚Â½ Add safe API endpoint for executing a pending device policy through the router execution service.
+- Step 18D ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ Add safe API endpoint for executing a pending device policy through the router execution service.
 
 ---
 
-## Step 18 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-16
+## Step 18 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-16
 
-### Step 18D ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User Device Policy Execution Endpoint
+### Step 18D ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User Device Policy Execution Endpoint
 
 Completed and tested:
 
@@ -1651,13 +1587,13 @@ Impact:
 
 Next:
 
-- Step 18E ÃƒÂ¯Ã‚Â¿Ã‚Â½ Add ISP Admin/router action log visibility or add tests for policy execution endpoint.
+- Step 18E ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ Add ISP Admin/router action log visibility or add tests for policy execution endpoint.
 
 ---
 
-## Step 18 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-16
+## Step 18 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-16
 
-### Step 18E ÃƒÂ¯Ã‚Â¿Ã‚Â½ ISP Admin Router Action Log Visibility
+### Step 18E ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ ISP Admin Router Action Log Visibility
 
 Completed and tested:
 
@@ -1697,13 +1633,13 @@ Impact:
 
 Next:
 
-- Step 18F ÃƒÂ¯Ã‚Â¿Ã‚Â½ Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.
+- Step 18F ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ Add focused tests for router action execution and ISP Admin router action log isolation, or add router capability visibility endpoint.
 
 ---
 
-## Step 18 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-16
+## Step 18 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-16
 
-### Step 18F ÃƒÂ¯Ã‚Â¿Ã‚Â½ Router Policy Execution and Router Action Log Integration Tests
+### Step 18F ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ Router Policy Execution and Router Action Log Integration Tests
 
 Completed and tested:
 
@@ -1739,13 +1675,13 @@ Impact:
 
 Next:
 
-- Step 18G ÃƒÂ¯Ã‚Â¿Ã‚Â½ Add router capability visibility endpoint or Step 18 cleanup/docs before moving to Step 19 usage ingestion.
+- Step 18G ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ Add router capability visibility endpoint or Step 18 cleanup/docs before moving to Step 19 usage ingestion.
 
 ---
 
-## Step 18 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-16
+## Step 18 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-16
 
-### Step 18G ÃƒÂ¯Ã‚Â¿Ã‚Â½ App User Router Capability Visibility Endpoint
+### Step 18G ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ App User Router Capability Visibility Endpoint
 
 Completed and tested:
 
@@ -1785,13 +1721,13 @@ Impact:
 
 Next:
 
-- Step 18 cleanup/docs, then Step 19 ÃƒÂ¯Ã‚Â¿Ã‚Â½ usage data ingestion and simulator usage generation.
+- Step 18 cleanup/docs, then Step 19 ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ usage data ingestion and simulator usage generation.
 
 ---
 
-## Step 19 Progress ÃƒÂ¯Ã‚Â¿Ã‚Â½ 2026-05-16
+## Step 19 Progress ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ 2026-05-16
 
-### Step 19A/19B ÃƒÂ¯Ã‚Â¿Ã‚Â½ Simulator Usage Ingestion Service and ISP Admin Trigger Endpoint
+### Step 19A/19B ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ Simulator Usage Ingestion Service and ISP Admin Trigger Endpoint
 
 Completed and tested:
 
@@ -1836,13 +1772,13 @@ Testing:
 
 Next step:
 
-- Step 19C ÃƒÂ¯Ã‚Â¿Ã‚Â½ connected device ingestion/update from simulator data, including device connection logs for new/seen devices.
+- Step 19C ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¿Ãƒâ€šÃ‚Â½ connected device ingestion/update from simulator data, including device connection logs for new/seen devices.
 
 ---
 
-## Step 19 Progress ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â 2026-05-16
+## Step 19 Progress ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â 2026-05-16
 
-### Step 19C ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Simulator Connected Device Ingestion
+### Step 19C ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Simulator Connected Device Ingestion
 
 Completed and tested:
 
@@ -1881,7 +1817,7 @@ Testing:
 
 Next step:
 
-- Step 19D ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â combine simulator device ingestion and usage ingestion into a single demo ingestion flow, or add ISP Admin visibility for device connection logs.
+- Step 19D ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â combine simulator device ingestion and usage ingestion into a single demo ingestion flow, or add ISP Admin visibility for device connection logs.
 
 ---
 
@@ -3877,3 +3813,4 @@ Next:
   - service request creation,
   - ISP Admin request review approval/rejection.
 <!-- PULSEFI_STEP_42B_MOBILE_MFA_END -->
+
