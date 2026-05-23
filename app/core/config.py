@@ -97,14 +97,20 @@ class Settings(BaseSettings):
         return self
 
     def async_database_url(self) -> str:
-        if self.DATABASE_URL.startswith("postgresql://"):
-            return self.DATABASE_URL.replace(
+        database_url = self.DATABASE_URL
+
+        if database_url.startswith("postgresql://"):
+            database_url = database_url.replace(
                 "postgresql://",
                 "postgresql+asyncpg://",
                 1,
             )
 
-        return self.DATABASE_URL
+        # Neon and many Postgres providers give sslmode=require.
+        # asyncpg expects ssl=require instead.
+        database_url = database_url.replace("sslmode=require", "ssl=require")
+
+        return database_url
 
     model_config = SettingsConfigDict(
         env_file=".env",
