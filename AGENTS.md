@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 44E in progress - deployed email delivery moving from SMTP to HTTP provider**.
+Current phase: **Step 44F in progress - Platform Admin team invitation backend flow**.
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -15,6 +15,7 @@ Completed before deployment:
 - Step 43B mobile Insights selected-router polish is complete.
 - Step 43C App User mobile MFA settings is complete.
 - Step 43D final full smoke test remains intentionally postponed until deployment/email/mobile are ready.
+- Step 44F added protected Platform Admin team invitation backend routes so existing Platform Admins can invite/list/revoke Platform Admin invitations and list Platform Admin accounts.
 
 Deployment status:
 - Railway deployment was abandoned.

@@ -774,3 +774,35 @@ Notes:
 - A Gmail address such as `pulsefi.verify@gmail.com` should be used as a recipient unless a matching sender domain is verified in Resend.
 - API keys and provider secrets must never be committed or shared in chat.
 <!-- PULSEFI_EMAIL_DELIVERY_CONTRACT_END -->
+
+---
+
+## Step 44F - Platform Admin Team Invitations
+
+Protected by `platform_admin` role only.
+
+Endpoints:
+
+- `POST /api/v1/platform-admin/platform-admin-invitations`
+  - Creates a pending invitation for another Platform Admin.
+  - Uses the same secure invitation-token flow as ISP Admin/App User invitations.
+  - In `DEBUG=True`, response may include `dev_invitation_token` for deployed demo testing.
+  - In production, email delivery must be configured.
+
+- `GET /api/v1/platform-admin/platform-admin-invitations`
+  - Lists Platform Admin invitations.
+  - Optional query: `status=pending|accepted|revoked|expired`.
+
+- `PATCH /api/v1/platform-admin/platform-admin-invitations/{invitation_id}/revoke`
+  - Revokes a pending Platform Admin invitation.
+
+- `GET /api/v1/platform-admin/platform-admins`
+  - Lists active Platform Admin accounts.
+  - Optional query: `status=active|inactive|suspended`.
+
+Security notes:
+
+- Platform Admin accounts are not public-registration accounts.
+- First Platform Admin is deployment-bootstrap only.
+- Additional Platform Admins are invited by an existing Platform Admin.
+- Platform Admin invitations use `account_type="admin"`, `admin_role="platform_admin"`, and `isp_id=null`.

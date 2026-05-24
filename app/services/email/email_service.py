@@ -422,6 +422,67 @@ PulseFi
     )
 
 
+
+async def send_platform_admin_invitation_email(
+    *,
+    to_email: str,
+    full_name: str | None,
+    raw_token: str,
+    expires_in_days: int,
+    frontend_base_url: str | None = None,
+) -> None:
+    accept_url = _build_accept_invitation_url(
+        raw_token=raw_token,
+        account_type="admin",
+        frontend_base_url=frontend_base_url,
+    )
+
+    display_name = full_name or to_email
+
+    text_body = f"""
+Hello {display_name},
+
+You have been invited to become a Platform Admin on PulseFi.
+
+Open this link to accept the invitation and create your login information:
+
+{accept_url}
+
+This invitation expires in {expires_in_days} day(s).
+
+If you did not expect this invitation, you can ignore this email.
+
+PulseFi
+""".strip()
+
+    html_body = f"""
+<!doctype html>
+<html>
+  <body style="font-family: Arial, sans-serif; color: #102033;">
+    <h2>PulseFi Platform Admin Invitation</h2>
+    <p>Hello {escape(display_name)},</p>
+    <p>You have been invited to become a <strong>Platform Admin</strong> on PulseFi.</p>
+    <p>
+      <a href="{escape(accept_url)}"
+         style="display:inline-block;padding:12px 16px;background:#2274a5;color:white;text-decoration:none;border-radius:10px;font-weight:bold;">
+        Accept invitation
+      </a>
+    </p>
+    <p>This invitation expires in {expires_in_days} day(s).</p>
+    <p>If you did not expect this invitation, you can ignore this email.</p>
+    <p>PulseFi</p>
+  </body>
+</html>
+""".strip()
+
+    await send_email(
+        to_email=to_email,
+        subject="PulseFi Platform Admin invitation",
+        text_body=text_body,
+        html_body=html_body,
+    )
+
+
 async def send_isp_admin_invitation_email(
     *,
     to_email: str,
