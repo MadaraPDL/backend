@@ -121,7 +121,7 @@ async def create_isp_admin_invitation_endpoint(
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Invitation email delivery failed. Check SMTP settings.",
+            detail="Invitation email delivery failed. Check email provider settings.",
         ) from exc
 
     await db.commit()

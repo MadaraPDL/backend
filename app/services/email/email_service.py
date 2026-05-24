@@ -125,6 +125,53 @@ async def _send_resend_email(
         raise EmailDeliveryError("HTTP email delivery failed.") from exc
 
 
+
+async def _send_mailtrap_email(
+    *,
+    to_email: str,
+    subject: str,
+    text_body: str,
+    html_body: str | None = None,
+) -> None:
+    payload: dict[str, object] = {
+        "from": {
+            "email": settings.SMTP_FROM_EMAIL,
+            "name": settings.SMTP_FROM_NAME,
+        },
+        "to": [{"email": to_email}],
+        "subject": subject,
+        "text": text_body,
+    }
+
+    if html_body:
+        payload["html"] = html_body
+
+    headers = {
+        "Authorization": f"Bearer {settings.MAILTRAP_API_TOKEN}",
+        "Content-Type": "application/json",
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=20) as client:
+            response = await client.post(
+                settings.MAILTRAP_API_URL,
+                headers=headers,
+                json=payload,
+            )
+
+        if response.status_code < 200 or response.status_code >= 300:
+            logger.warning(
+                "Mailtrap HTTP email delivery failed with status %s: %s",
+                response.status_code,
+                response.text[:500],
+            )
+            raise EmailDeliveryError(
+                f"Mailtrap HTTP email delivery failed with status {response.status_code}."
+            )
+    except httpx.HTTPError as exc:
+        raise EmailDeliveryError("Mailtrap HTTP email delivery failed.") from exc
+
+
 async def send_email(
     *,
     to_email: str,
@@ -139,6 +186,15 @@ async def send_email(
 
     if email_provider == "resend":
         await _send_resend_email(
+            to_email=to_email,
+            subject=subject,
+            text_body=text_body,
+            html_body=html_body,
+        )
+        return
+
+    if email_provider == "mailtrap":
+        await _send_mailtrap_email(
             to_email=to_email,
             subject=subject,
             text_body=text_body,

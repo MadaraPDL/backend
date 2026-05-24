@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     EMAIL_DELIVERY_PROVIDER: str = "smtp"
     RESEND_API_KEY: str = ""
     RESEND_API_URL: str = "https://api.resend.com/emails"
+    MAILTRAP_API_TOKEN: str = ""
+    MAILTRAP_API_URL: str = "https://send.api.mailtrap.io/api/send"
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587
     SMTP_USERNAME: str = ""
@@ -48,9 +50,9 @@ class Settings(BaseSettings):
         if self.EMAIL_DELIVERY_ENABLED:
             email_provider = self.EMAIL_DELIVERY_PROVIDER.strip().lower()
 
-            if email_provider not in {"smtp", "resend"}:
+            if email_provider not in {"smtp", "resend", "mailtrap"}:
                 raise ValueError(
-                    "EMAIL_DELIVERY_PROVIDER must be either 'smtp' or 'resend'."
+                    "EMAIL_DELIVERY_PROVIDER must be one of 'smtp', 'resend', or 'mailtrap'."
                 )
 
             required_email_settings = {
@@ -63,6 +65,9 @@ class Settings(BaseSettings):
 
             if email_provider == "resend":
                 required_email_settings["RESEND_API_KEY"] = self.RESEND_API_KEY
+
+            if email_provider == "mailtrap":
+                required_email_settings["MAILTRAP_API_TOKEN"] = self.MAILTRAP_API_TOKEN
 
             missing_email_settings = [
                 name
