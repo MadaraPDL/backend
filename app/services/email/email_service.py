@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import smtplib
 import httpx
 from email.message import EmailMessage
@@ -8,6 +9,8 @@ from html import escape
 from urllib.parse import urlencode, urlparse
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 
 class EmailDeliveryError(RuntimeError):
@@ -110,6 +113,11 @@ async def _send_resend_email(
             )
 
         if response.status_code < 200 or response.status_code >= 300:
+            logger.warning(
+                "HTTP email delivery failed with status %s: %s",
+                response.status_code,
+                response.text[:500],
+            )
             raise EmailDeliveryError(
                 f"HTTP email delivery failed with status {response.status_code}."
             )
