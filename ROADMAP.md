@@ -2864,3 +2864,5 @@ Next:
   - service request creation,
   - ISP Admin request review approval/rejection.
 <!-- PULSEFI_STEP_42B_MOBILE_MFA_END -->
+
+FINAL DEMO CHECKPOINT: Backend Render, DB Neon, Admin web Vercel, Mobile Android APK/EAS working. Use C:\PulseFi\pulsefi-mobile-app as real mobile repo. Do not use C:\PulseFi\pulsefi-mobile. Working flows: Platform Admin, Platform Team invites, ISP creation, ISP Admin invite, App User invite, invitation accept redirects to login, router-only service-line creation, active service-line simulator, deployed web/mobile data. Email pending Brevo OTP. Keep DEBUG=True and EMAIL_DELIVERY_ENABLED=False until Brevo is verified.
