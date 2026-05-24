@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import smtplib
+import httpx
 from email.message import EmailMessage
 from html import escape
 from urllib.parse import urlencode, urlparse
@@ -74,6 +75,48 @@ def _send_message_blocking(message: EmailMessage) -> None:
                 pass
 
 
+def _build_sender_address() -> str:
+    return f"{settings.SMTP_FROM_NAME} <{settings.SMTP_FROM_EMAIL}>"
+
+
+async def _send_resend_email(
+    *,
+    to_email: str,
+    subject: str,
+    text_body: str,
+    html_body: str | None = None,
+) -> None:
+    payload: dict[str, object] = {
+        "from": _build_sender_address(),
+        "to": [to_email],
+        "subject": subject,
+        "text": text_body,
+    }
+
+    if html_body:
+        payload["html"] = html_body
+
+    headers = {
+        "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=20) as client:
+            response = await client.post(
+                settings.RESEND_API_URL,
+                headers=headers,
+                json=payload,
+            )
+
+        if response.status_code < 200 or response.status_code >= 300:
+            raise EmailDeliveryError(
+                f"HTTP email delivery failed with status {response.status_code}."
+            )
+    except httpx.HTTPError as exc:
+        raise EmailDeliveryError("HTTP email delivery failed.") from exc
+
+
 async def send_email(
     *,
     to_email: str,
@@ -83,6 +126,20 @@ async def send_email(
 ) -> None:
     if not settings.EMAIL_DELIVERY_ENABLED:
         return
+
+    email_provider = getattr(settings, "EMAIL_DELIVERY_PROVIDER", "smtp").strip().lower()
+
+    if email_provider == "resend":
+        await _send_resend_email(
+            to_email=to_email,
+            subject=subject,
+            text_body=text_body,
+            html_body=html_body,
+        )
+        return
+
+    if email_provider != "smtp":
+        raise EmailDeliveryError("Unsupported email delivery provider.")
 
     message = _build_message(
         to_email=to_email,

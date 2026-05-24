@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     TEST_DATABASE_URL: str | None = None
 
     EMAIL_DELIVERY_ENABLED: bool = False
+    EMAIL_DELIVERY_PROVIDER: str = "smtp"
+    RESEND_API_KEY: str = ""
+    RESEND_API_URL: str = "https://api.resend.com/emails"
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587
     SMTP_USERNAME: str = ""
@@ -43,13 +46,27 @@ class Settings(BaseSettings):
             )
 
         if self.EMAIL_DELIVERY_ENABLED:
+            email_provider = self.EMAIL_DELIVERY_PROVIDER.strip().lower()
+
+            if email_provider not in {"smtp", "resend"}:
+                raise ValueError(
+                    "EMAIL_DELIVERY_PROVIDER must be either 'smtp' or 'resend'."
+                )
+
+            required_email_settings = {
+                "SMTP_FROM_EMAIL": self.SMTP_FROM_EMAIL,
+                "FRONTEND_ADMIN_URL": self.FRONTEND_ADMIN_URL,
+            }
+
+            if email_provider == "smtp":
+                required_email_settings["SMTP_HOST"] = self.SMTP_HOST
+
+            if email_provider == "resend":
+                required_email_settings["RESEND_API_KEY"] = self.RESEND_API_KEY
+
             missing_email_settings = [
                 name
-                for name, value in {
-                    "SMTP_HOST": self.SMTP_HOST,
-                    "SMTP_FROM_EMAIL": self.SMTP_FROM_EMAIL,
-                    "FRONTEND_ADMIN_URL": self.FRONTEND_ADMIN_URL,
-                }.items()
+                for name, value in required_email_settings.items()
                 if not value
             ]
 
@@ -59,7 +76,11 @@ class Settings(BaseSettings):
                     f"Email delivery is enabled but missing settings: {joined}."
                 )
 
-            if self.SMTP_USERNAME and not self.SMTP_PASSWORD:
+            if (
+                email_provider == "smtp"
+                and self.SMTP_USERNAME
+                and not self.SMTP_PASSWORD
+            ):
                 raise ValueError(
                     "Email delivery is enabled but SMTP_PASSWORD is missing for SMTP_USERNAME."
                 )
