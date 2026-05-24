@@ -1,4 +1,4 @@
-﻿# PulseFi Backend API Contract
+# PulseFi Backend API Contract
 
 Generated at: `2026-05-18`
 
@@ -744,3 +744,33 @@ Alert reports may include:
 
 Raw `report_data` remains available for technical inspection, but admin clients should render `summary`, `insights`, and `tables` as the primary user-facing report.
 
+<!-- PULSEFI_EMAIL_DELIVERY_CONTRACT_START -->
+## Email Delivery Configuration - Step 44E (2026-05-24)
+
+PulseFi supports email delivery for:
+- ISP Admin invitations.
+- App User invitations.
+- password reset links.
+- verification/MFA-related email flows where enabled.
+
+Deployment email status:
+- Gmail SMTP is not reliable on the current Render deployment because outbound SMTP connection attempts failed with `OSError: [Errno 101] Network is unreachable`.
+- SMTP connection failures should be handled as email-provider failures, not unhandled 500 crashes.
+- HTTP email delivery through Resend is the active Step 44E direction.
+
+Environment variables:
+- `EMAIL_DELIVERY_ENABLED=True`
+- `EMAIL_DELIVERY_PROVIDER=smtp|resend`
+- `RESEND_API_KEY=<secret, Render only>`
+- `RESEND_API_URL=https://api.resend.com/emails`
+- `SMTP_FROM_EMAIL=<sender address>`
+- `SMTP_FROM_NAME=PulseFi`
+- `FRONTEND_ADMIN_URL=https://pulsefi-admin-web.vercel.app`
+
+Notes:
+- With `EMAIL_DELIVERY_PROVIDER=resend`, old Gmail SMTP connection variables are ignored for sending.
+- `SMTP_FROM_EMAIL` and `SMTP_FROM_NAME` are still used as sender identity fields.
+- For quick Resend testing, use `SMTP_FROM_EMAIL=onboarding@resend.dev`.
+- A Gmail address such as `pulsefi.verify@gmail.com` should be used as a recipient unless a matching sender domain is verified in Resend.
+- API keys and provider secrets must never be committed or shared in chat.
+<!-- PULSEFI_EMAIL_DELIVERY_CONTRACT_END -->

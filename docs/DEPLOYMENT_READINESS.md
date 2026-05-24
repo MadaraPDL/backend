@@ -532,7 +532,7 @@ Next deployment steps:
 <!-- PULSEFI_STEP_44_RENDER_NEON_DEPLOYMENT_END -->
 
 <!-- PULSEFI_STEP_44_DEPLOYMENT_START -->
-## Step 44 Deployment Checkpoint - 2026-05-23
+## Step 44 Deployment Checkpoint - 2026-05-24
 
 Status:
 - Neon PostgreSQL is the deployed database.
@@ -548,20 +548,23 @@ Completed:
 - The sanitizer removes `channel_binding=require`.
 - Alembic migration against Neon reached latest head.
 - First deployed Platform Admin was created in Neon.
-- Render backend redeployed.
+- Render backend deployed.
 - Vercel admin web deployed with `VITE_API_BASE_URL` pointing to the Render backend `/api/v1`.
-- Admin login from a phone outside the local network worked.
+- Admin login and authenticator MFA worked from outside the local network.
+- Render CORS was fixed for the Vercel admin web origin.
 
-Current first-deploy settings:
-- `DEBUG=True`
-- `EMAIL_DELIVERY_ENABLED=False`
-- `ENABLE_INTELLIGENCE_SCHEDULER=False`
-- SMTP is intentionally off.
-- Authenticator MFA is the expected MFA path for this first deployment.
+Email delivery checkpoint:
+- Gmail SMTP from Render failed with network-level `OSError: [Errno 101] Network is unreachable` on both SMTP/TLS and SMTP/SSL paths.
+- The backend now handles SMTP connection failures as clean email-delivery failures instead of raw server crashes.
+- HTTP email provider work started for Resend.
+- Target provider settings are `EMAIL_DELIVERY_PROVIDER=resend`, `RESEND_API_URL=https://api.resend.com/emails`, and a Render-only `RESEND_API_KEY`.
+- Sender identity still uses `SMTP_FROM_EMAIL` and `SMTP_FROM_NAME`; for quick Resend testing use `SMTP_FROM_EMAIL=onboarding@resend.dev`.
+- Current deployed invitation failure is a clean `503 Service Unavailable`, meaning backend and CORS are working but email provider delivery still needs verification.
 
 Next:
-- Configure mobile app for deployed backend.
-- Enable SMTP later before production-style email flows.
-- Run final full smoke test after backend, admin web, and mobile are all deployed/configured.
+- Verify Resend HTTP email delivery from Render logs.
+- Create ISP Admin and App User through the deployed invitation flow after email delivery works.
+- Configure/test mobile app with deployed backend.
+- Run final full smoke test after backend, admin web, email, and mobile are all deployed/configured.
 <!-- PULSEFI_STEP_44_DEPLOYMENT_END -->
 

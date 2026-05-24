@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
-## Current Synchronized PulseFi Checkpoint - 2026-05-23
+## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 44C complete - deployed admin web connected to Render backend**.
+Current phase: **Step 44E in progress - deployed email delivery moving from SMTP to HTTP provider**.
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -14,14 +14,15 @@ Completed before deployment:
 - Step 43A mobile selected-router context across Home/Usage/Devices/Alerts/Plan Request is complete.
 - Step 43B mobile Insights selected-router polish is complete.
 - Step 43C App User mobile MFA settings is complete.
+- Step 43D final full smoke test remains intentionally postponed until deployment/email/mobile are ready.
 
 Deployment status:
 - Railway deployment was abandoned.
-- Current stack is:
+- Current deployment stack is:
   - Neon PostgreSQL database.
   - Render backend web service.
   - Vercel admin web.
-  - Expo/EAS mobile later.
+  - Expo mobile through Expo Go/EAS later.
 - Neon async database URL handling was fixed for asyncpg:
   - `postgresql://` is converted to `postgresql+asyncpg://`.
   - `sslmode=require` is converted to `ssl=require`.
@@ -29,21 +30,44 @@ Deployment status:
 - `app/db/session.py` and `alembic/env.py` use `settings.async_database_url()`.
 - Alembic migration against Neon reached latest head.
 - First deployed Platform Admin was created in Neon.
-- Render backend was deployed successfully.
-- Vercel admin web was deployed successfully.
+- Render backend deployed successfully.
+- Vercel admin web deployed successfully.
 - Vercel admin web uses `VITE_API_BASE_URL=https://<render-backend>/api/v1`.
-- Admin login from a phone outside the local network worked, confirming the deployed admin web can reach the deployed backend.
+- Admin login and authenticator MFA worked from a phone outside the local network.
+- Render CORS was fixed for `https://pulsefi-admin-web.vercel.app`.
+- Browser CORS preflight checks returned `Access-Control-Allow-Origin: https://pulsefi-admin-web.vercel.app`.
 
-Current first-deploy settings:
-- `DEBUG=True`
-- `EMAIL_DELIVERY_ENABLED=False`
-- `ENABLE_INTELLIGENCE_SCHEDULER=False`
-- SMTP is intentionally off for first deployment.
-- Authenticator MFA works without SMTP.
-- Email MFA, invitations, and password reset email delivery still need SMTP before production-style mode.
+Email delivery status:
+- Gmail SMTP was attempted on Render with port 587/TLS and 465/SSL.
+- Gmail SMTP failed from Render with `OSError: [Errno 101] Network is unreachable`.
+- The failure happens before Gmail authentication, so the Gmail app password is not the root issue.
+- Backend email error handling was patched so SMTP connection failures return clean email-delivery errors instead of raw 500 crashes.
+- Invitation requests now reach the backend and return clean `503 Service Unavailable` when email delivery fails.
+- Step 44E started adding HTTP email delivery through Resend:
+  - `EMAIL_DELIVERY_PROVIDER=resend`
+  - `RESEND_API_KEY`
+  - `RESEND_API_URL=https://api.resend.com/emails`
+  - `SMTP_FROM_EMAIL` and `SMTP_FROM_NAME` remain the sender identity fields for compatibility.
+- Resend verification is not complete yet.
+- Current observed deployed invitation failure is `503 Service Unavailable` with message `Invitation email delivery failed...`, meaning the backend is reachable but the email provider request/settings still need verification.
+- For Resend quick testing, use `SMTP_FROM_EMAIL=onboarding@resend.dev`; Gmail addresses such as `pulsefi.verify@gmail.com` are recipients, not Resend sender addresses unless a matching domain is verified.
+
+Current deployment env direction:
+- `DEBUG=True` during first deployment/testing.
+- `ENABLE_INTELLIGENCE_SCHEDULER=False` during first deployment.
+- Target email env for HTTP provider:
+  - `EMAIL_DELIVERY_ENABLED=True`
+  - `EMAIL_DELIVERY_PROVIDER=resend`
+  - `RESEND_API_URL=https://api.resend.com/emails`
+  - `RESEND_API_KEY=<Render secret only>`
+  - `SMTP_FROM_EMAIL=onboarding@resend.dev` for quick testing
+  - `SMTP_FROM_NAME=PulseFi`
+  - `FRONTEND_ADMIN_URL=https://pulsefi-admin-web.vercel.app`
+  - `BACKEND_CORS_ORIGINS=["https://pulsefi-admin-web.vercel.app"]`
+- Never paste or commit Resend API keys, SMTP passwords, database URLs, JWT secrets, Neon credentials, Render secrets, or Vercel secrets.
 
 Active rules:
-- Never commit `.env`, database URLs, JWT secrets, SMTP passwords, Neon passwords, Render secrets, or Vercel secrets.
+- Never commit `.env`, database URLs, JWT secrets, SMTP passwords, Resend API keys, Neon passwords, Render secrets, or Vercel secrets.
 - ISP Admin endpoints must use `get_current_isp_admin`.
 - Every ISP Admin query must be scoped by `current_admin.isp_id`.
 - App User `/me` endpoints must use `get_current_app_user`.
@@ -53,9 +77,10 @@ Active rules:
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
 
 Next recommended phase:
-- Step 44D: configure mobile app to use the deployed backend.
-- Step 44E: enable SMTP later and switch toward production-style settings.
-- Step 43D final full smoke test remains intentionally postponed until backend, admin web, and mobile are all deployed/configured.
+- Finish Step 44E by verifying Resend HTTP email delivery in Render logs and successfully receiving an invitation email.
+- After email works, create ISP Admin and App User through the real deployed invitation flow.
+- Then continue Step 44D/44F mobile deployed-backend login check.
+- Step 43D final full smoke test remains postponed until backend, admin web, email, and mobile are all ready.
 <!-- PULSEFI_SYNC_END -->
 
 # AGENTS.md - PulseFi Backend Instructions
