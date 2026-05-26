@@ -16,19 +16,11 @@ class Settings(BaseSettings):
     TEST_DATABASE_URL: str | None = None
 
     EMAIL_DELIVERY_ENABLED: bool = False
-    EMAIL_DELIVERY_PROVIDER: str = "smtp"
-    RESEND_API_KEY: str = ""
-    RESEND_API_URL: str = "https://api.resend.com/emails"
-    MAILTRAP_API_TOKEN: str = ""
-    MAILTRAP_API_URL: str = "https://send.api.mailtrap.io/api/send"
-    SMTP_HOST: str = ""
-    SMTP_PORT: int = 587
-    SMTP_USERNAME: str = ""
-    SMTP_PASSWORD: str = ""
+    EMAIL_DELIVERY_PROVIDER: str = "brevo"
+    BREVO_API_KEY: str = ""
+    BREVO_API_URL: str = "https://api.brevo.com/v3/smtp/email"
     SMTP_FROM_EMAIL: str = ""
     SMTP_FROM_NAME: str = "PulseFi"
-    SMTP_USE_TLS: bool = True
-    SMTP_USE_SSL: bool = False
     FRONTEND_ADMIN_URL: str = "http://localhost:5173"
 
     DATA_ENCRYPTION_KEY: str = ""
@@ -42,32 +34,17 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_production_settings(self) -> "Settings":
-        if self.SMTP_USE_TLS and self.SMTP_USE_SSL:
-            raise ValueError(
-                "SMTP_USE_TLS and SMTP_USE_SSL cannot both be enabled."
-            )
-
         if self.EMAIL_DELIVERY_ENABLED:
             email_provider = self.EMAIL_DELIVERY_PROVIDER.strip().lower()
 
-            if email_provider not in {"smtp", "resend", "mailtrap"}:
-                raise ValueError(
-                    "EMAIL_DELIVERY_PROVIDER must be one of 'smtp', 'resend', or 'mailtrap'."
-                )
+            if email_provider != "brevo":
+                raise ValueError("EMAIL_DELIVERY_PROVIDER must be 'brevo'.")
 
             required_email_settings = {
+                "BREVO_API_KEY": self.BREVO_API_KEY,
                 "SMTP_FROM_EMAIL": self.SMTP_FROM_EMAIL,
                 "FRONTEND_ADMIN_URL": self.FRONTEND_ADMIN_URL,
             }
-
-            if email_provider == "smtp":
-                required_email_settings["SMTP_HOST"] = self.SMTP_HOST
-
-            if email_provider == "resend":
-                required_email_settings["RESEND_API_KEY"] = self.RESEND_API_KEY
-
-            if email_provider == "mailtrap":
-                required_email_settings["MAILTRAP_API_TOKEN"] = self.MAILTRAP_API_TOKEN
 
             missing_email_settings = [
                 name
@@ -79,15 +56,6 @@ class Settings(BaseSettings):
                 joined = ", ".join(missing_email_settings)
                 raise ValueError(
                     f"Email delivery is enabled but missing settings: {joined}."
-                )
-
-            if (
-                email_provider == "smtp"
-                and self.SMTP_USERNAME
-                and not self.SMTP_PASSWORD
-            ):
-                raise ValueError(
-                    "Email delivery is enabled but SMTP_PASSWORD is missing for SMTP_USERNAME."
                 )
 
         if self.DEBUG:

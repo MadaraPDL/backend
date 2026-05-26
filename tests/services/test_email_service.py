@@ -66,52 +66,94 @@ def test_resolve_frontend_base_url_rejects_invalid_origin(monkeypatch):
     )
 
 
-class FakeSMTP:
-    instances = []
+class FakeAsyncEmailResponse:
+    def __init__(self, status_code=201, text="ok"):
+        self.status_code = status_code
+        self.text = text
 
-    def __init__(self, host, port, timeout):
-        self.host = host
-        self.port = port
+
+class FakeBrevoAsyncClient:
+    posts = []
+    status_code = 201
+    text = "ok"
+
+    def __init__(self, timeout):
         self.timeout = timeout
-        self.started_tls = False
-        self.login_args = None
-        self.messages = []
-        self.quit_called = False
-        FakeSMTP.instances.append(self)
 
-    def starttls(self):
-        self.started_tls = True
+    async def __aenter__(self):
+        return self
 
-    def login(self, username, password):
-        self.login_args = (username, password)
+    async def __aexit__(self, exc_type, exc, traceback):
+        return False
 
-    def send_message(self, message):
-        self.messages.append(message)
+    async def post(self, url, *, headers, json):
+        self.__class__.posts.append(
+            {
+                "url": url,
+                "headers": headers,
+                "json": json,
+                "timeout": self.timeout,
+            }
+        )
+        return FakeAsyncEmailResponse(
+            status_code=self.__class__.status_code,
+            text=self.__class__.text,
+        )
 
-    def quit(self):
-        self.quit_called = True
 
-
-@pytest.mark.asyncio
-async def test_app_user_invitation_email_uses_enabled_smtp_with_password(monkeypatch):
-    FakeSMTP.instances = []
+def patch_brevo_settings(monkeypatch, *, enabled=True):
     monkeypatch.setattr(
         email_service,
         "settings",
         SimpleNamespace(
-            EMAIL_DELIVERY_ENABLED=True,
-            SMTP_HOST="smtp.test",
-            SMTP_PORT=587,
-            SMTP_USERNAME="smtp-user",
-            SMTP_PASSWORD="smtp-pass",
+            DEBUG=True,
+            EMAIL_DELIVERY_ENABLED=enabled,
+            EMAIL_DELIVERY_PROVIDER="brevo",
+            BREVO_API_KEY="brevo-test-key",
+            BREVO_API_URL="https://api.brevo.com/v3/smtp/email",
             SMTP_FROM_EMAIL="no-reply@pulsefi.test",
             SMTP_FROM_NAME="PulseFi",
-            SMTP_USE_TLS=True,
-            SMTP_USE_SSL=False,
             FRONTEND_ADMIN_URL="https://admin.pulsefi.test",
         ),
     )
-    monkeypatch.setattr(email_service.smtplib, "SMTP", FakeSMTP)
+
+
+@pytest.mark.asyncio
+async def test_send_email_uses_brevo_provider(monkeypatch):
+    FakeBrevoAsyncClient.posts = []
+    FakeBrevoAsyncClient.status_code = 201
+    FakeBrevoAsyncClient.text = "ok"
+    patch_brevo_settings(monkeypatch)
+    monkeypatch.setattr(email_service.httpx, "AsyncClient", FakeBrevoAsyncClient)
+
+    await email_service.send_email(
+        to_email="user@example.com",
+        subject="PulseFi test",
+        text_body="Plain text body",
+        html_body="<p>HTML body</p>",
+    )
+
+    post = FakeBrevoAsyncClient.posts[0]
+
+    assert post["url"] == "https://api.brevo.com/v3/smtp/email"
+    assert post["headers"]["api-key"] == "brevo-test-key"
+    assert post["json"]["sender"] == {
+        "email": "no-reply@pulsefi.test",
+        "name": "PulseFi",
+    }
+    assert post["json"]["to"] == [{"email": "user@example.com"}]
+    assert post["json"]["subject"] == "PulseFi test"
+    assert post["json"]["textContent"] == "Plain text body"
+    assert post["json"]["htmlContent"] == "<p>HTML body</p>"
+
+
+@pytest.mark.asyncio
+async def test_app_user_invitation_email_uses_brevo(monkeypatch):
+    FakeBrevoAsyncClient.posts = []
+    FakeBrevoAsyncClient.status_code = 201
+    FakeBrevoAsyncClient.text = "ok"
+    patch_brevo_settings(monkeypatch)
+    monkeypatch.setattr(email_service.httpx, "AsyncClient", FakeBrevoAsyncClient)
 
     await email_service.send_app_user_invitation_email(
         to_email="user@example.com",
@@ -120,40 +162,21 @@ async def test_app_user_invitation_email_uses_enabled_smtp_with_password(monkeyp
         expires_in_days=7,
     )
 
-    smtp = FakeSMTP.instances[0]
-    message = smtp.messages[0]
+    post = FakeBrevoAsyncClient.posts[0]
 
-    assert smtp.host == "smtp.test"
-    assert smtp.port == 587
-    assert smtp.started_tls is True
-    assert smtp.login_args == ("smtp-user", "smtp-pass")
-    assert smtp.quit_called is True
-    assert message["To"] == "user@example.com"
-    assert "token=raw+token+with+spaces" in message.get_body().get_content()
+    assert post["json"]["to"] == [{"email": "user@example.com"}]
+    assert post["json"]["subject"] == "PulseFi App User invitation"
+    assert "token=raw+token+with+spaces" in post["json"]["textContent"]
+    assert "token=raw+token+with+spaces" in post["json"]["htmlContent"]
 
 
 @pytest.mark.asyncio
 async def test_isp_admin_invitation_email_does_not_send_when_delivery_disabled(
     monkeypatch,
 ):
-    FakeSMTP.instances = []
-    monkeypatch.setattr(
-        email_service,
-        "settings",
-        SimpleNamespace(
-            EMAIL_DELIVERY_ENABLED=False,
-            SMTP_HOST="smtp.test",
-            SMTP_PORT=587,
-            SMTP_USERNAME="smtp-user",
-            SMTP_PASSWORD="smtp-pass",
-            SMTP_FROM_EMAIL="no-reply@pulsefi.test",
-            SMTP_FROM_NAME="PulseFi",
-            SMTP_USE_TLS=True,
-            SMTP_USE_SSL=False,
-            FRONTEND_ADMIN_URL="https://admin.pulsefi.test",
-        ),
-    )
-    monkeypatch.setattr(email_service.smtplib, "SMTP", FakeSMTP)
+    FakeBrevoAsyncClient.posts = []
+    patch_brevo_settings(monkeypatch, enabled=False)
+    monkeypatch.setattr(email_service.httpx, "AsyncClient", FakeBrevoAsyncClient)
 
     await email_service.send_isp_admin_invitation_email(
         to_email="admin@example.com",
@@ -163,4 +186,20 @@ async def test_isp_admin_invitation_email_does_not_send_when_delivery_disabled(
         expires_in_days=7,
     )
 
-    assert FakeSMTP.instances == []
+    assert FakeBrevoAsyncClient.posts == []
+
+
+@pytest.mark.asyncio
+async def test_brevo_failure_raises_clean_email_error(monkeypatch):
+    FakeBrevoAsyncClient.posts = []
+    FakeBrevoAsyncClient.status_code = 401
+    FakeBrevoAsyncClient.text = "invalid api key"
+    patch_brevo_settings(monkeypatch)
+    monkeypatch.setattr(email_service.httpx, "AsyncClient", FakeBrevoAsyncClient)
+
+    with pytest.raises(email_service.EmailDeliveryError, match="Brevo HTTP email delivery failed"):
+        await email_service.send_email(
+            to_email="user@example.com",
+            subject="PulseFi test",
+            text_body="Plain text body",
+        )

@@ -843,3 +843,20 @@ Security notes:
 - First Platform Admin is deployment-bootstrap only.
 - Additional Platform Admins are invited by an existing Platform Admin.
 - Platform Admin invitations use `account_type="admin"`, `admin_role="platform_admin"`, and `isp_id=null`.
+
+## Brevo Email Delivery Update
+
+PulseFi now uses Brevo as the only active production email delivery provider.
+
+Required deployment environment variables:
+- EMAIL_DELIVERY_ENABLED=True
+- EMAIL_DELIVERY_PROVIDER=brevo
+- BREVO_API_URL=https://api.brevo.com/v3/smtp/email
+- BREVO_API_KEY=<deployment secret only>
+- SMTP_FROM_EMAIL=<verified Brevo sender email>
+- SMTP_FROM_NAME=PulseFi
+- FRONTEND_ADMIN_URL=https://pulsefi-admin-web.vercel.app
+
+Old SMTP, Resend, and Mailtrap delivery paths were removed from active backend code to simplify deployment and avoid unused provider configuration.
+Never commit Brevo API keys or any .env files.
+

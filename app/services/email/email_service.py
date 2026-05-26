@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import asyncio
 import logging
-import smtplib
+
 import httpx
-from email.message import EmailMessage
 from html import escape
 from urllib.parse import urlencode, urlparse
 
@@ -17,72 +15,7 @@ class EmailDeliveryError(RuntimeError):
     pass
 
 
-def _build_message(
-    *,
-    to_email: str,
-    subject: str,
-    text_body: str,
-    html_body: str | None = None,
-) -> EmailMessage:
-    message = EmailMessage()
-    message["Subject"] = subject
-    message["From"] = f"{settings.SMTP_FROM_NAME} <{settings.SMTP_FROM_EMAIL}>"
-    message["To"] = to_email
-
-    message.set_content(text_body)
-
-    if html_body:
-        message.add_alternative(html_body, subtype="html")
-
-    return message
-
-
-def _send_message_blocking(message: EmailMessage) -> None:
-    if not settings.SMTP_HOST:
-        raise EmailDeliveryError("SMTP_HOST is not configured.")
-
-    smtp = None
-
-    try:
-        if settings.SMTP_USE_SSL:
-            smtp = smtplib.SMTP_SSL(
-                settings.SMTP_HOST,
-                settings.SMTP_PORT,
-                timeout=20,
-            )
-        else:
-            smtp = smtplib.SMTP(
-                settings.SMTP_HOST,
-                settings.SMTP_PORT,
-                timeout=20,
-            )
-
-        if settings.SMTP_USE_TLS and not settings.SMTP_USE_SSL:
-            smtp.starttls()
-
-        if settings.SMTP_USERNAME:
-            smtp.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-
-        smtp.send_message(message)
-    except OSError as exc:
-        raise EmailDeliveryError(
-            "SMTP server could not be reached from this deployment environment."
-        ) from exc
-    except smtplib.SMTPException as exc:
-        raise EmailDeliveryError("SMTP email delivery failed.") from exc
-    finally:
-        if smtp is not None:
-            try:
-                smtp.quit()
-            except smtplib.SMTPException:
-                pass
-
-
-def _build_sender_address() -> str:
-    return f"{settings.SMTP_FROM_NAME} <{settings.SMTP_FROM_EMAIL}>"
-
-
-async def _send_resend_email(
+async def _send_brevo_email(
     *,
     to_email: str,
     subject: str,
@@ -90,86 +23,43 @@ async def _send_resend_email(
     html_body: str | None = None,
 ) -> None:
     payload: dict[str, object] = {
-        "from": _build_sender_address(),
-        "to": [to_email],
-        "subject": subject,
-        "text": text_body,
-    }
-
-    if html_body:
-        payload["html"] = html_body
-
-    headers = {
-        "Authorization": f"Bearer {settings.RESEND_API_KEY}",
-        "Content-Type": "application/json",
-    }
-
-    try:
-        async with httpx.AsyncClient(timeout=20) as client:
-            response = await client.post(
-                settings.RESEND_API_URL,
-                headers=headers,
-                json=payload,
-            )
-
-        if response.status_code < 200 or response.status_code >= 300:
-            logger.warning(
-                "HTTP email delivery failed with status %s: %s",
-                response.status_code,
-                response.text[:500],
-            )
-            raise EmailDeliveryError(
-                f"HTTP email delivery failed with status {response.status_code}."
-            )
-    except httpx.HTTPError as exc:
-        raise EmailDeliveryError("HTTP email delivery failed.") from exc
-
-
-
-async def _send_mailtrap_email(
-    *,
-    to_email: str,
-    subject: str,
-    text_body: str,
-    html_body: str | None = None,
-) -> None:
-    payload: dict[str, object] = {
-        "from": {
+        "sender": {
             "email": settings.SMTP_FROM_EMAIL,
             "name": settings.SMTP_FROM_NAME,
         },
         "to": [{"email": to_email}],
         "subject": subject,
-        "text": text_body,
+        "textContent": text_body,
     }
 
     if html_body:
-        payload["html"] = html_body
+        payload["htmlContent"] = html_body
 
     headers = {
-        "Authorization": f"Bearer {settings.MAILTRAP_API_TOKEN}",
+        "api-key": settings.BREVO_API_KEY,
+        "Accept": "application/json",
         "Content-Type": "application/json",
     }
 
     try:
         async with httpx.AsyncClient(timeout=20) as client:
             response = await client.post(
-                settings.MAILTRAP_API_URL,
+                settings.BREVO_API_URL,
                 headers=headers,
                 json=payload,
             )
 
         if response.status_code < 200 or response.status_code >= 300:
             logger.warning(
-                "Mailtrap HTTP email delivery failed with status %s: %s",
+                "Brevo HTTP email delivery failed with status %s: %s",
                 response.status_code,
                 response.text[:500],
             )
             raise EmailDeliveryError(
-                f"Mailtrap HTTP email delivery failed with status {response.status_code}."
+                f"Brevo HTTP email delivery failed with status {response.status_code}."
             )
     except httpx.HTTPError as exc:
-        raise EmailDeliveryError("Mailtrap HTTP email delivery failed.") from exc
+        raise EmailDeliveryError("Brevo HTTP email delivery failed.") from exc
 
 
 async def send_email(
@@ -182,37 +72,17 @@ async def send_email(
     if not settings.EMAIL_DELIVERY_ENABLED:
         return
 
-    email_provider = getattr(settings, "EMAIL_DELIVERY_PROVIDER", "smtp").strip().lower()
+    email_provider = getattr(settings, "EMAIL_DELIVERY_PROVIDER", "brevo").strip().lower()
 
-    if email_provider == "resend":
-        await _send_resend_email(
-            to_email=to_email,
-            subject=subject,
-            text_body=text_body,
-            html_body=html_body,
-        )
-        return
+    if email_provider != "brevo":
+        raise EmailDeliveryError("Unsupported email delivery provider. Use 'brevo'.")
 
-    if email_provider == "mailtrap":
-        await _send_mailtrap_email(
-            to_email=to_email,
-            subject=subject,
-            text_body=text_body,
-            html_body=html_body,
-        )
-        return
-
-    if email_provider != "smtp":
-        raise EmailDeliveryError("Unsupported email delivery provider.")
-
-    message = _build_message(
+    await _send_brevo_email(
         to_email=to_email,
         subject=subject,
         text_body=text_body,
         html_body=html_body,
     )
-
-    await asyncio.to_thread(_send_message_blocking, message)
 
 
 def _normalize_frontend_base_url(value: str) -> str | None:

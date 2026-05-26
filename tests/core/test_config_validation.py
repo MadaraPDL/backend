@@ -29,14 +29,25 @@ def test_debug_allows_email_delivery_disabled():
     assert settings.EMAIL_DELIVERY_ENABLED is False
 
 
-def test_email_delivery_rejects_tls_and_ssl_together():
-    with pytest.raises(ValidationError, match="SMTP_USE_TLS and SMTP_USE_SSL"):
+def test_email_delivery_requires_brevo_provider():
+    with pytest.raises(ValidationError, match="EMAIL_DELIVERY_PROVIDER"):
         build_settings(
             EMAIL_DELIVERY_ENABLED=True,
-            SMTP_HOST="smtp.example.com",
+            EMAIL_DELIVERY_PROVIDER="smtp",
+            BREVO_API_KEY="brevo-key",
             SMTP_FROM_EMAIL="noreply@example.com",
-            SMTP_USE_TLS=True,
-            SMTP_USE_SSL=True,
+            FRONTEND_ADMIN_URL="https://admin.pulsefi.example",
+        )
+
+
+def test_email_delivery_requires_brevo_api_key():
+    with pytest.raises(ValidationError, match="BREVO_API_KEY"):
+        build_settings(
+            EMAIL_DELIVERY_ENABLED=True,
+            EMAIL_DELIVERY_PROVIDER="brevo",
+            BREVO_API_KEY="",
+            SMTP_FROM_EMAIL="noreply@example.com",
+            FRONTEND_ADMIN_URL="https://admin.pulsefi.example",
         )
 
 
@@ -44,7 +55,8 @@ def test_email_delivery_requires_frontend_admin_url():
     with pytest.raises(ValidationError, match="FRONTEND_ADMIN_URL"):
         build_settings(
             EMAIL_DELIVERY_ENABLED=True,
-            SMTP_HOST="smtp.example.com",
+            EMAIL_DELIVERY_PROVIDER="brevo",
+            BREVO_API_KEY="brevo-key",
             SMTP_FROM_EMAIL="noreply@example.com",
             FRONTEND_ADMIN_URL="",
         )
@@ -66,7 +78,8 @@ def test_production_rejects_localhost_frontend_admin_url():
         build_settings(
             DEBUG=False,
             EMAIL_DELIVERY_ENABLED=True,
-            SMTP_HOST="smtp.example.com",
+            EMAIL_DELIVERY_PROVIDER="brevo",
+            BREVO_API_KEY="brevo-key",
             SMTP_FROM_EMAIL="noreply@example.com",
             BACKEND_CORS_ORIGINS=["https://admin.pulsefi.example"],
             DATA_ENCRYPTION_KEY="encryption-key-placeholder",
@@ -74,11 +87,12 @@ def test_production_rejects_localhost_frontend_admin_url():
         )
 
 
-def test_production_accepts_complete_email_settings():
+def test_production_accepts_complete_brevo_email_settings():
     settings = build_settings(
         DEBUG=False,
         EMAIL_DELIVERY_ENABLED=True,
-        SMTP_HOST="smtp.example.com",
+        EMAIL_DELIVERY_PROVIDER="brevo",
+        BREVO_API_KEY="brevo-key",
         SMTP_FROM_EMAIL="noreply@example.com",
         BACKEND_CORS_ORIGINS=["https://admin.pulsefi.example"],
         DATA_ENCRYPTION_KEY="encryption-key-placeholder",
@@ -87,4 +101,5 @@ def test_production_accepts_complete_email_settings():
 
     assert settings.DEBUG is False
     assert settings.EMAIL_DELIVERY_ENABLED is True
+    assert settings.EMAIL_DELIVERY_PROVIDER == "brevo"
     assert settings.FRONTEND_ADMIN_URL == "https://admin.pulsefi.example"
