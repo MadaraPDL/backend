@@ -6,6 +6,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.usage_summary import UsageConsumptionSummary
+
 
 AppUserStatus = Literal[
     "active",
@@ -31,6 +33,8 @@ class AppUserResponse(BaseModel):
     mfa_enabled: bool
     mfa_required: bool
     preferred_mfa_method: str | None
+    usage_summary: UsageConsumptionSummary | None = None
+    usage_summaries: list[UsageConsumptionSummary] = Field(default_factory=list)
 
 
 class AppUserUpdateRequest(BaseModel):

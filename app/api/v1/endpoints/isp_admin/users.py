@@ -8,10 +8,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.dependencies import get_current_isp_admin
 from app.db.session import get_db
 from app.models.admin import Admin
+from app.models.app_user import AppUser
 from app.schemas.isp_admin import (
     AppUserResponse,
     AppUserStatus,
     AppUserUpdateRequest,
+)
+from app.services.usage_summary_service import (
+    build_latest_active_usage_summary_for_user,
+    build_usage_summaries_for_user,
 )
 from app.services.isp_admin import (
     get_app_user_for_isp,
@@ -21,6 +26,32 @@ from app.services.isp_admin import (
 
 
 router = APIRouter(prefix="/users")
+
+
+
+async def _build_app_user_response_with_usage(
+    *,
+    db: AsyncSession,
+    app_user: AppUser,
+    isp_id: UUID,
+) -> AppUserResponse:
+    usage_summary = await build_latest_active_usage_summary_for_user(
+        db=db,
+        user_id=app_user.id,
+        isp_id=isp_id,
+    )
+    usage_summaries = await build_usage_summaries_for_user(
+        db=db,
+        user_id=app_user.id,
+        isp_id=isp_id,
+    )
+
+    return AppUserResponse.model_validate(app_user).model_copy(
+        update={
+            "usage_summary": usage_summary,
+            "usage_summaries": usage_summaries,
+        }
+    )
 
 
 @router.get(
@@ -42,7 +73,14 @@ async def list_app_users_endpoint(
         offset=offset,
     )
 
-    return [AppUserResponse.model_validate(user) for user in users]
+    return [
+        await _build_app_user_response_with_usage(
+            db=db,
+            app_user=user,
+            isp_id=current_admin.isp_id,
+        )
+        for user in users
+    ]
 
 
 @router.get(
@@ -66,7 +104,11 @@ async def get_app_user_endpoint(
             detail="App User not found",
         )
 
-    return AppUserResponse.model_validate(app_user)
+    return await _build_app_user_response_with_usage(
+        db=db,
+        app_user=app_user,
+        isp_id=current_admin.isp_id,
+    )
 
 
 @router.patch(
@@ -99,4 +141,8 @@ async def update_app_user_endpoint(
 
     await db.commit()
 
-    return AppUserResponse.model_validate(updated_user)
+    return await _build_app_user_response_with_usage(
+        db=db,
+        app_user=updated_user,
+        isp_id=current_admin.isp_id,
+    )

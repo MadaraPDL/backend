@@ -3,7 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+
+from app.schemas.usage_summary import UsageConsumptionSummary
 
 
 class AppUserSummaryResponse(BaseModel):
@@ -20,3 +22,5 @@ class AppUserSummaryResponse(BaseModel):
     created_at: datetime | None
     total_subscriptions: int
     active_subscriptions: int
+    usage_summary: UsageConsumptionSummary | None = None
+    usage_summaries: list[UsageConsumptionSummary] = Field(default_factory=list)
