@@ -23,6 +23,9 @@ HIGH_USAGE_PERCENT = Decimal("80")
 PLAN_EXCEEDED_PERCENT = Decimal("100")
 RAPID_HIGH_USAGE_24H_GB = Decimal("5")
 RAPID_HIGH_USAGE_1H_GB = Decimal("2")
+RAPID_HIGH_USAGE_INGESTION_WINDOW_GB = Decimal("2")
+RAPID_HIGH_USAGE_INGESTION_WINDOW_MINUTES = 10
+RAPID_HIGH_USAGE_SINGLE_UPDATE_GB = Decimal("2")
 UNUSUAL_USAGE_MULTIPLIER = Decimal("3")
 MIN_PREVIOUS_WINDOWS_FOR_ANOMALY = 3
 MIN_UNUSUAL_USAGE_MB = Decimal("100")
@@ -131,6 +134,24 @@ async def _get_latest_window_total_mb(
     result = await db.execute(stmt)
     return _decimal_or_zero(result.scalar_one_or_none())
 
+
+
+
+async def _get_recent_ingestion_total_mb(
+    *,
+    db: AsyncSession,
+    user_subscription_id: UUID,
+    since_created_at: datetime,
+) -> Decimal:
+    total_expr = _usage_total_expression()
+
+    stmt = select(func.coalesce(func.sum(total_expr), 0)).where(
+        UsageRecord.user_subscription_id == user_subscription_id,
+        UsageRecord.created_at >= since_created_at,
+    )
+
+    result = await db.execute(stmt)
+    return _decimal_or_zero(result.scalar_one_or_none())
 
 
 async def _get_recent_usage_total_mb(
@@ -288,17 +309,44 @@ async def generate_usage_alerts_for_subscription(
 
 
     if latest_record_end is not None:
-        recent_24h_start = latest_record_end - timedelta(hours=24)
-        recent_24h_total_mb = await _get_recent_usage_total_mb(
+        rapid_reason_total_mb = Decimal("0")
+        rapid_threshold_mb = RAPID_HIGH_USAGE_24H_GB * MB_PER_GB
+        rapid_window_label = "recent usage"
+
+        # 1) Multiple records created very recently.
+        # This catches repeated simulator/ingestion runs in a few minutes.
+        recent_ingestion_start = datetime.now(timezone.utc) - timedelta(
+            minutes=RAPID_HIGH_USAGE_INGESTION_WINDOW_MINUTES,
+        )
+        recent_ingestion_total_mb = await _get_recent_ingestion_total_mb(
             db=db,
             user_subscription_id=subscription.id,
-            since_record_start=recent_24h_start,
+            since_created_at=recent_ingestion_start,
+        )
+        recent_ingestion_threshold_mb = (
+            RAPID_HIGH_USAGE_INGESTION_WINDOW_GB * MB_PER_GB
         )
 
-        rapid_reason_total_mb = recent_24h_total_mb
-        rapid_threshold_mb = RAPID_HIGH_USAGE_24H_GB * MB_PER_GB
-        rapid_window_label = "the last 24 hours"
+        if recent_ingestion_total_mb >= recent_ingestion_threshold_mb:
+            rapid_reason_total_mb = recent_ingestion_total_mb
+            rapid_threshold_mb = recent_ingestion_threshold_mb
+            rapid_window_label = (
+                f"the last {RAPID_HIGH_USAGE_INGESTION_WINDOW_MINUTES} minutes"
+            )
 
+        # 2) One latest usage update is large enough by itself.
+        if latest_window_total_mb is not None:
+            single_update_threshold_mb = RAPID_HIGH_USAGE_SINGLE_UPDATE_GB * MB_PER_GB
+
+            if (
+                latest_window_total_mb >= single_update_threshold_mb
+                and latest_window_total_mb >= rapid_reason_total_mb
+            ):
+                rapid_reason_total_mb = latest_window_total_mb
+                rapid_threshold_mb = single_update_threshold_mb
+                rapid_window_label = "one new usage update"
+
+        # 3) The latest usage window represents about one hour and is high.
         if (
             latest_window_total_mb is not None
             and latest_record_start is not None
@@ -314,14 +362,34 @@ async def generate_usage_alerts_for_subscription(
                 else Decimal("0")
             )
 
+            one_hour_threshold_mb = RAPID_HIGH_USAGE_1H_GB * MB_PER_GB
+
             if (
                 window_hours > 0
                 and window_hours <= Decimal("1.25")
-                and latest_window_total_mb >= RAPID_HIGH_USAGE_1H_GB * MB_PER_GB
+                and latest_window_total_mb >= one_hour_threshold_mb
+                and latest_window_total_mb >= rapid_reason_total_mb
             ):
                 rapid_reason_total_mb = latest_window_total_mb
-                rapid_threshold_mb = RAPID_HIGH_USAGE_1H_GB * MB_PER_GB
+                rapid_threshold_mb = one_hour_threshold_mb
                 rapid_window_label = "about one hour"
+
+        # 4) Rolling 24-hour usage is high.
+        recent_24h_start = latest_record_end - timedelta(hours=24)
+        recent_24h_total_mb = await _get_recent_usage_total_mb(
+            db=db,
+            user_subscription_id=subscription.id,
+            since_record_start=recent_24h_start,
+        )
+        recent_24h_threshold_mb = RAPID_HIGH_USAGE_24H_GB * MB_PER_GB
+
+        if (
+            recent_24h_total_mb >= recent_24h_threshold_mb
+            and recent_24h_total_mb >= rapid_reason_total_mb
+        ):
+            rapid_reason_total_mb = recent_24h_total_mb
+            rapid_threshold_mb = recent_24h_threshold_mb
+            rapid_window_label = "the last 24 hours"
 
         if rapid_reason_total_mb >= rapid_threshold_mb:
             if not await _open_alert_exists(
