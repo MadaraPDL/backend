@@ -319,7 +319,7 @@ async def generate_usage_alerts_for_subscription(
     )
 
 
-    if latest_record_end is not None:
+    if alerts_created == 0 and latest_record_end is not None:
         rapid_reason_total_mb = Decimal("0")
         rapid_threshold_mb = RAPID_HIGH_USAGE_24H_GB * MB_PER_GB
         rapid_window_label = "recent usage"
@@ -438,7 +438,7 @@ async def generate_usage_alerts_for_subscription(
                 alerts_created += 1
                 high_usage_created = True
 
-    if latest_window_total_mb is not None and latest_record_start is not None:
+    if alerts_created == 0 and latest_window_total_mb is not None and latest_record_start is not None:
         previous_totals = await _get_previous_window_totals_mb(
             db=db,
             user_subscription_id=subscription.id,
@@ -519,45 +519,67 @@ async def generate_new_device_alerts_for_router(
     result = await db.execute(stmt)
     rows = result.all()
 
-    alerts_created = 0
+    if not rows:
+        return AlertGenerationResult(alerts_created=0)
 
-    for connection_log, device, router in rows:
-        if router.user_subscription_id is None:
-            continue
+    first_connection_log, first_device, router = rows[0]
 
-        if await _open_alert_exists(
-            db=db,
-            user_id=device.user_id,
-            user_subscription_id=router.user_subscription_id,
-            alert_type="new_device_connected",
-            connection_log_id=connection_log.id,
-        ):
-            continue
+    if router.user_subscription_id is None:
+        return AlertGenerationResult(alerts_created=0)
 
+    if await _open_alert_exists(
+        db=db,
+        user_id=first_device.user_id,
+        user_subscription_id=router.user_subscription_id,
+        alert_type="new_device_connected",
+        title="New device connected",
+        since_created_at=event_start,
+    ):
+        return AlertGenerationResult(alerts_created=0)
+
+    device_names: list[str] = []
+
+    for _, device, _ in rows:
         device_name = device.device_name or "Unknown device"
 
-        db.add(
-            Alert(
-                user_id=device.user_id,
-                user_subscription_id=router.user_subscription_id,
-                device_id=device.id,
-                connection_log_id=connection_log.id,
-                alert_type="new_device_connected",
-                severity="medium",
-                title="New device connected",
-                message=f"{device_name} connected to your router.",
-                status="unread",
-            )
+        if device_name not in device_names:
+            device_names.append(device_name)
+
+    visible_names = ", ".join(device_names[:3])
+    extra_count = max(len(device_names) - 3, 0)
+
+    if len(device_names) == 1:
+        message = f"{visible_names} connected to your router."
+    elif extra_count:
+        message = (
+            f"{len(device_names)} new devices connected to your router: "
+            f"{visible_names}, and {extra_count} more."
+        )
+    else:
+        message = (
+            f"{len(device_names)} new devices connected to your router: "
+            f"{visible_names}."
         )
 
-        alerts_created += 1
+    db.add(
+        Alert(
+            user_id=first_device.user_id,
+            user_subscription_id=router.user_subscription_id,
+            device_id=first_device.id,
+            connection_log_id=first_connection_log.id,
+            alert_type="new_device_connected",
+            severity="medium",
+            title="New device connected",
+            message=message,
+            status="unread",
+        )
+    )
 
-    if alerts_created:
-        await db.flush()
+    await db.flush()
 
     return AlertGenerationResult(
-        alerts_created=alerts_created,
-        new_device_alerts_created=alerts_created,
+        alerts_created=1,
+        new_device_alerts_created=1,
     )
 
 

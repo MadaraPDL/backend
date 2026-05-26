@@ -205,6 +205,7 @@ async def run_full_simulator_ingestion_endpoint(
     intelligence_result = await run_intelligence_for_isp(
         db=db,
         isp_id=current_admin.isp_id,
+        include_alert_generation=False,
     )
 
     await db.commit()

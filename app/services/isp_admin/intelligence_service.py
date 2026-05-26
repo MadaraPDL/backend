@@ -142,6 +142,8 @@ def _prediction_needs_refresh(
 async def run_intelligence_for_isp(
     db: AsyncSession,
     isp_id: UUID,
+    *,
+    include_alert_generation: bool = True,
 ) -> ISPAdminIntelligenceRunResponse:
     subscription_ids = await list_active_subscription_ids_for_isp(
         db=db,
@@ -164,33 +166,36 @@ async def run_intelligence_for_isp(
                     subscription_id=subscription_id,
                 )
             )
-            usage_alert_result = await generate_usage_alerts_for_subscription(
-                db=db,
-                user_subscription_id=subscription_id,
-                latest_record_start=latest_record_start,
-                latest_record_end=latest_record_end,
-            )
-            router_ids = await list_router_ids_for_subscription(
-                db=db,
-                subscription_id=subscription_id,
-                isp_id=isp_id,
-            )
-            new_device_alerts_created = 0
+            item_alerts_created = 0
 
-            for router_id in router_ids:
-                new_device_result = await generate_new_device_alerts_for_router(
+            if include_alert_generation:
+                usage_alert_result = await generate_usage_alerts_for_subscription(
                     db=db,
-                    router_id=router_id,
-                    event_start=new_device_event_start,
+                    user_subscription_id=subscription_id,
+                    latest_record_start=latest_record_start,
+                    latest_record_end=latest_record_end,
                 )
-                new_device_alerts_created += (
-                    new_device_result.new_device_alerts_created
+                router_ids = await list_router_ids_for_subscription(
+                    db=db,
+                    subscription_id=subscription_id,
+                    isp_id=isp_id,
                 )
+                new_device_alerts_created = 0
 
-            item_alerts_created = (
-                usage_alert_result.alerts_created + new_device_alerts_created
-            )
-            alerts_created += item_alerts_created
+                for router_id in router_ids:
+                    new_device_result = await generate_new_device_alerts_for_router(
+                        db=db,
+                        router_id=router_id,
+                        event_start=new_device_event_start,
+                    )
+                    new_device_alerts_created += (
+                        new_device_result.new_device_alerts_created
+                    )
+
+                item_alerts_created = (
+                    usage_alert_result.alerts_created + new_device_alerts_created
+                )
+                alerts_created += item_alerts_created
 
             existing_prediction = await get_existing_prediction_for_today(
                 db=db,
