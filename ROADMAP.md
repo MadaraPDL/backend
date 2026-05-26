@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 45 complete - simulator scenarios, automatic intelligence alerts, and admin navigation polish**.
+Current phase: **Step 46 planned - usage visibility, alert correctness, and mobile simplification**.
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -2904,4 +2904,138 @@ Required deployment environment variables:
 
 Old SMTP, Resend, and Mailtrap delivery paths were removed from active backend code to simplify deployment and avoid unused provider configuration.
 Never commit Brevo API keys or any .env files.
+
+## PulseFi Forward Plan - Steps 46 to 50
+
+### Current live deployment note
+
+The deployed backend is configured to run automatic intelligence:
+
+- `ENABLE_INTELLIGENCE_SCHEDULER=True`
+- `INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES=15`
+
+This means the backend should periodically run intelligence for active ISPs. Manual intelligence runs should remain available only for admin/demo testing. If alerts or recommendations do not appear, verify Render logs for scheduler start/tick messages and confirm that the simulation created enough usage data to trigger alert/recommendation conditions.
+
+### Step 46 - Usage visibility, alert correctness, and mobile simplification
+
+Status: planned / next.
+
+Goals:
+
+- Add a shared backend usage summary service that calculates:
+  - today usage
+  - current-cycle/month usage
+  - total usage
+  - plan limit
+  - remaining data
+  - usage percentage
+- Show each user's plan consumption in the ISP Admin Users page:
+  - plan name
+  - used / plan limit
+  - remaining data
+  - usage percentage
+  - unread alerts
+  - latest recommendation
+- Improve App User mobile usage visibility:
+  - show total consumption as used / plan limit
+  - show remaining data
+  - show daily usage
+  - show monthly/current-cycle usage
+- Fix high usage alerts so they are generated in two cases:
+  - near-plan-limit usage, such as 80%+ of the current plan allowance
+  - rapid high usage, where the user consumes too many GB in a short period even if they are not near the monthly limit yet
+- Make full simulation immediately generate visible alerts, predictions, and recommendations after creating usage/device data, instead of relying only on the scheduler tick.
+- Simplify the mobile app layout:
+  - Home should show only the most important summary cards
+  - Usage should contain detailed daily/monthly/current-cycle usage
+  - Devices should contain connected devices and device actions
+  - Alerts should contain alerts and recommendation explanations
+  - Profile should become a separate bottom-tab page for account, plan, service line, MFA/security, and logout
+
+### Step 47 - Real ML prediction pipeline
+
+Status: planned.
+
+Current intelligence is still rules-based/heuristic MVP, not a trained ML pipeline.
+
+Step 47 should add a lightweight supervised ML pipeline for predicting whether a user will exceed their plan before the cycle ends.
+
+Planned ML inputs:
+
+- current cycle usage
+- plan limit
+- days elapsed in cycle
+- days remaining
+- average daily usage
+- recent 7-day usage
+- highest daily spike
+- connected device count
+- rapid usage spike count
+
+Planned ML outputs:
+
+- predicted end-cycle usage
+- risk level: low / medium / high
+- exceed probability
+- recommended action
+
+Target implementation:
+
+- add ML dependencies such as `numpy`, `pandas`, `scikit-learn`, and `joblib`
+- train first model from simulator/historical usage records
+- save/load model artifact
+- keep rule-based fallback when model artifact is missing
+- store ML prediction results in the existing predictions flow
+
+### Step 48 - Focused chatbot / AI explainer
+
+Status: planned after Step 46 and Step 47.
+
+Do not build a generic chatbot first. The useful version is a focused PulseFi assistant that explains alerts and recommendations.
+
+Examples:
+
+- Explain this alert.
+- Why is this user high risk?
+- Why did PulseFi recommend this plan?
+- What should the user do next?
+
+The assistant should receive only safe scoped context about the selected alert, recommendation, user usage summary, and plan. It must not receive secrets, passwords, API keys, MFA codes, raw tokens, or unrestricted database content.
+
+### Step 49 - Push notifications
+
+Status: deferred until alert generation is correct.
+
+Required pieces:
+
+- mobile push token registration
+- notification preferences
+- backend push dispatch service
+- Expo push notification integration
+- alert/recommendation notification triggers
+- tests for token registration and dispatch behavior
+
+Push notifications should come after Step 46 because notifications depend on correct alert generation.
+
+### Step 50 - Final live QA and presentation cleanup
+
+Status: planned.
+
+Final QA should cover:
+
+- Render backend
+- Neon database
+- Vercel admin web
+- Expo APK mobile app
+- Brevo email delivery
+- invitation flows
+- password reset
+- simulator
+- alerts
+- recommendations
+- usage summaries
+- ML predictions after Step 47
+- Platform Admin flows
+- ISP Admin flows
+- App User mobile flows
 
