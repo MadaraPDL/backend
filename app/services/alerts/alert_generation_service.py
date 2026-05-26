@@ -64,6 +64,7 @@ async def _open_alert_exists(
     user_subscription_id: UUID,
     alert_type: str,
     connection_log_id: UUID | None = None,
+    title: str | None = None,
 ) -> bool:
     stmt = (
         select(Alert.id)
@@ -78,6 +79,9 @@ async def _open_alert_exists(
 
     if connection_log_id is not None:
         stmt = stmt.where(Alert.connection_log_id == connection_log_id)
+
+    if title is not None:
+        stmt = stmt.where(Alert.title == title)
 
     result = await db.execute(stmt)
     return result.scalar_one_or_none() is not None
@@ -228,6 +232,7 @@ async def generate_usage_alerts_for_subscription(
             user_id=subscription.user_id,
             user_subscription_id=subscription.id,
             alert_type=alert_type,
+            title=title,
         ):
             used_gb = used_mb / MB_PER_GB
 
@@ -296,6 +301,7 @@ async def generate_usage_alerts_for_subscription(
                 user_id=subscription.user_id,
                 user_subscription_id=subscription.id,
                 alert_type="high_usage",
+                title="Rapid high internet usage",
             ):
                 latest_window_gb = latest_window_total_mb / MB_PER_GB
                 threshold_gb = rapid_threshold_mb / MB_PER_GB
