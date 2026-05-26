@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 46 active - usage visibility, alert correctness, event-driven intelligence, and mobile simplification**.
+Current phase: **Step 46 active/finalizing - usage visibility, alert correctness, event-driven intelligence, admin alert scoping, device trust enforcement, and mobile simplification preparation**.
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -2907,26 +2907,29 @@ Never commit Brevo API keys or any .env files.
 
 ## PulseFi Current Truth - Step 46+ Forward Plan
 
-### Live deployment configuration
+### Current phase
 
-The deployed backend is configured for automatic intelligence:
+Current phase: **Step 46 active/finalizing - usage visibility, alert correctness, event-driven intelligence, admin alert scoping, device trust enforcement, and mobile simplification preparation**.
 
-- `ENABLE_INTELLIGENCE_SCHEDULER=True`
-- `INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES=15`
+Live deployment notes:
 
-This means scheduled intelligence should periodically check active subscriptions. However, PulseFi should not depend only on the scheduler for simulator/demo behavior. New usage ingestion should also trigger immediate alert/intelligence checks.
+- Backend is deployed on Render.
+- Admin web is deployed on Vercel.
+- Mobile app/APK is handled through Expo.
+- Brevo email delivery is configured.
+- `ENABLE_INTELLIGENCE_SCHEDULER=True` is enabled.
+- `INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES=15` is enabled.
+- Push notifications are deferred until alert/recommendation behavior is stable.
 
-### Step 46 - Usage visibility, alert correctness, simulator intelligence, and mobile simplification
+---
 
-Status: active / in progress.
-
-#### Step 46A - Shared usage summary backend
+### Step 46A - Shared usage summary backend
 
 Status: implemented.
 
-PulseFi now needs one shared usage summary contract used by ISP Admin and App User/mobile.
+PulseFi now uses calculated usage summary API fields. These are not database columns.
 
-Required fields:
+Required usage summary fields:
 
 - `today_usage_gb`
 - `monthly_usage_gb`
@@ -2940,219 +2943,261 @@ Required fields:
 - `cycle_end`
 - `last_record_end`
 
-Important rule:
+Important truth:
 
-- `usage_summaries` is not a database column.
-- It is a calculated API response built from existing `user_subscriptions`, `subscription_plans`, and `usage_records`.
+- `usage_summaries` is a calculated API response.
+- It is built from `user_subscriptions`, `subscription_plans`, and `usage_records`.
+- It is not a new database column.
 
-#### Step 46B - ISP Admin selected-user plan usage
+---
 
-Status: implemented and live-tested after backend deploy.
+### Step 46B - ISP Admin selected-user plan usage
 
-The ISP Admin Users table should stay compact. It should not contain too many usage columns.
+Status: implemented and live-tested.
 
 Correct UX:
 
+- ISP Admin Users table should stay compact.
 - Users table is for finding/selecting users.
-- Selected user panel shows details.
 - Selected user panel shows one circular usage card per subscription/service line/plan.
-- If the user has multiple subscriptions, each subscription must have its own usage card and its own used/limit display.
+- Multiple subscriptions must show multiple separate cards.
+- Each card has its own used/limit, percent, remaining, today usage, monthly/current-cycle usage, and total usage.
 
-Expected selected-user usage display:
+---
 
-- plan name
-- subscription label
-- status
-- used / plan limit
-- usage percentage
-- remaining data
-- today usage
-- monthly/current-cycle usage
-- total usage
+### Step 46C - App User mobile usage visibility
 
-#### Step 46C - App User mobile usage visibility
+Status: planned for mobile step.
 
-Status: planned / next mobile work.
-
-The App User mobile app must not show only total consumption without context.
-
-Required mobile usage display:
+Mobile app should not only show total consumption. It should show:
 
 - used / plan limit
 - remaining GB
 - today usage
-- this month / current-cycle usage
+- monthly/current-cycle usage
 - total usage
+- per-plan/per-service-line usage
 - unlimited-plan handling
 
-The Home screen should show only a small summary. Detailed usage belongs in the Usage tab.
+Home should show a small summary only. Detailed usage belongs in the Usage tab.
 
-#### Step 46D - Automatic usage alert tiers
+---
 
-Status: being corrected and tested.
+### Step 46D - Automatic usage alert tiers
 
-PulseFi alert generation must be automatic after usage ingestion.
+Status: implemented/finalizing.
 
-Plan usage tiers:
+Plan usage alerts should be automatic after usage ingestion.
 
-- `50%+` of plan: create `Usage warning`
-- `80%+` of plan: create `High internet usage`
-- `100%+` of plan: create `Plan usage limit reached`
+Expected tiers:
 
-Important implementation rule:
+- `50%+` of plan: `Usage warning`
+- `80%+` of plan: `High internet usage`
+- `100%+` of plan: `Plan usage limit reached`
 
-- Do not add a new DB alert type for rapid usage unless a safe migration is prepared.
-- For now, use existing `alert_type="high_usage"` with different alert titles:
-  - `Usage warning`
-  - `High internet usage`
-  - `Rapid high internet usage`
+Implementation truth:
+
+- Do not add a new DB alert type for rapid usage yet.
+- `Usage warning`, `High internet usage`, and `Rapid high internet usage` may all use `alert_type="high_usage"` with different titles.
 - `Plan usage limit reached` should use `alert_type="plan_exceed_risk"`.
 
-Duplicate protection should be title-specific, not only alert-type-specific. Otherwise one unread `high_usage` alert blocks `Usage warning`, `High internet usage`, and `Rapid high internet usage`.
+---
 
-#### Step 46E - Rapid high-usage alerts
+### Step 46E - Rapid high-usage alerts
 
-Status: planned/in progress.
+Status: implemented/finalizing.
 
-Rapid high usage must trigger even when the user is not near the monthly plan limit.
+Rapid usage is different from monthly plan percentage. It should trigger even on large plans.
 
-Required rapid rules:
+Expected rapid triggers:
 
-- `5 GB+` in the last 24 hours should trigger `Rapid high internet usage`.
-- `2 GB+` in about one hour should trigger `Rapid high internet usage`.
+- One large usage update can trigger rapid usage.
+- Multiple usage ingestions in a short period can trigger rapid usage.
+- About `2 GB+` in a short/one-hour window should trigger rapid usage.
+- About `2 GB+` total created within about `10 minutes` should trigger rapid usage.
+- About `5 GB+` within `24 hours` should trigger rapid usage.
 
-Example:
+Important example:
 
-- A user consuming `6.73 GB` quickly on a `10 GB` plan should receive a rapid usage alert even if the cycle percentage is below the high-usage threshold.
+- A `450 GB` plan user consuming `4 GB` in about `2 minutes` through multiple simulator runs should still receive `Rapid high internet usage`.
 
-This must be based on actual recent usage records, not only the simulator scenario name.
+---
 
-#### Step 46F - Full simulator immediate checks
+### Step 46F - Simulator alert spam correction
 
-Status: in progress.
+Status: implemented/finalizing.
 
-After full simulation creates usage/device data, backend should immediately run:
+One full simulator run should not create 8 alerts.
 
-- usage alert checks
-- new-device alert checks
-- prediction/intelligence checks
-- recommendation checks
+Correct simulator behavior:
 
-The user/admin should not need to wait for the 15-minute scheduler tick during demo testing.
+- Max one new-device summary alert per run.
+- Max one usage alert per subscription per run.
+- Full simulator should not create duplicate alerts through both simulator alert generation and intelligence alert generation.
+- Intelligence may refresh predictions/recommendations after simulation, but simulator should not create duplicate alert spam through the intelligence path.
 
-The simulator response should expose useful counts:
+Expected result:
 
-- usage alerts created
-- new device alerts created
-- total alerts created
-- intelligence alerts created
-- predictions created
-- recommendations created
+- A simulator run may create around 1-2 meaningful alerts, not many duplicate alerts.
 
-#### Step 46G - Mobile alert auto-refresh
+---
 
-Status: planned / needed before push notifications.
+### Step 46G - Prediction/recommendation non-spam behavior
 
-Backend alert creation can be automatic, but mobile display is not instant unless the app refreshes or receives push events.
+Status: implemented/finalizing.
 
-Required mobile behavior:
+Predictions/recommendations should be state-based, not event-spam.
 
-- refresh alerts when opening the Alerts tab
-- refresh Home unread-alert count when opening Home
-- refresh alerts when the app returns from background
-- optionally poll every 15-30 seconds while Alerts is open
-- keep pull-to-refresh
+Correct behavior:
 
-This is not full push notifications. It is a lightweight auto-refresh improvement.
+- Same-day prediction should update in place, not create many duplicate prediction rows.
+- Recommendation should only create a new row if the recommendation state changes.
+- `stay_current -> stay_current`: do not create/push duplicates.
+- `stay_current -> upgrade_plan`: create a new recommendation.
+- `upgrade_plan` to same plan -> same plan: do not duplicate.
+- `upgrade_plan` to different plan: create a new recommendation.
+- `upgrade_plan -> monitor_usage`: create a new recommendation.
+- `stay_current` can refresh daily, effectively after midnight, but not every usage run.
 
-#### Step 46H - Event-driven non-spam intelligence
+Important truth:
 
-Status: planned / next backend correction.
+- Alerts are closer to an event log.
+- Recommendations are a state/decision layer and must not spam.
 
-Best architecture:
+---
 
-- after each usage record is created, run intelligence for that subscription
-- compare the new recommendation state against the latest existing recommendation state
-- only create/push a recommendation when the state changes
-- keep periodic intelligence as a safety sweep, but avoid spam
+### Step 46H - Mobile alert/recommendation list cleanup
 
-Recommendation state comparison should include:
+Status: planned for mobile step.
 
-- `recommendation_type`
-- `recommendation_plan_id`
-- `risk_level`
+The mobile app currently becomes too crowded when alerts/recommendations build up.
 
-Expected behavior:
+Mobile should not show endless raw history by default.
 
-- `stay_current` -> `stay_current`: do not create/push duplicate recommendation
-- `stay_current` -> `upgrade_plan`: create recommendation
-- `upgrade_plan` to same plan -> same plan: do not duplicate
-- `upgrade_plan` to one plan -> `upgrade_plan` to different plan: create new recommendation
-- `upgrade_plan` -> `monitor_usage`: create new recommendation
-- `upgrade_plan` -> `stay_current`: do not spam; optionally record a non-push status later
+Mobile UX plan:
 
-The manual `Run intelligence now` button should remain for admin/demo testing, but normal behavior should be event-driven after usage ingestion.
+- Home shows only the most important active alert.
+- Home shows only the latest meaningful recommendation.
+- Alerts tab should show active/recent important alerts first.
+- Recommendations tab/section should show latest meaningful recommendation first.
+- History should be behind `View all`, filters, or pagination.
+- Pull-to-refresh and auto-refresh should be handled in the mobile step.
 
-#### Step 46I - Mobile app simplification
+Important:
+
+- The mobile app part will be handled separately in the mobile step.
+- Do not mix mobile UI cleanup into backend Step 46 unless required by API contracts.
+
+---
+
+### Step 46I - ISP Admin high-usage alerts per selected user
+
+Status: planned next.
+
+Current issue:
+
+- ISP Admin monitoring can become too broad if it shows all users combined.
+- Admin should be able to view high-usage alerts per selected user.
+
+Backend truth:
+
+- ISP Admin alerts endpoint already supports filters:
+  - `user_id`
+  - `user_subscription_id`
+  - `device_id`
+  - `alert_type`
+  - `severity`
+  - `status`
+  - date range
+- Backend already scopes ISP Admin alert queries by `current_admin.isp_id`.
+
+Frontend/admin next step:
+
+- Add selected-user alert panel in Users or Monitoring.
+- Show high-usage alerts for the selected user only.
+- Default Monitoring can show summary, but detailed alert review should support user filtering.
+- For high usage specifically, call alerts API with user filter and `alert_type=high_usage`.
+
+---
+
+### Step 46J - Device trust enforcement
+
+Status: planned next.
+
+Current issue:
+
+- Device has `is_trusted`, but trust state does not fully enforce network access.
+
+Correct rule:
+
+- If a device is not trusted, it should not be allowed to use Wi-Fi.
+
+Backend/device truth:
+
+- Devices already have:
+  - `is_trusted`
+  - `status`
+- Mobile/app user endpoint already supports changing trust:
+  - `PATCH /api/v1/app/me/devices/{device_id}/trust`
+
+Next backend behavior:
+
+- When `is_trusted=false`, device should be treated as blocked/untrusted.
+- Simulator usage should not generate usage records for blocked/untrusted devices.
+- Device status should clearly reflect blocked/untrusted behavior if needed.
+- New untrusted devices should generate a clear alert and/or require approval.
+- Later real-router integration should translate untrusted/blocked state into router MAC blocking.
+
+Important technical note:
+
+- Router action logs currently allow action types such as `bandwidth_limit` and `device_priority`.
+- If we add real `block_device` actions, we need a safe migration/check constraint update.
+- Until real router integration exists, simulator enforcement should be implemented first.
+
+---
+
+### Step 46K - Admin/mobile alert volume rules
 
 Status: planned.
 
-The mobile app is too crowded and should be reorganized into:
+Alerts should not be unlimited spam, but also should not be blocked forever.
 
-- Home
-- Usage
-- Devices
-- Alerts
-- Profile
+Correct alert behavior:
 
-Home should only show:
+- Usage alerts should have cooldown/rate-limiting.
+- Plan tier alerts should not resend every simulator click.
+- Rapid usage should not send duplicates immediately.
+- New device alerts should be summarized per run instead of one alert per discovered simulator device.
+- Important repeated events may create later alerts after cooldown.
+- Mobile should display recent/active important alerts first and hide older history behind filters/pagination.
 
-- plan usage summary
-- today usage
-- most important active alert
-- latest meaningful recommendation
-- quick counts
-
-Usage tab should contain:
-
-- daily usage
-- monthly/current-cycle usage
-- total usage
-- per-plan/subscription usage
-
-Devices tab should contain:
-
-- connected devices
-- device details
-- device policies/actions
-- new-device state
-
-Alerts tab should contain:
-
-- alerts
-- recommendation/explanation entry points
-
-Profile tab should contain:
-
-- account info
-- plan/service-line info
-- MFA/security
-- logout
-- settings
+---
 
 ### Step 47 - Real ML prediction pipeline
 
-Status: planned.
+Status: planned after Step 46 stabilizes.
 
-Current intelligence is rules-based/heuristic MVP, not a trained ML pipeline.
+Current intelligence is rules-based/heuristic MVP, not trained ML.
 
-Step 47 should add a lightweight supervised ML pipeline to predict whether a user will exceed their plan before the cycle ends.
+ML should mainly power prediction, not only recommendations.
+
+Correct ML structure:
+
+- usage data -> ML prediction -> risk level -> recommendation/alert support
+
+Step 47 target:
+
+- predict end-of-cycle usage
+- predict plan exceed risk
+- estimate risk level
+- support plan recommendation decisions
+- optionally improve anomaly/rapid usage detection later
 
 Planned inputs:
 
 - current cycle usage
 - plan limit
-- days elapsed in cycle
+- days elapsed
 - days remaining
 - average daily usage
 - recent 7-day usage
@@ -3167,46 +3212,60 @@ Planned outputs:
 - exceed probability
 - recommended action
 
-Target implementation:
+Implementation direction:
 
-- add ML dependencies such as `numpy`, `pandas`, `scikit-learn`, and `joblib`
+- add `numpy`, `pandas`, `scikit-learn`, `joblib`
 - train first model from simulator/historical usage records
 - save/load model artifact
 - keep rule-based fallback when model artifact is missing
-- store prediction results in the existing predictions flow
+- store results in existing predictions flow
+
+---
 
 ### Step 48 - Focused chatbot / AI explainer
 
 Status: planned after Step 46 and Step 47.
 
-Do not build a generic chatbot first. The useful version is a focused PulseFi assistant that explains alerts and recommendations.
+Do not build a generic chatbot first.
 
-Examples:
+Useful version:
 
 - Explain this alert.
+- Explain this recommendation.
 - Why is this user high risk?
 - Why did PulseFi recommend this plan?
-- What should the user do next?
+- What should the user/admin do next?
 
 Security rule:
 
-- The explainer should receive only scoped alert/recommendation/usage summary/plan context.
-- It must not receive secrets, passwords, API keys, MFA codes, raw tokens, router credentials, or unrestricted database content.
+- Only pass scoped alert/recommendation/usage summary/plan context.
+- Do not pass secrets, passwords, API keys, MFA codes, raw tokens, router credentials, or unrestricted database content.
+
+---
 
 ### Step 49 - Push notifications
 
-Status: deferred until alert generation and mobile alert refresh are correct.
+Status: deferred until Step 46 alert/recommendation behavior is stable.
 
-Required pieces:
+Do not continue push notifications until:
 
-- mobile push token registration
+- alerts are not spammy
+- recommendations are not spammy
+- simulator alert behavior is stable
+- mobile alert/recommendation display strategy is clear
+
+Future push pieces:
+
+- push token registration
 - notification preferences
-- backend push dispatch service
-- Expo push notification integration
-- alert/recommendation notification triggers
-- tests for token registration and dispatch behavior
+- Expo push service
+- push dispatch on new important alert
+- push dispatch on meaningful recommendation state change
+- no push for repeated `stay_current`
+- no sensitive details in notification body
+- notification tap opens Alerts or Recommendation detail
 
-Push notifications should come after Step 46 because notifications depend on correct alert/recommendation generation.
+---
 
 ### Step 50 - Final live QA and presentation cleanup
 
@@ -3222,25 +3281,50 @@ Final QA should cover:
 - invitation flows
 - password reset
 - simulator
-- usage summary cards
+- selected-user usage cards
 - alert tiers
 - rapid high-usage alerts
 - recommendation state-change behavior
-- mobile alert auto-refresh
-- ML predictions after Step 47
+- admin per-user high-usage alert filtering
+- device trust enforcement
+- mobile alert/recommendation cleanup
+- ML prediction after Step 47
 - Platform Admin flows
 - ISP Admin flows
 - App User mobile flows
 
+---
+
+### Tomorrow continuation checkpoint
+
+Continue from:
+
+1. Verify latest Step 46 backend tests pass.
+2. Commit/push any remaining Step 46 backend changes if not already committed.
+3. Redeploy Render.
+4. Test one simulator run:
+   - no 8-alert spam
+   - max one new-device summary alert
+   - max one usage alert
+   - no duplicate intelligence alerts
+5. Implement Step 46I:
+   - ISP Admin high-usage alerts per selected user.
+6. Implement Step 46J:
+   - device trust enforcement.
+7. Leave mobile UI cleanup for the mobile step.
+8. Leave push notifications until alert/recommendation behavior is stable.
+
+---
+
 ### SE documentation note
 
-The SE diagrams/docs should be updated after these implementation steps stabilize.
+SE diagrams/docs should be updated after these implementation steps stabilize.
 
 Required future SE updates:
 
-- Use Case Diagram: usage summaries, rapid alerts, profile tab, ML predictions, chatbot, push notifications
+- Use Case Diagram: usage summaries, alert tiers, rapid alerts, profile tab, ML predictions, chatbot, push notifications, device trust/blocking
 - DFD Level 1: usage ingestion -> alert generation -> intelligence -> recommendations -> mobile/admin display
-- Component Diagram: usage summary service, alert service, intelligence service, future ML module, future notification service
+- Component Diagram: usage summary service, alert service, intelligence service, future ML module, future notification service, device trust enforcement
 - Mobile screen map: Home, Usage, Devices, Alerts, Profile
-- API/Feature coverage matrix: usage summaries, alert tiers, recommendation refresh, auto-refresh/push status
+- API/Feature coverage matrix: usage summaries, alert tiers, recommendation refresh, admin alert filters, device trust enforcement, auto-refresh/push status
 
