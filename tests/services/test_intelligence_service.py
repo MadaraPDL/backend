@@ -29,6 +29,7 @@ async def test_run_intelligence_for_isp_generates_prediction_recommendation_and_
         return (
             datetime(2026, 5, 26, 9, 0, tzinfo=timezone.utc),
             datetime(2026, 5, 26, 10, 0, tzinfo=timezone.utc),
+            datetime(2026, 5, 26, 10, 1, tzinfo=timezone.utc),
         )
 
     async def fake_generate_usage_alerts_for_subscription(**kwargs):

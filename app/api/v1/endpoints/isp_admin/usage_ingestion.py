@@ -200,6 +200,8 @@ async def run_full_simulator_ingestion_endpoint(
         include_new_device_alerts=True,
     )
 
+    await db.flush()
+
     intelligence_result = await run_intelligence_for_isp(
         db=db,
         isp_id=current_admin.isp_id,

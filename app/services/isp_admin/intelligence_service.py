@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
@@ -86,19 +86,23 @@ async def get_existing_recommendation_for_prediction(
 async def get_latest_usage_window_for_subscription(
     db: AsyncSession,
     subscription_id: UUID,
-) -> tuple[datetime | None, datetime | None]:
+) -> tuple[datetime | None, datetime | None, datetime | None]:
     result = await db.execute(
-        select(UsageRecord.record_start, UsageRecord.record_end)
+        select(
+            UsageRecord.record_start,
+            UsageRecord.record_end,
+            UsageRecord.created_at,
+        )
         .where(UsageRecord.user_subscription_id == subscription_id)
-        .order_by(UsageRecord.record_end.desc(), UsageRecord.created_at.desc())
+        .order_by(UsageRecord.created_at.desc(), UsageRecord.record_end.desc())
         .limit(1)
     )
     row = result.one_or_none()
 
     if row is None:
-        return None, None
+        return None, None, None
 
-    return row.record_start, row.record_end
+    return row.record_start, row.record_end, row.created_at
 
 
 async def list_router_ids_for_subscription(
@@ -117,6 +121,22 @@ async def list_router_ids_for_subscription(
     )
 
     return list(result.scalars().all())
+
+
+
+def _prediction_needs_refresh(
+    *,
+    existing_prediction: Prediction | None,
+    latest_usage_created_at: datetime | None,
+) -> bool:
+    if existing_prediction is None:
+        return True
+
+    if latest_usage_created_at is None:
+        return False
+
+    return latest_usage_created_at > existing_prediction.created_at
+
 
 
 async def run_intelligence_for_isp(
@@ -138,7 +158,7 @@ async def run_intelligence_for_isp(
 
     for subscription_id in subscription_ids:
         try:
-            latest_record_start, latest_record_end = (
+            latest_record_start, latest_record_end, latest_usage_created_at = (
                 await get_latest_usage_window_for_subscription(
                     db=db,
                     subscription_id=subscription_id,
@@ -177,7 +197,12 @@ async def run_intelligence_for_isp(
                 subscription_id=subscription_id,
             )
 
-            if existing_prediction is None:
+            should_refresh_prediction = _prediction_needs_refresh(
+                existing_prediction=existing_prediction,
+                latest_usage_created_at=latest_usage_created_at,
+            )
+
+            if should_refresh_prediction:
                 prediction_result = await generate_usage_prediction_for_subscription(
                     db=db,
                     user_subscription_id=subscription_id,
@@ -186,10 +211,14 @@ async def run_intelligence_for_isp(
                 )
                 prediction = prediction_result.prediction
                 predictions_created += 1
-                prediction_message = "Prediction generated."
+
+                if existing_prediction is None:
+                    prediction_message = "Prediction generated."
+                else:
+                    prediction_message = "Prediction refreshed after new usage."
             else:
                 prediction = existing_prediction
-                prediction_message = "Today's prediction already exists."
+                prediction_message = "Today's prediction already exists and is up to date."
 
             existing_recommendation = await get_existing_recommendation_for_prediction(
                 db=db,
@@ -212,7 +241,11 @@ async def run_intelligence_for_isp(
                 recommendation = existing_recommendation
                 recommendation_message = "Recommendation already exists."
 
-            if existing_prediction is not None and existing_recommendation is not None:
+            if (
+                not should_refresh_prediction
+                and existing_prediction is not None
+                and existing_recommendation is not None
+            ):
                 skipped += 1
                 status = "skipped"
             else:
