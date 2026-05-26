@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import date, timedelta
@@ -185,20 +185,40 @@ async def generate_usage_prediction_for_subscription(
         record_count=int(usage_row.record_count or 0),
     )
 
-    prediction = Prediction(
-        user_id=subscription.user_id,
-        user_subscription_id=subscription.id,
-        plan_id=subscription.plan_id,
-        prediction_date=final_prediction_date,
-        period_start=period_start,
-        period_end=period_end,
-        predicted_usage_gb=predicted_usage_gb,
-        confidence_score=confidence_score,
-        risk_level=risk_level,
-        model_version=MODEL_VERSION,
+    existing_prediction_result = await db.execute(
+        select(Prediction)
+        .where(
+            Prediction.user_subscription_id == subscription.id,
+            Prediction.prediction_date == final_prediction_date,
+        )
+        .order_by(Prediction.created_at.desc())
+        .limit(1)
     )
+    prediction = existing_prediction_result.scalar_one_or_none()
 
-    db.add(prediction)
+    if prediction is None:
+        prediction = Prediction(
+            user_id=subscription.user_id,
+            user_subscription_id=subscription.id,
+            plan_id=subscription.plan_id,
+            prediction_date=final_prediction_date,
+            period_start=period_start,
+            period_end=period_end,
+            predicted_usage_gb=predicted_usage_gb,
+            confidence_score=confidence_score,
+            risk_level=risk_level,
+            model_version=MODEL_VERSION,
+        )
+        db.add(prediction)
+    else:
+        prediction.plan_id = subscription.plan_id
+        prediction.period_start = period_start
+        prediction.period_end = period_end
+        prediction.predicted_usage_gb = predicted_usage_gb
+        prediction.confidence_score = confidence_score
+        prediction.risk_level = risk_level
+        prediction.model_version = MODEL_VERSION
+
     await db.flush()
     await db.refresh(prediction)
 

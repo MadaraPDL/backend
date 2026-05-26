@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import date, timedelta
 from decimal import Decimal
@@ -100,6 +100,7 @@ async def test_prediction_generation_calculates_full_cycle_usage():
         execute_values=[
             FakeScalarResult(subscription),
             FakeOneResult(usage_row),
+            FakeScalarResult(None),
         ]
     )
 
@@ -157,6 +158,8 @@ async def test_recommendation_generation_stay_current_path():
     db = FakeDb(
         execute_values=[
             FakeScalarResult(prediction),
+            FakeScalarResult(None),
+            FakeScalarResult(None),
             FakeScalarResult(None),
         ]
     )
@@ -227,6 +230,7 @@ async def test_recommendation_generation_upgrade_path():
             FakeScalarResult(prediction),
             FakeScalarResult(None),
             FakeScalarResult(recommended_plan),
+            FakeScalarResult(None),
         ]
     )
 
@@ -413,6 +417,7 @@ async def test_recommendation_generation_downgrade_path():
             FakeScalarResult(prediction),
             FakeScalarResult(None),
             FakeScalarResult(recommended_plan),
+            FakeScalarResult(None),
         ]
     )
 
@@ -466,6 +471,7 @@ async def test_recommendation_generation_monitor_usage_when_no_upgrade_plan_exis
     db = FakeDb(
         execute_values=[
             FakeScalarResult(prediction),
+            FakeScalarResult(None),
             FakeScalarResult(None),
             FakeScalarResult(None),
         ]

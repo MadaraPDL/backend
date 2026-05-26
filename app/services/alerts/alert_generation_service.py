@@ -270,13 +270,7 @@ async def generate_usage_alerts_for_subscription(
             severity = "medium"
             title = "Usage warning"
 
-        if not await _open_alert_exists(
-            db=db,
-            user_id=subscription.user_id,
-            user_subscription_id=subscription.id,
-            alert_type=alert_type,
-            title=title,
-        ):
+        if True:
             used_gb = used_mb / MB_PER_GB
 
             db.add(
@@ -392,13 +386,7 @@ async def generate_usage_alerts_for_subscription(
             rapid_window_label = "the last 24 hours"
 
         if rapid_reason_total_mb >= rapid_threshold_mb:
-            if not await _open_alert_exists(
-                db=db,
-                user_id=subscription.user_id,
-                user_subscription_id=subscription.id,
-                alert_type="high_usage",
-                title="Rapid high internet usage",
-            ):
+            if True:
                 recent_total_gb = rapid_reason_total_mb / MB_PER_GB
                 threshold_gb = rapid_threshold_mb / MB_PER_GB
 

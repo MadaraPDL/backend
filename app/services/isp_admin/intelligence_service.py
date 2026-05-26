@@ -210,12 +210,12 @@ async def run_intelligence_for_isp(
                     prediction_date=None,
                 )
                 prediction = prediction_result.prediction
-                predictions_created += 1
 
                 if existing_prediction is None:
+                    predictions_created += 1
                     prediction_message = "Prediction generated."
                 else:
-                    prediction_message = "Prediction refreshed after new usage."
+                    prediction_message = "Prediction refreshed in place after new usage."
             else:
                 prediction = existing_prediction
                 prediction_message = "Today's prediction already exists and is up to date."

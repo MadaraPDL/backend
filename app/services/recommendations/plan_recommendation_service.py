@@ -1,6 +1,7 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from decimal import Decimal
 from uuid import UUID
 
@@ -70,6 +71,35 @@ async def _find_existing_new_recommendation(
 
     result = await db.execute(stmt)
     return result.scalar_one_or_none()
+
+
+
+async def _find_latest_recommendation_for_subscription(
+    *,
+    db: AsyncSession,
+    user_subscription_id: UUID,
+) -> Recommendation | None:
+    stmt = (
+        select(Recommendation)
+        .where(Recommendation.user_subscription_id == user_subscription_id)
+        .order_by(Recommendation.created_at.desc())
+        .limit(1)
+    )
+
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none()
+
+
+def _same_recommendation_state(
+    *,
+    existing: Recommendation,
+    recommendation_type: str,
+    recommendation_plan_id: UUID | None,
+) -> bool:
+    return (
+        existing.recommendation_type == recommendation_type
+        and existing.recommendation_plan_id == recommendation_plan_id
+    )
 
 
 async def _find_smallest_covering_plan(
@@ -288,13 +318,40 @@ async def generate_recommendation_for_prediction(
         usage_percent=usage_percent,
     )
 
+    recommendation_plan_id = recommended_plan.id if recommended_plan is not None else None
+    latest_recommendation = await _find_latest_recommendation_for_subscription(
+        db=db,
+        user_subscription_id=prediction.user_subscription_id,
+    )
+
+    if latest_recommendation is not None and _same_recommendation_state(
+        existing=latest_recommendation,
+        recommendation_type=recommendation_type,
+        recommendation_plan_id=recommendation_plan_id,
+    ):
+        today = datetime.now(timezone.utc).date()
+        latest_created_date = latest_recommendation.created_at.date()
+
+        # Non-stay-current states should not duplicate unless state changes.
+        # stay_current should only create a fresh daily record, not every usage run.
+        if recommendation_type != "stay_current" or latest_created_date == today:
+            return RecommendationGenerationResult(
+                recommendation=latest_recommendation,
+                created=False,
+                predicted_usage_gb=predicted_usage_gb,
+                current_plan_limit_gb=current_plan_limit_gb,
+                recommended_plan_limit_gb=(
+                    recommended_plan.data_limit_gb
+                    if recommended_plan is not None
+                    else None
+                ),
+            )
+
     recommendation = Recommendation(
         user_id=prediction.user_id,
         user_subscription_id=prediction.user_subscription_id,
         current_plan_id=current_plan.id,
-        recommendation_plan_id=(
-            recommended_plan.id if recommended_plan is not None else None
-        ),
+        recommendation_plan_id=recommendation_plan_id,
         prediction_id=prediction.id,
         recommendation_type=recommendation_type,
         recommendation_text=text,
