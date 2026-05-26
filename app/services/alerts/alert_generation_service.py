@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, time, timezone
+from datetime import datetime, time, timedelta, timezone
 from decimal import Decimal
 from uuid import UUID
 
@@ -18,11 +18,11 @@ from app.models.usage_record import UsageRecord
 from app.models.user_subscription import UserSubscription
 
 
+WARNING_USAGE_PERCENT = Decimal("50")
 HIGH_USAGE_PERCENT = Decimal("80")
 PLAN_EXCEEDED_PERCENT = Decimal("100")
 RAPID_HIGH_USAGE_24H_GB = Decimal("5")
 RAPID_HIGH_USAGE_1H_GB = Decimal("2")
-RAPID_HIGH_USAGE_PLAN_PERCENT = Decimal("10")
 UNUSUAL_USAGE_MULTIPLIER = Decimal("3")
 MIN_PREVIOUS_WINDOWS_FOR_ANOMALY = 3
 MIN_UNUSUAL_USAGE_MB = Decimal("100")
@@ -132,6 +132,24 @@ async def _get_latest_window_total_mb(
     return _decimal_or_zero(result.scalar_one_or_none())
 
 
+
+async def _get_recent_usage_total_mb(
+    *,
+    db: AsyncSession,
+    user_subscription_id: UUID,
+    since_record_start: datetime,
+) -> Decimal:
+    total_expr = _usage_total_expression()
+
+    stmt = select(func.coalesce(func.sum(total_expr), 0)).where(
+        UsageRecord.user_subscription_id == user_subscription_id,
+        UsageRecord.record_start >= since_record_start,
+    )
+
+    result = await db.execute(stmt)
+    return _decimal_or_zero(result.scalar_one_or_none())
+
+
 async def _get_previous_window_totals_mb(
     *,
     db: AsyncSession,
@@ -217,15 +235,19 @@ async def generate_usage_alerts_for_subscription(
         record_end=latest_record_end,
     )
 
-    if usage_percent >= HIGH_USAGE_PERCENT:
+    if usage_percent >= WARNING_USAGE_PERCENT:
         if usage_percent >= PLAN_EXCEEDED_PERCENT:
             alert_type = "plan_exceed_risk"
             severity = "critical"
             title = "Plan usage limit reached"
-        else:
+        elif usage_percent >= HIGH_USAGE_PERCENT:
             alert_type = "high_usage"
             severity = "high"
             title = "High internet usage"
+        else:
+            alert_type = "high_usage"
+            severity = "medium"
+            title = "Usage warning"
 
         if not await _open_alert_exists(
             db=db,
@@ -254,8 +276,8 @@ async def generate_usage_alerts_for_subscription(
             )
 
             alerts_created += 1
-            high_usage_created = alert_type == "high_usage"
-            plan_exceed_created = alert_type == "plan_exceed_risk"
+            high_usage_created = title == "High internet usage"
+            plan_exceed_created = title == "Plan usage limit reached"
 
     latest_window_total_mb = await _get_latest_window_total_mb(
         db=db,
@@ -265,37 +287,43 @@ async def generate_usage_alerts_for_subscription(
     )
 
 
-    if (
-        latest_window_total_mb is not None
-        and latest_record_start is not None
-        and latest_record_end is not None
-    ):
-        window_seconds = max(
-            (latest_record_end - latest_record_start).total_seconds(),
-            0,
-        )
-        window_hours = (
-            Decimal(str(window_seconds)) / Decimal("3600")
-            if window_seconds > 0
-            else Decimal("0")
+    if latest_record_end is not None:
+        recent_24h_start = latest_record_end - timedelta(hours=24)
+        recent_24h_total_mb = await _get_recent_usage_total_mb(
+            db=db,
+            user_subscription_id=subscription.id,
+            since_record_start=recent_24h_start,
         )
 
+        rapid_reason_total_mb = recent_24h_total_mb
         rapid_threshold_mb = RAPID_HIGH_USAGE_24H_GB * MB_PER_GB
+        rapid_window_label = "the last 24 hours"
 
-        if window_hours and window_hours <= Decimal("1.25"):
-            rapid_threshold_mb = min(
-                rapid_threshold_mb,
-                RAPID_HIGH_USAGE_1H_GB * MB_PER_GB,
+        if (
+            latest_window_total_mb is not None
+            and latest_record_start is not None
+            and latest_record_end is not None
+        ):
+            window_seconds = max(
+                (latest_record_end - latest_record_start).total_seconds(),
+                0,
+            )
+            window_hours = (
+                Decimal(str(window_seconds)) / Decimal("3600")
+                if window_seconds > 0
+                else Decimal("0")
             )
 
-        rapid_plan_threshold_mb = (
-            plan_limit_mb * RAPID_HIGH_USAGE_PLAN_PERCENT / Decimal("100")
-        )
+            if (
+                window_hours > 0
+                and window_hours <= Decimal("1.25")
+                and latest_window_total_mb >= RAPID_HIGH_USAGE_1H_GB * MB_PER_GB
+            ):
+                rapid_reason_total_mb = latest_window_total_mb
+                rapid_threshold_mb = RAPID_HIGH_USAGE_1H_GB * MB_PER_GB
+                rapid_window_label = "about one hour"
 
-        if rapid_plan_threshold_mb > 0:
-            rapid_threshold_mb = min(rapid_threshold_mb, rapid_plan_threshold_mb)
-
-        if latest_window_total_mb >= rapid_threshold_mb:
+        if rapid_reason_total_mb >= rapid_threshold_mb:
             if not await _open_alert_exists(
                 db=db,
                 user_id=subscription.user_id,
@@ -303,7 +331,7 @@ async def generate_usage_alerts_for_subscription(
                 alert_type="high_usage",
                 title="Rapid high internet usage",
             ):
-                latest_window_gb = latest_window_total_mb / MB_PER_GB
+                recent_total_gb = rapid_reason_total_mb / MB_PER_GB
                 threshold_gb = rapid_threshold_mb / MB_PER_GB
 
                 db.add(
@@ -315,16 +343,16 @@ async def generate_usage_alerts_for_subscription(
                         severity="high",
                         title="Rapid high internet usage",
                         message=(
-                            f"You used about {_format_decimal(latest_window_gb)} GB "
-                            f"in a short usage window. This is above the rapid "
-                            f"usage threshold of about {_format_decimal(threshold_gb)} GB."
+                            f"You used about {_format_decimal(recent_total_gb)} GB in "
+                            f"{rapid_window_label}. This is above the rapid usage "
+                            f"threshold of about {_format_decimal(threshold_gb)} GB."
                         ),
                         status="unread",
                     )
                 )
 
                 alerts_created += 1
-
+                high_usage_created = True
 
     if latest_window_total_mb is not None and latest_record_start is not None:
         previous_totals = await _get_previous_window_totals_mb(
