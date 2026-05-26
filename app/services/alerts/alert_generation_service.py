@@ -30,6 +30,8 @@ UNUSUAL_USAGE_MULTIPLIER = Decimal("3")
 MIN_PREVIOUS_WINDOWS_FOR_ANOMALY = 3
 MIN_UNUSUAL_USAGE_MB = Decimal("100")
 MB_PER_GB = Decimal("1024")
+PLAN_ALERT_REPEAT_WINDOW_HOURS = 24
+RAPID_ALERT_REPEAT_WINDOW_MINUTES = 30
 
 
 @dataclass(frozen=True)
@@ -68,6 +70,7 @@ async def _open_alert_exists(
     alert_type: str,
     connection_log_id: UUID | None = None,
     title: str | None = None,
+    since_created_at: datetime | None = None,
 ) -> bool:
     stmt = (
         select(Alert.id)
@@ -85,6 +88,9 @@ async def _open_alert_exists(
 
     if title is not None:
         stmt = stmt.where(Alert.title == title)
+
+    if since_created_at is not None:
+        stmt = stmt.where(Alert.created_at >= since_created_at)
 
     result = await db.execute(stmt)
     return result.scalar_one_or_none() is not None
@@ -270,7 +276,18 @@ async def generate_usage_alerts_for_subscription(
             severity = "medium"
             title = "Usage warning"
 
-        if True:
+        plan_alert_window_start = datetime.now(timezone.utc) - timedelta(
+            hours=PLAN_ALERT_REPEAT_WINDOW_HOURS,
+        )
+
+        if not await _open_alert_exists(
+            db=db,
+            user_id=subscription.user_id,
+            user_subscription_id=subscription.id,
+            alert_type=alert_type,
+            title=title,
+            since_created_at=plan_alert_window_start,
+        ):
             used_gb = used_mb / MB_PER_GB
 
             db.add(
@@ -386,7 +403,18 @@ async def generate_usage_alerts_for_subscription(
             rapid_window_label = "the last 24 hours"
 
         if rapid_reason_total_mb >= rapid_threshold_mb:
-            if True:
+            rapid_alert_window_start = datetime.now(timezone.utc) - timedelta(
+                minutes=RAPID_ALERT_REPEAT_WINDOW_MINUTES,
+            )
+
+            if not await _open_alert_exists(
+                db=db,
+                user_id=subscription.user_id,
+                user_subscription_id=subscription.id,
+                alert_type="high_usage",
+                title="Rapid high internet usage",
+                since_created_at=rapid_alert_window_start,
+            ):
                 recent_total_gb = rapid_reason_total_mb / MB_PER_GB
                 threshold_gb = rapid_threshold_mb / MB_PER_GB
 
