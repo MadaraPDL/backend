@@ -10,6 +10,7 @@ import pytest
 from app.models.alert import Alert
 from app.services.alerts import alert_generation_service
 from app.services.alerts.alert_generation_service import (
+    generate_new_device_alerts_for_router,
     generate_policy_failed_alert_for_policy,
     generate_usage_alerts_for_subscription,
 )
@@ -28,6 +29,14 @@ class FakeOneResult:
         self.value = value
 
     def scalar_one_or_none(self):
+        return self.value
+
+
+class FakeAllResult:
+    def __init__(self, value):
+        self.value = value
+
+    def all(self):
         return self.value
 
 
@@ -115,6 +124,167 @@ async def test_generate_plan_exceed_alert(monkeypatch):
     assert alert.alert_type == "plan_exceed_risk"
     assert alert.severity == "critical"
     assert alert.status == "unread"
+
+
+@pytest.mark.asyncio
+async def test_generate_high_usage_alert(monkeypatch):
+    user_id = uuid4()
+    subscription_id = uuid4()
+
+    subscription = SimpleNamespace(
+        id=subscription_id,
+        user_id=user_id,
+        status="active",
+        start_date=date.today(),
+        plan=SimpleNamespace(
+            data_limit_gb=Decimal("0.10"),
+        ),
+    )
+
+    db = FakeDb(
+        execute_values=[
+            FakeScalarResult(subscription),
+            FakeScalarResult(Decimal("90")),
+        ]
+    )
+
+    async def fake_open_alert_exists(**kwargs):
+        return False
+
+    async def fake_get_latest_usage_id(**kwargs):
+        return uuid4()
+
+    async def fake_get_latest_window_total_mb(**kwargs):
+        return None
+
+    monkeypatch.setattr(
+        alert_generation_service,
+        "_open_alert_exists",
+        fake_open_alert_exists,
+    )
+    monkeypatch.setattr(
+        alert_generation_service,
+        "_get_latest_usage_id",
+        fake_get_latest_usage_id,
+    )
+    monkeypatch.setattr(
+        alert_generation_service,
+        "_get_latest_window_total_mb",
+        fake_get_latest_window_total_mb,
+    )
+
+    result = await generate_usage_alerts_for_subscription(
+        db=db,
+        user_subscription_id=subscription_id,
+    )
+
+    assert result.alerts_created == 1
+    assert result.high_usage_alert_created is True
+    assert result.plan_exceed_alert_created is False
+
+    alert = db.added[0]
+
+    assert alert.alert_type == "high_usage"
+    assert alert.severity == "high"
+    assert "high-usage threshold" in alert.explanation
+
+
+@pytest.mark.asyncio
+async def test_generate_usage_alerts_skips_normal_usage(monkeypatch):
+    subscription = SimpleNamespace(
+        id=uuid4(),
+        user_id=uuid4(),
+        status="active",
+        start_date=date.today(),
+        plan=SimpleNamespace(
+            data_limit_gb=Decimal("10"),
+        ),
+    )
+
+    db = FakeDb(
+        execute_values=[
+            FakeScalarResult(subscription),
+            FakeScalarResult(Decimal("500")),
+        ]
+    )
+
+    async def fake_get_latest_usage_id(**kwargs):
+        return uuid4()
+
+    async def fake_get_latest_window_total_mb(**kwargs):
+        return None
+
+    monkeypatch.setattr(
+        alert_generation_service,
+        "_get_latest_usage_id",
+        fake_get_latest_usage_id,
+    )
+    monkeypatch.setattr(
+        alert_generation_service,
+        "_get_latest_window_total_mb",
+        fake_get_latest_window_total_mb,
+    )
+
+    result = await generate_usage_alerts_for_subscription(
+        db=db,
+        user_subscription_id=subscription.id,
+    )
+
+    assert result.alerts_created == 0
+    assert db.added == []
+    assert db.flush_called is False
+
+
+@pytest.mark.asyncio
+async def test_generate_new_device_alert(monkeypatch):
+    router_id = uuid4()
+    user_id = uuid4()
+    subscription_id = uuid4()
+    connection_log_id = uuid4()
+    device_id = uuid4()
+
+    connection_log = SimpleNamespace(
+        id=connection_log_id,
+    )
+    device = SimpleNamespace(
+        id=device_id,
+        user_id=user_id,
+        device_name="Living Room TV",
+    )
+    router = SimpleNamespace(
+        user_subscription_id=subscription_id,
+    )
+
+    db = FakeDb(
+        execute_values=[
+            FakeAllResult([(connection_log, device, router)]),
+        ]
+    )
+
+    async def fake_open_alert_exists(**kwargs):
+        return False
+
+    monkeypatch.setattr(
+        alert_generation_service,
+        "_open_alert_exists",
+        fake_open_alert_exists,
+    )
+
+    result = await generate_new_device_alerts_for_router(
+        db=db,
+        router_id=router_id,
+        event_start=date.today(),
+    )
+
+    assert result.alerts_created == 1
+    assert result.new_device_alerts_created == 1
+
+    alert = db.added[0]
+
+    assert alert.alert_type == "new_device_connected"
+    assert alert.device_id == device_id
+    assert alert.connection_log_id == connection_log_id
+    assert "newly discovered device" in alert.explanation
 
 
 @pytest.mark.asyncio

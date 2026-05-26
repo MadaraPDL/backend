@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from ipaddress import ip_address
+import random
 from uuid import UUID
 
 from sqlalchemy import select
@@ -16,6 +17,10 @@ from app.services.isp_admin.ownership_scope import apply_router_isp_ownership_sc
 from app.services.usage_ingestion.simulator_usage_service import (
     RouterNotFoundForIngestionError,
     RouterNotReadyForIngestionError,
+)
+from app.core.simulator_scenarios import (
+    DEFAULT_SIMULATOR_SCENARIO,
+    SimulatorScenario,
 )
 
 
@@ -50,10 +55,34 @@ def _connection_event_type(previous_status: str | None) -> str:
     return "reconnected"
 
 
-def _build_simulator_devices(router_id: UUID) -> list[SimulatorDevicePayload]:
+def _random_simulator_device(router_id: UUID) -> SimulatorDevicePayload:
     prefix = _router_mac_prefix(router_id)
+    device_variants = [
+        ("Simulator Tablet", "tablet"),
+        ("Simulator Game Console", "console"),
+        ("Simulator Camera", "camera"),
+        ("Simulator Guest Phone", "phone"),
+        ("Simulator Work Laptop", "laptop"),
+    ]
+    device_name, device_type = random.choice(device_variants)
+    mac_high = random.randint(0x20, 0xEF)
+    mac_low = random.randint(0x10, 0xFE)
+    ip_octet = random.randint(30, 240)
 
-    return [
+    return SimulatorDevicePayload(
+        device_name=device_name,
+        mac_address=f"{prefix}:{mac_high:02X}:{mac_low:02X}",
+        ip_address=f"192.168.1.{ip_octet}",
+        device_type=device_type,
+    )
+
+
+def _build_simulator_devices(
+    router_id: UUID,
+    scenario: SimulatorScenario = DEFAULT_SIMULATOR_SCENARIO,
+) -> list[SimulatorDevicePayload]:
+    prefix = _router_mac_prefix(router_id)
+    payloads = [
         SimulatorDevicePayload(
             device_name="Simulator Phone",
             mac_address=f"{prefix}:10:01",
@@ -74,11 +103,17 @@ def _build_simulator_devices(router_id: UUID) -> list[SimulatorDevicePayload]:
         ),
     ]
 
+    if scenario == "new_device":
+        payloads.append(_random_simulator_device(router_id))
+
+    return payloads
+
 
 async def run_simulator_device_ingestion_for_router(
     db: AsyncSession,
     router_id: UUID,
     isp_id: UUID | None = None,
+    scenario: SimulatorScenario = DEFAULT_SIMULATOR_SCENARIO,
 ) -> SimulatorDeviceIngestionResult:
     now = datetime.now(timezone.utc)
 
@@ -114,7 +149,7 @@ async def run_simulator_device_ingestion_for_router(
             "Router subscription must be active before device ingestion."
         )
 
-    payloads = _build_simulator_devices(router.id)
+    payloads = _build_simulator_devices(router.id, scenario=scenario)
 
     devices_created = 0
     devices_updated = 0

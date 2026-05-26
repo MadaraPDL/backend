@@ -358,12 +358,49 @@ Environment flags:
 Behavior:
 - When enabled, the backend periodically checks active ISPs.
 - For each ISP, it checks active subscriptions.
-- It generates missing daily predictions and recommendations.
+- It generates missing daily predictions, recommendations, and alert checks from latest usage/device data.
 - Existing prediction/recommendation records are reused to avoid duplicate rows.
+- Unread/recent alert checks prevent duplicate high-usage, plan-risk, new-device, and policy-failure alert spam.
+- Manual `POST /api/v1/isp-admin/intelligence/run` remains an admin/demo trigger; it is not the only way intelligence runs.
+- The response includes `alerts_created` at run level and per item.
+
+ML status:
+- Current intelligence is a rules-based/heuristic MVP.
+- Predictions use `model_version="rule_based_v1"`.
+- Recommendations use `rule_based_recommendation_v1` service logic.
+- There is no integrated trained ML training/inference pipeline yet, so do not label the current implementation as completed ML.
 
 Production note:
 - This scheduler is suitable for local/demo use.
 - Before multi-worker production deployment, move scheduling to a single worker, cron, or job queue to avoid duplicate background runs.
+
+### Step 45 Simulator Scenarios and Deterministic Explain Text
+
+Full simulator request body now supports an optional `scenario` field:
+
+```json
+{
+  "scenario": "near_plan_limit",
+  "record_start": null,
+  "record_end": null
+}
+```
+
+Supported scenario values:
+- `normal_usage`
+- `high_usage`
+- `near_plan_limit`
+- `exceeded_plan`
+- `new_device`
+- `policy_failure`
+- `heavy_device_usage`
+
+Simulator responses include `scenario`; full simulator responses also include `policy_failure_alert_created`.
+
+Alert and recommendation response models now include:
+- `explanation`: deterministic text generated from existing alert/recommendation fields.
+
+This is the current Explain-this MVP. It does not call an external AI service.
 
 ### Step 27D ISP Admin Intelligence Integration
 

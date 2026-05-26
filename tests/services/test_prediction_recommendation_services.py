@@ -243,6 +243,7 @@ async def test_recommendation_generation_upgrade_path():
     assert recommendation.recommendation_type == "upgrade_plan"
     assert recommendation.recommendation_plan_id == recommended_plan_id
     assert "Upgrade to Bigger Plan." == recommendation.recommendation_text
+    assert "recommends an upgrade" in recommendation.explanation
 
 
 @pytest.mark.asyncio

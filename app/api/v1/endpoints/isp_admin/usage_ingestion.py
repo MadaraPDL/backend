@@ -54,6 +54,7 @@ async def run_simulator_usage_ingestion_endpoint(
             isp_id=current_admin.isp_id,
             record_start=request_data.record_start,
             record_end=request_data.record_end,
+            scenario=request_data.scenario,
         )
     except RouterNotFoundForIngestionError:
         raise HTTPException(
@@ -86,6 +87,7 @@ async def run_simulator_usage_ingestion_endpoint(
         download_mb=result.download_mb,
         total_mb=result.total_mb,
         alerts_created=alert_result.usage_alerts_created,
+        scenario=request_data.scenario,
     )
 
 
@@ -172,6 +174,7 @@ async def run_full_simulator_ingestion_endpoint(
             isp_id=current_admin.isp_id,
             record_start=request_data.record_start,
             record_end=request_data.record_end,
+            scenario=request_data.scenario,
         )
     except RouterNotFoundForIngestionError:
         raise HTTPException(
@@ -207,6 +210,7 @@ async def run_full_simulator_ingestion_endpoint(
         devices_updated=device_result.devices_updated,
         connection_logs_created=device_result.connection_logs_created,
         alerts_created=alert_result.new_device_alerts_created,
+        scenario=result.scenario,
     )
 
     usage_response = SimulatorUsageIngestionResponse(
@@ -220,6 +224,7 @@ async def run_full_simulator_ingestion_endpoint(
         download_mb=usage_result.download_mb,
         total_mb=usage_result.total_mb,
         alerts_created=alert_result.usage_alerts_created,
+        scenario=result.scenario,
     )
 
     return SimulatorFullIngestionResponse(
@@ -228,5 +233,9 @@ async def run_full_simulator_ingestion_endpoint(
         user_subscription_id=usage_result.user_subscription_id,
         device_ingestion=device_response,
         usage_ingestion=usage_response,
-        alerts_created=alert_result.alerts_created,
+        alerts_created=(
+            alert_result.alerts_created + int(result.policy_failure_alert_created)
+        ),
+        scenario=result.scenario,
+        policy_failure_alert_created=result.policy_failure_alert_created,
     )

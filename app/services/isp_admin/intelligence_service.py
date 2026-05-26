@@ -1,6 +1,6 @@
 ﻿from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from sqlalchemy import select
@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.app_user import AppUser
 from app.models.prediction import Prediction
 from app.models.recommendation import Recommendation
+from app.models.router import Router
+from app.models.usage_record import UsageRecord
 from app.models.user_subscription import UserSubscription
 from app.schemas.isp_admin import (
     ISPAdminIntelligenceRunItem,
@@ -23,6 +25,10 @@ from app.services.recommendations import (
     PredictionNotFoundForRecommendationError,
     PredictionNotReadyForRecommendationError,
     generate_recommendation_for_prediction,
+)
+from app.services.alerts import (
+    generate_new_device_alerts_for_router,
+    generate_usage_alerts_for_subscription,
 )
 
 
@@ -77,6 +83,42 @@ async def get_existing_recommendation_for_prediction(
     return result.scalar_one_or_none()
 
 
+async def get_latest_usage_window_for_subscription(
+    db: AsyncSession,
+    subscription_id: UUID,
+) -> tuple[datetime | None, datetime | None]:
+    result = await db.execute(
+        select(UsageRecord.record_start, UsageRecord.record_end)
+        .where(UsageRecord.user_subscription_id == subscription_id)
+        .order_by(UsageRecord.record_end.desc(), UsageRecord.created_at.desc())
+        .limit(1)
+    )
+    row = result.one_or_none()
+
+    if row is None:
+        return None, None
+
+    return row.record_start, row.record_end
+
+
+async def list_router_ids_for_subscription(
+    db: AsyncSession,
+    subscription_id: UUID,
+    isp_id: UUID,
+) -> list[UUID]:
+    result = await db.execute(
+        select(Router.id)
+        .where(
+            Router.user_subscription_id == subscription_id,
+            Router.isp_id == isp_id,
+            Router.status == "active",
+        )
+        .order_by(Router.created_at.desc())
+    )
+
+    return list(result.scalars().all())
+
+
 async def run_intelligence_for_isp(
     db: AsyncSession,
     isp_id: UUID,
@@ -89,11 +131,47 @@ async def run_intelligence_for_isp(
     items: list[ISPAdminIntelligenceRunItem] = []
     predictions_created = 0
     recommendations_created = 0
+    alerts_created = 0
     skipped = 0
     failed = 0
+    new_device_event_start = datetime.now(timezone.utc) - timedelta(days=1)
 
     for subscription_id in subscription_ids:
         try:
+            latest_record_start, latest_record_end = (
+                await get_latest_usage_window_for_subscription(
+                    db=db,
+                    subscription_id=subscription_id,
+                )
+            )
+            usage_alert_result = await generate_usage_alerts_for_subscription(
+                db=db,
+                user_subscription_id=subscription_id,
+                latest_record_start=latest_record_start,
+                latest_record_end=latest_record_end,
+            )
+            router_ids = await list_router_ids_for_subscription(
+                db=db,
+                subscription_id=subscription_id,
+                isp_id=isp_id,
+            )
+            new_device_alerts_created = 0
+
+            for router_id in router_ids:
+                new_device_result = await generate_new_device_alerts_for_router(
+                    db=db,
+                    router_id=router_id,
+                    event_start=new_device_event_start,
+                )
+                new_device_alerts_created += (
+                    new_device_result.new_device_alerts_created
+                )
+
+            item_alerts_created = (
+                usage_alert_result.alerts_created + new_device_alerts_created
+            )
+            alerts_created += item_alerts_created
+
             existing_prediction = await get_existing_prediction_for_today(
                 db=db,
                 subscription_id=subscription_id,
@@ -146,7 +224,11 @@ async def run_intelligence_for_isp(
                     status=status,
                     prediction_id=str(prediction.id),
                     recommendation_id=str(recommendation.id),
-                    message=f"{prediction_message} {recommendation_message}",
+                    alerts_created=item_alerts_created,
+                    message=(
+                        f"{prediction_message} {recommendation_message} "
+                        f"Alerts created: {item_alerts_created}."
+                    ),
                 )
             )
 
@@ -179,6 +261,7 @@ async def run_intelligence_for_isp(
         subscriptions_checked=len(subscription_ids),
         predictions_created=predictions_created,
         recommendations_created=recommendations_created,
+        alerts_created=alerts_created,
         skipped=skipped,
         failed=failed,
         items=items,

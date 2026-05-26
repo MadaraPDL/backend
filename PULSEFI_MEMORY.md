@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 44F in progress - Platform Admin team invitation backend flow**.
+Current phase: **Step 45 complete - simulator scenarios, automatic intelligence alerts, and admin navigation polish**.
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -16,6 +16,7 @@ Completed before deployment:
 - Step 43C App User mobile MFA settings is complete.
 - Step 43D final full smoke test remains intentionally postponed until deployment/email/mobile are ready.
 - Step 44F added protected Platform Admin team invitation backend routes so existing Platform Admins can invite/list/revoke Platform Admin invitations and list Platform Admin accounts.
+- Step 45 added Settings toggle navigation polish in both admin dashboards, controlled full-simulator scenarios, scheduled intelligence alert generation, deterministic Explain-this response text, and tests for alert/recommendation coverage.
 
 Deployment status:
 - Railway deployment was abandoned.
@@ -67,6 +68,14 @@ Current deployment env direction:
   - `BACKEND_CORS_ORIGINS=["https://pulsefi-admin-web.vercel.app"]`
 - Never paste or commit Resend API keys, SMTP passwords, database URLs, JWT secrets, Neon credentials, Render secrets, or Vercel secrets.
 
+Current intelligence status:
+- Automatic intelligence can run from the env-gated backend scheduler or the manual ISP Admin demo trigger.
+- Scheduler controls are `ENABLE_INTELLIGENCE_SCHEDULER` and `INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES`.
+- Each run is ISP-scoped and reuses existing daily predictions/recommendations while unread/recent alert checks prevent duplicate alert spam.
+- Current prediction/recommendation intelligence is rules-based/heuristic MVP (`rule_based_v1` and `rule_based_recommendation_v1`), not a completed trained ML model. No training/inference pipeline is integrated yet.
+- Full simulator scenarios now support `normal_usage`, `high_usage`, `near_plan_limit`, `exceeded_plan`, `new_device`, `policy_failure`, and `heavy_device_usage`.
+- Alert/recommendation API responses include deterministic `explanation` text for a simple Explain-this MVP without external AI calls.
+
 Active rules:
 - Never commit `.env`, database URLs, JWT secrets, SMTP passwords, Resend API keys, Neon passwords, Render secrets, or Vercel secrets.
 - ISP Admin endpoints must use `get_current_isp_admin`.
@@ -81,6 +90,7 @@ Next recommended phase:
 - Finish Step 44E by verifying Resend HTTP email delivery in Render logs and successfully receiving an invitation email.
 - After email works, create ISP Admin and App User through the real deployed invitation flow.
 - Then continue Step 44D/44F mobile deployed-backend login check.
+- Do not implement full push notifications until deployed mobile login and device-token storage are smoke-tested. Next required pieces are mobile push token registration, notification preferences, backend notification dispatch service, and tests.
 - Step 43D final full smoke test remains postponed until backend, admin web, email, and mobile are all ready.
 <!-- PULSEFI_SYNC_END -->
 
@@ -3858,3 +3868,21 @@ Next:
 <!-- PULSEFI_STEP_42B_MOBILE_MFA_END -->
 
 FINAL DEMO CHECKPOINT: Backend Render, DB Neon, Admin web Vercel, Mobile Android APK/EAS working. Use C:\PulseFi\pulsefi-mobile-app as real mobile repo. Do not use C:\PulseFi\pulsefi-mobile. Working flows: Platform Admin, Platform Team invites, ISP creation, ISP Admin invite, App User invite, invitation accept redirects to login, router-only service-line creation, active service-line simulator, deployed web/mobile data. Email pending Brevo OTP. Keep DEBUG=True and EMAIL_DELIVERY_ENABLED=False until Brevo is verified.
+
+## Step 45 Checkpoint - 2026-05-26
+
+Completed:
+- Platform Admin and ISP Admin Settings buttons now toggle back to the page that was active before Settings opened.
+- Clicking the PulseFi brand/name/logo navigates to Overview.
+- Full simulator ingestion accepts controlled scenarios: `normal_usage`, `high_usage`, `near_plan_limit`, `exceeded_plan`, `new_device`, `policy_failure`, and `heavy_device_usage`.
+- Automatic intelligence is scheduler-ready and now checks predictions, recommendations, and alerts from latest usage/subscription/device data.
+- Manual Run Intelligence remains an admin/demo trigger only.
+- Alert/recommendation responses include deterministic `explanation` text for the Explain-this MVP.
+- Current intelligence is rules-based/heuristic MVP; there is no trained ML model training/inference pipeline yet.
+- Push notifications remain deferred until deployed mobile login and device-token storage are smoke-tested.
+
+Validation:
+- Backend compileall passed with the project venv.
+- Backend pytest passed: 147 passed.
+- Admin web lint passed with `npm.cmd run lint`.
+- Admin web production build passed with `npm.cmd run build`.

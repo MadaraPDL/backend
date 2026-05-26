@@ -6,10 +6,16 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from app.core.simulator_scenarios import (
+    DEFAULT_SIMULATOR_SCENARIO,
+    SimulatorScenario,
+)
+
 
 class SimulatorUsageIngestionRequest(BaseModel):
     record_start: datetime | None = None
     record_end: datetime | None = None
+    scenario: SimulatorScenario = DEFAULT_SIMULATOR_SCENARIO
 
 
 class SimulatorUsageIngestionResponse(BaseModel):
@@ -23,6 +29,7 @@ class SimulatorUsageIngestionResponse(BaseModel):
     download_mb: Decimal
     total_mb: Decimal
     alerts_created: int = 0
+    scenario: SimulatorScenario = DEFAULT_SIMULATOR_SCENARIO
     source: str = "simulator"
 
 
@@ -35,6 +42,7 @@ class SimulatorDeviceIngestionResponse(BaseModel):
     devices_updated: int
     connection_logs_created: int
     alerts_created: int = 0
+    scenario: SimulatorScenario = DEFAULT_SIMULATOR_SCENARIO
     source: str = "simulator"
 
 
@@ -45,4 +53,6 @@ class SimulatorFullIngestionResponse(BaseModel):
     device_ingestion: SimulatorDeviceIngestionResponse
     usage_ingestion: SimulatorUsageIngestionResponse
     alerts_created: int = 0
+    scenario: SimulatorScenario = DEFAULT_SIMULATOR_SCENARIO
+    policy_failure_alert_created: bool = False
     source: str = "simulator"

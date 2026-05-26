@@ -17,6 +17,7 @@ class MyRecommendationResponse(BaseModel):
     recommendation_type: str
     recommendation_text: str
     reason: str | None
+    explanation: str = "PulseFi generated this recommendation from available plan data."
     confidence_score: Decimal | None
     status: str
     created_at: datetime

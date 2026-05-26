@@ -18,6 +18,7 @@ class MyAlertResponse(BaseModel):
     severity: str
     title: str
     message: str
+    explanation: str = "PulseFi generated this alert from available account data."
     status: str
     read_at: datetime | None
     created_at: datetime

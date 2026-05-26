@@ -140,3 +140,35 @@ class Alert(Base):
         "Prediction",
         back_populates="alerts",
     )
+
+    @property
+    def explanation(self) -> str:
+        alert_explanations = {
+            "high_usage": (
+                "PulseFi raised this because the latest subscription usage is "
+                "above the high-usage threshold while the plan still has some "
+                "remaining allowance."
+            ),
+            "plan_exceed_risk": (
+                "PulseFi raised this because recorded usage has reached or "
+                "passed the current plan allowance, so the user may need a "
+                "larger plan or immediate usage review."
+            ),
+            "unusual_consumption": (
+                "PulseFi raised this because the newest usage window is much "
+                "higher than the recent average for the same subscription."
+            ),
+            "new_device_connected": (
+                "PulseFi raised this because a newly discovered device was "
+                "seen on the router and may need user review."
+            ),
+            "policy_failed": (
+                "PulseFi raised this because a device network policy could not "
+                "be applied successfully by the router integration layer."
+            ),
+        }
+
+        return alert_explanations.get(
+            self.alert_type,
+            "PulseFi generated this alert from the available usage, device, or policy data.",
+        )

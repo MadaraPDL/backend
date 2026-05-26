@@ -128,3 +128,31 @@ class Recommendation(Base):
         "SubscriptionChangeRequest",
         back_populates="recommendation",
     )
+
+    @property
+    def explanation(self) -> str:
+        recommendation_explanations = {
+            "upgrade_plan": (
+                "PulseFi recommends an upgrade because predicted usage is above "
+                "the current plan allowance and an active higher-capacity plan "
+                "is available."
+            ),
+            "downgrade_plan": (
+                "PulseFi recommends a downgrade because predicted usage is well "
+                "below the current plan allowance and a smaller active plan can "
+                "still cover the forecast."
+            ),
+            "stay_current": (
+                "PulseFi recommends staying on the current plan because the "
+                "forecast fits the allowance without a better plan change."
+            ),
+            "monitor_usage": (
+                "PulseFi recommends monitoring usage because the forecast is "
+                "high but no better active plan was found."
+            ),
+        }
+
+        return recommendation_explanations.get(
+            self.recommendation_type,
+            "PulseFi generated this recommendation from the available prediction and plan data.",
+        )

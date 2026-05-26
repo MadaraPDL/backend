@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 44F in progress - Platform Admin team invitation backend flow**.
+Current phase: **Step 45 complete - simulator scenarios, automatic intelligence alerts, and admin navigation polish**.
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -16,6 +16,7 @@ Completed before deployment:
 - Step 43C App User mobile MFA settings is complete.
 - Step 43D final full smoke test remains intentionally postponed until deployment/email/mobile are ready.
 - Step 44F added protected Platform Admin team invitation backend routes so existing Platform Admins can invite/list/revoke Platform Admin invitations and list Platform Admin accounts.
+- Step 45 added Settings toggle navigation polish in both admin dashboards, controlled full-simulator scenarios, scheduled intelligence alert generation, deterministic Explain-this response text, and tests for alert/recommendation coverage.
 
 Deployment status:
 - Railway deployment was abandoned.
@@ -67,6 +68,14 @@ Current deployment env direction:
   - `BACKEND_CORS_ORIGINS=["https://pulsefi-admin-web.vercel.app"]`
 - Never paste or commit Resend API keys, SMTP passwords, database URLs, JWT secrets, Neon credentials, Render secrets, or Vercel secrets.
 
+Current intelligence status:
+- Automatic intelligence can run from the env-gated backend scheduler or the manual ISP Admin demo trigger.
+- Scheduler controls are `ENABLE_INTELLIGENCE_SCHEDULER` and `INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES`.
+- Each run is ISP-scoped and reuses existing daily predictions/recommendations while unread/recent alert checks prevent duplicate alert spam.
+- Current prediction/recommendation intelligence is rules-based/heuristic MVP (`rule_based_v1` and `rule_based_recommendation_v1`), not a completed trained ML model. No training/inference pipeline is integrated yet.
+- Full simulator scenarios now support `normal_usage`, `high_usage`, `near_plan_limit`, `exceeded_plan`, `new_device`, `policy_failure`, and `heavy_device_usage`.
+- Alert/recommendation API responses include deterministic `explanation` text for a simple Explain-this MVP without external AI calls.
+
 Active rules:
 - Never commit `.env`, database URLs, JWT secrets, SMTP passwords, Resend API keys, Neon passwords, Render secrets, or Vercel secrets.
 - ISP Admin endpoints must use `get_current_isp_admin`.
@@ -81,6 +90,7 @@ Next recommended phase:
 - Finish Step 44E by verifying Resend HTTP email delivery in Render logs and successfully receiving an invitation email.
 - After email works, create ISP Admin and App User through the real deployed invitation flow.
 - Then continue Step 44D/44F mobile deployed-backend login check.
+- Do not implement full push notifications until deployed mobile login and device-token storage are smoke-tested. Next required pieces are mobile push token registration, notification preferences, backend notification dispatch service, and tests.
 - Step 43D final full smoke test remains postponed until backend, admin web, email, and mobile are all ready.
 <!-- PULSEFI_SYNC_END -->
 
@@ -2081,12 +2091,17 @@ Done:
 - Added environment-gated local/demo scheduler.
 - Added idempotency guard to avoid duplicate prediction/recommendation rows.
 - Step 27D added ISP Admin recommendation viewing routes and connected recommendation history in the real Intelligence Center.
+- Step 45 added automatic alert generation to scheduled/manual intelligence runs.
+- Step 45 added controlled simulator scenarios and deterministic Explain-this response text.
+- Step 45 tests cover high usage alerts, new device alerts, policy failure alerts, plan upgrade recommendations, and normal/no-alert behavior.
+- Current intelligence remains rules-based/heuristic MVP; no trained ML pipeline is integrated.
 
 Follow-up:
 - Convert FastAPI `on_event` startup/shutdown hooks to lifespan to remove warnings.
-- Add seeded tests for automatic intelligence once stable test fixtures exist.
 - Add prediction list endpoints if dashboard prediction history is needed.
 - Move scheduler to a production worker/cron system before multi-worker deployment.
+- Add push notifications only after deployed mobile login and device-token storage are smoke-tested.
+- Push notification pieces needed: mobile push token registration, notification preferences, backend notification dispatch service, and tests.
 
 ## Network Integration / RADIUS Backlog
 

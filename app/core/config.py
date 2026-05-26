@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     DEBUG: bool
 
     ENABLE_INTELLIGENCE_SCHEDULER: bool = False
-    INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES: int = 60
+    INTELLIGENCE_SCHEDULER_INTERVAL_MINUTES: int = Field(default=60, ge=1)
 
     API_V1_PREFIX: str
 
