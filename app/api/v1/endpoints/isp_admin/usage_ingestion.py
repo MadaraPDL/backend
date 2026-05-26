@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import datetime, timezone
 from uuid import UUID
@@ -16,6 +16,7 @@ from app.schemas.isp_admin import (
     SimulatorUsageIngestionResponse,
 )
 from app.services.alerts import generate_alerts_after_router_ingestion
+from app.services.isp_admin.intelligence_service import run_intelligence_for_isp
 from app.services.usage_ingestion import (
     RouterNotFoundForIngestionError,
     RouterNotReadyForIngestionError,
@@ -199,6 +200,11 @@ async def run_full_simulator_ingestion_endpoint(
         include_new_device_alerts=True,
     )
 
+    intelligence_result = await run_intelligence_for_isp(
+        db=db,
+        isp_id=current_admin.isp_id,
+    )
+
     await db.commit()
 
     device_response = SimulatorDeviceIngestionResponse(
@@ -238,4 +244,7 @@ async def run_full_simulator_ingestion_endpoint(
         ),
         scenario=result.scenario,
         policy_failure_alert_created=result.policy_failure_alert_created,
+        intelligence_alerts_created=intelligence_result.alerts_created,
+        predictions_created=intelligence_result.predictions_created,
+        recommendations_created=intelligence_result.recommendations_created,
     )

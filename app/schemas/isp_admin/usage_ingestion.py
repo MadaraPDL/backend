@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
@@ -55,4 +55,7 @@ class SimulatorFullIngestionResponse(BaseModel):
     alerts_created: int = 0
     scenario: SimulatorScenario = DEFAULT_SIMULATOR_SCENARIO
     policy_failure_alert_created: bool = False
+    intelligence_alerts_created: int = 0
+    predictions_created: int = 0
+    recommendations_created: int = 0
     source: str = "simulator"

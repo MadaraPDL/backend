@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, time, timezone
@@ -20,6 +20,9 @@ from app.models.user_subscription import UserSubscription
 
 HIGH_USAGE_PERCENT = Decimal("80")
 PLAN_EXCEEDED_PERCENT = Decimal("100")
+RAPID_HIGH_USAGE_24H_GB = Decimal("5")
+RAPID_HIGH_USAGE_1H_GB = Decimal("2")
+RAPID_HIGH_USAGE_PLAN_PERCENT = Decimal("10")
 UNUSUAL_USAGE_MULTIPLIER = Decimal("3")
 MIN_PREVIOUS_WINDOWS_FOR_ANOMALY = 3
 MIN_UNUSUAL_USAGE_MB = Decimal("100")
@@ -255,6 +258,67 @@ async def generate_usage_alerts_for_subscription(
         record_start=latest_record_start,
         record_end=latest_record_end,
     )
+
+
+    if (
+        latest_window_total_mb is not None
+        and latest_record_start is not None
+        and latest_record_end is not None
+    ):
+        window_seconds = max(
+            (latest_record_end - latest_record_start).total_seconds(),
+            0,
+        )
+        window_hours = (
+            Decimal(str(window_seconds)) / Decimal("3600")
+            if window_seconds > 0
+            else Decimal("0")
+        )
+
+        rapid_threshold_mb = RAPID_HIGH_USAGE_24H_GB * MB_PER_GB
+
+        if window_hours and window_hours <= Decimal("1.25"):
+            rapid_threshold_mb = min(
+                rapid_threshold_mb,
+                RAPID_HIGH_USAGE_1H_GB * MB_PER_GB,
+            )
+
+        rapid_plan_threshold_mb = (
+            plan_limit_mb * RAPID_HIGH_USAGE_PLAN_PERCENT / Decimal("100")
+        )
+
+        if rapid_plan_threshold_mb > 0:
+            rapid_threshold_mb = min(rapid_threshold_mb, rapid_plan_threshold_mb)
+
+        if latest_window_total_mb >= rapid_threshold_mb:
+            if not await _open_alert_exists(
+                db=db,
+                user_id=subscription.user_id,
+                user_subscription_id=subscription.id,
+                alert_type="high_usage",
+            ):
+                latest_window_gb = latest_window_total_mb / MB_PER_GB
+                threshold_gb = rapid_threshold_mb / MB_PER_GB
+
+                db.add(
+                    Alert(
+                        user_id=subscription.user_id,
+                        user_subscription_id=subscription.id,
+                        usage_id=latest_usage_id,
+                        alert_type="high_usage",
+                        severity="high",
+                        title="Rapid high internet usage",
+                        message=(
+                            f"You used about {_format_decimal(latest_window_gb)} GB "
+                            f"in a short usage window. This is above the rapid "
+                            f"usage threshold of about {_format_decimal(threshold_gb)} GB."
+                        ),
+                        status="unread",
+                    )
+                )
+
+                alerts_created += 1
+
 
     if latest_window_total_mb is not None and latest_record_start is not None:
         previous_totals = await _get_previous_window_totals_mb(
