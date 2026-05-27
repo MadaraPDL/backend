@@ -1,10 +1,25 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
+
+
+
+class ISPAdminUsageTotalsResponse(BaseModel):
+    upload_mb: Decimal
+    download_mb: Decimal
+    total_mb: Decimal
+    record_count: int
+    first_record_start: datetime | None
+    last_record_end: datetime | None
+
+
+class ISPAdminDailyUsageResponse(BaseModel):
+    usage_date: date
+    totals: ISPAdminUsageTotalsResponse
 
 
 class ISPAdminUsageRecordResponse(BaseModel):

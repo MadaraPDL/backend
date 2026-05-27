@@ -1,4 +1,4 @@
-﻿from app.schemas.isp_admin.alerts import (
+from app.schemas.isp_admin.alerts import (
     ISPAdminAlertResponse,
 )
 from app.schemas.isp_admin.analytics import (
@@ -62,7 +62,9 @@ from app.schemas.isp_admin.usage_ingestion import (
     SimulatorUsageIngestionResponse,
 )
 from app.schemas.isp_admin.usage_records import (
+    ISPAdminDailyUsageResponse,
     ISPAdminUsageRecordResponse,
+    ISPAdminUsageTotalsResponse,
 )
 from app.schemas.isp_admin.user_invitations import (
     AppUserInvitationCreateRequest,
@@ -100,7 +102,9 @@ __all__ = [
     "ISPAdminReportResponse",
     "ISPAdminReportType",
     "ISPAdminSummaryResponse",
+    "ISPAdminDailyUsageResponse",
     "ISPAdminUsageRecordResponse",
+    "ISPAdminUsageTotalsResponse",
     "PlanChangeRequestStatus",
     "RevokeAppUserInvitationResponse",
     "RevokeISPAdminInvitationResponse",
