@@ -12,7 +12,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 49 complete - mobile selected-router correctness is complete; next is mobile navigation restructure / More cleanup.**
+Current phase: **Step 50A complete - ISP Admin router creation UX simplified; next is mobile navigation restructure / More cleanup.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -3234,4 +3234,30 @@ Next:
 - Mobile navigation restructure / More cleanup.
 - Move important screens out of More where appropriate.
 - Then continue chatbot, UI polish, live smoke test, push notifications, ML/data pipeline, and final report alignment.
+
+### Step 50A ISP Admin router creation UX cleanup
+
+Status: Step 50A complete and pushed.
+
+Completed:
+- ISP Admin Router Management no longer shows the confusing `New service line` / `Existing service line` choice.
+- Router creation now follows the actual PulseFi workflow:
+  - select App User,
+  - select package/plan,
+  - enter subscription label/start date,
+  - enter router details,
+  - PulseFi creates the linked subscription automatically,
+  - router is linked to that subscription.
+- MAC address is now required in the router form.
+- API endpoint and router username remain optional fields for future real-router/API integration.
+- Advanced helper text was removed to keep the form cleaner.
+- User-facing wording now favors `assigned subscription` / `package` instead of `service line` where possible.
+
+Reason:
+- ISP Admin currently does not have a separate subscription creation workflow, so `Existing service line` was confusing and not useful for the current product/demo flow.
+- The UI now matches the real FYP workflow more clearly.
+
+Next:
+- Step 50B mobile navigation restructure / More cleanup.
+- Make the mobile app more user-friendly before chatbot, push notifications, ML, and final report alignment.
 
