@@ -9,7 +9,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 50D complete - App User mobile Daily Usage, usage total consistency, and records display are complete and verified; next is Step 50D3 ISP Admin daily usage view.**
+Current phase: **Step 50E complete - demo usage clarity is done; full live smoke test is deferred until all remaining project steps are finished.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -28,6 +28,7 @@ Completed before deployment:
 - Step 46I ISP Admin selected-user Monitoring alerts is complete and live-tested: Monitoring now requires selecting an App User before alert details are shown, only high-usage and plan-limit alerts are shown (`high_usage` and `plan_exceed_risk`), Users no longer owns this alert workflow, the alert list is scroll-contained, ISP Admin login defaults to Overview, and admin session restore no longer clears valid tokens on temporary backend/network failures.
 - Step 46J device trust enforcement is complete and tested: simulator usage records are created only for trusted connected devices, untrusted connected devices are blocked from simulator usage, and each blocked untrusted device creates a `policy_failed` alert.
 - Step 50D App User mobile Daily Usage is complete and verified: backend exposes daily usage for App Users, Home and Usage totals now use the same selected-router summary source, Daily Usage is visible on mobile, Latest Records starts at 5 rows with Show 5 more, and device download/upload breakdown remains available.
+- Step 50E demo usage clarity is complete: ISP Admin Daily Usage by User now shows usage kind as Official/Service total vs Estimated/Device estimate, includes All/Official/Estimated filters, and future simulator usage creates an official service total row plus estimated per-device rows for cleaner presentation data.
 
 Deployment status:
 - Railway deployment was abandoned.
@@ -97,9 +98,9 @@ Active rules:
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
 
 Next recommended phase:
-- Continue Step 50D3 by adding an ISP Admin daily usage view for selected users/routers/service lines.
+- Continue after Step 50E with the next remaining feature work; keep the full live smoke test deferred until all remaining steps are finished.
 - Keep ISP Admin daily usage queries scoped by `current_admin.isp_id`.
-- After Step 50D3, clean demo usage data and clarify official vs estimated usage for presentation.
+- Step 50E demo usage clarity is complete; next work should not run final live smoke yet.
 - Do not implement full push notifications until deployed mobile login and device-token storage are smoke-tested. Next required pieces are mobile push token registration, notification preferences, backend notification dispatch service, and tests.
 - Step 43D final full smoke test remains postponed until backend, admin web, email, and mobile are all ready.
 <!-- PULSEFI_SYNC_END -->
@@ -2954,3 +2955,5 @@ Commands for next chat:
   - `git log --oneline -5`
   - verify whether Step 50D1 backend daily endpoint is committed.
 
+
+- Full live smoke testing is intentionally deferred until the remaining project steps are finished; do not mark Step 50 fully complete until the final live smoke pass is done.

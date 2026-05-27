@@ -1529,3 +1529,19 @@ Commands for next chat:
   - `git log --oneline -5`
   - verify whether Step 50D1 backend daily endpoint is committed.
 
+
+
+## Usage kind notes
+
+For ISP Admin daily usage by user, `usage_kind` explains how the row should be interpreted:
+
+- `official` / Service total: total usage counted for the user service line/router and suitable for plan/package usage display.
+- `estimated` / Device estimate: simulator/CPE per-device usage breakdown used for device-level visibility.
+
+Future simulator usage ingestion creates one official aggregate row with `device_id = null` plus estimated device rows for trusted connected devices.
+
+- `GET /api/v1/me/usage/daily`
+
+- `GET /api/v1/isp-admin/usage-records/daily`
+
+- `GET /api/v1/isp-admin/usage-records/daily-by-user`
