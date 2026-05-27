@@ -1,7 +1,9 @@
+- Step 46K alert volume controls are complete and tested: repeated simulator runs no longer spam duplicate untrusted-device `policy_failed` alerts for the same user/subscription/device when an unread or recent alert already exists.
+- Step 46J device trust enforcement is complete and tested: simulator usage records are created only for trusted connected devices, untrusted connected devices are blocked from simulator usage, and each blocked untrusted device can create a `policy_failed` alert.
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 46J complete - device trust enforcement is implemented/tested; next is Step 46K alert volume rules or final Step 46 cleanup**.
+Current phase: **Step 46 complete/finalized - selected-user Monitoring alerts, simulator device trust enforcement, and alert volume controls are implemented/tested; mobile selected-router scoping remains a later mobile improvement item**.
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -3909,7 +3911,7 @@ Never commit Brevo API keys or any .env files.
 
 ### Current phase
 
-Current phase: **Step 46J complete - device trust enforcement is implemented/tested; next is Step 46K alert volume rules or final Step 46 cleanup**.
+Current phase: **Step 46 complete/finalized - selected-user Monitoring alerts, simulator device trust enforcement, and alert volume controls are implemented/tested; mobile selected-router scoping remains a later mobile improvement item**.
 
 Live deployment notes:
 
@@ -4380,4 +4382,37 @@ Networking meaning:
 Testing:
 - Focused simulator ingestion tests passed.
 - Full backend compile/test checks passed locally.
+
+### Step 46 finalization note - Monitoring, trust enforcement, and alert volume rules
+
+Status: complete and tested locally.
+
+Completed Step 46I:
+- ISP Admin Monitoring now requires selecting an App User before user-specific alert details are shown.
+- Monitoring only shows selected-user `high_usage` and `plan_exceed_risk` alerts in that workflow.
+- The Users page no longer owns the selected-user alert workflow.
+- ISP Admin dashboard login defaults to Overview.
+- Admin session restore no longer clears valid saved tokens on temporary non-auth backend/network failures.
+
+Completed Step 46J:
+- Simulator usage ingestion now separates connected devices into trusted and untrusted devices.
+- Trusted connected devices can generate simulator usage records.
+- Untrusted connected devices no longer generate simulator usage records.
+- Blocked untrusted devices can create `policy_failed` alerts titled `Untrusted device usage blocked`.
+- Simulator usage responses include `blocked_devices` and `policy_alerts_created`.
+
+Completed Step 46K:
+- Duplicate/volume control was added for simulator untrusted-device policy alerts.
+- Repeated simulator runs do not spam duplicate `policy_failed` alerts for the same user/subscription/device when an unread or recent alert already exists.
+
+Networking/report note:
+- PulseFi currently implements logical provisioning and simulator-backed network enforcement.
+- Real router provisioning is a future production integration layer through MikroTik RouterOS API, RADIUS/PPPoE, TR-069/USP, ISP APIs/webhooks, or a secure local router agent.
+- Real ISP database/API synchronization is also a future production integration layer.
+- The current deployed prototype uses PulseFi's own PostgreSQL database and simulator ingestion to prove the workflow.
+
+Known later mobile improvement:
+- App User mobile selected-router context still needs a dedicated mobile cleanup pass.
+- Usage endpoints already support `router_id`, but the mobile app must consistently pass the selected router.
+- App User alerts need router-aware filtering later so selected-router alert views do not remain user-wide.
 

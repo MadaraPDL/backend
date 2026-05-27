@@ -6,7 +6,7 @@ from decimal import Decimal
 import random
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -28,6 +28,7 @@ PLAN_TARGET_SCENARIOS: dict[SimulatorScenario, Decimal] = {
     "near_plan_limit": Decimal("0.95"),
     "exceeded_plan": Decimal("1.05"),
 }
+UNTRUSTED_DEVICE_POLICY_ALERT_REPEAT_WINDOW_HOURS = 24
 
 
 @dataclass(frozen=True)
@@ -156,7 +157,34 @@ async def _get_cycle_usage_mb(
     return _decimal_or_zero(result.scalar_one_or_none())
 
 
-def _add_untrusted_device_policy_alerts(
+async def _untrusted_device_policy_alert_exists(
+    *,
+    db: AsyncSession,
+    user_subscription: UserSubscription,
+    device: Device,
+    since_created_at: datetime,
+) -> bool:
+    stmt = (
+        select(Alert.id)
+        .where(
+            Alert.user_id == user_subscription.user_id,
+            Alert.user_subscription_id == user_subscription.id,
+            Alert.device_id == device.id,
+            Alert.alert_type == "policy_failed",
+            Alert.title == "Untrusted device usage blocked",
+            or_(
+                Alert.status == "unread",
+                Alert.created_at >= since_created_at,
+            ),
+        )
+        .limit(1)
+    )
+
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none() is not None
+
+
+async def _add_untrusted_device_policy_alerts(
     *,
     db: AsyncSession,
     router: Router,
@@ -164,8 +192,19 @@ def _add_untrusted_device_policy_alerts(
     devices: list[Device],
 ) -> int:
     alerts_created = 0
+    repeat_window_start = datetime.now(timezone.utc) - timedelta(
+        hours=UNTRUSTED_DEVICE_POLICY_ALERT_REPEAT_WINDOW_HOURS,
+    )
 
     for device in devices:
+        if await _untrusted_device_policy_alert_exists(
+            db=db,
+            user_subscription=user_subscription,
+            device=device,
+            since_created_at=repeat_window_start,
+        ):
+            continue
+
         device_label = device.device_name or device.mac_address
 
         db.add(
@@ -180,6 +219,7 @@ def _add_untrusted_device_policy_alerts(
                     "PulseFi blocked simulated usage for "
                     f"{device_label} because the device is not trusted."
                 ),
+                status="unread",
             )
         )
 
@@ -318,7 +358,7 @@ async def run_simulator_usage_ingestion_for_router(
 
     trusted_devices = [device for device in devices if device.is_trusted]
     blocked_devices = [device for device in devices if not device.is_trusted]
-    policy_alerts_created = _add_untrusted_device_policy_alerts(
+    policy_alerts_created = await _add_untrusted_device_policy_alerts(
         db=db,
         router=router,
         user_subscription=user_subscription,
