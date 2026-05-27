@@ -261,7 +261,24 @@ async def test_simulator_usage_blocks_untrusted_connected_devices():
     usage_records = [item for item in db.added if isinstance(item, UsageRecord)]
     policy_alerts = [item for item in db.added if isinstance(item, Alert)]
 
-    assert result.records_created == 1
+    assert result.records_created == 2
+
+    records = (
+        await db_session.execute(
+            select(UsageRecord).where(UsageRecord.router_id == router.id)
+        )
+    ).scalars().all()
+
+    assert len(records) == 2
+    assert any(
+        record.device_id is None and record.source == "simulator_official_total"
+        for record in records
+    )
+    assert any(
+        record.device_id is not None
+        and record.source == "simulator_estimated_device"
+        for record in records
+    )
     assert result.blocked_devices == 1
     assert result.policy_alerts_created == 1
 
