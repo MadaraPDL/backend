@@ -126,6 +126,34 @@ async def _has_matching_official_usage_records(
     return int(result.scalar_one() or 0) > 0
 
 
+async def _has_matching_official_usage_records(
+    db: AsyncSession,
+    current_user: AppUser,
+    user_subscription_id: UUID | None = None,
+    router_id: UUID | None = None,
+    start_at: datetime | None = None,
+    end_at: datetime | None = None,
+) -> bool:
+    stmt = (
+        select(func.count(UsageRecord.id))
+        .where(
+            UsageRecord.user_id == current_user.id,
+            UsageRecord.device_id.is_(None),
+        )
+    )
+
+    stmt = _apply_usage_filters(
+        stmt,
+        user_subscription_id=user_subscription_id,
+        router_id=router_id,
+        start_at=start_at,
+        end_at=end_at,
+    )
+
+    result = await db.execute(stmt)
+    return int(result.scalar_one() or 0) > 0
+
+
 async def get_my_usage_summary(
     db: AsyncSession,
     current_user: AppUser,
@@ -155,10 +183,6 @@ async def get_my_usage_summary(
         end_at=end_at,
     )
 
-    # Important:
-    # device_id NULL = official subscription/router total.
-    # device_id NOT NULL = estimated per-device usage.
-    # Do not add them together, or totals become wrong/double-counted.
     if device_id is None:
         has_official_rows = await _has_matching_official_usage_records(
             db=db,
