@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.alert import Alert
 from app.models.app_user import AppUser
 from app.models.router import Router
+from app.models.user_subscription import UserSubscription
 
 
 async def list_my_alerts(
@@ -43,9 +44,14 @@ async def list_my_alerts(
 
     if router_id is not None:
         router_result = await db.execute(
-            select(Router.user_subscription_id).where(
+            select(Router.user_subscription_id)
+            .join(
+                UserSubscription,
+                UserSubscription.id == Router.user_subscription_id,
+            )
+            .where(
                 Router.id == router_id,
-                Router.user_id == current_user.id,
+                UserSubscription.user_id == current_user.id,
             )
         )
         user_subscription_id = router_result.scalar_one_or_none()
