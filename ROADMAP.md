@@ -1,12 +1,15 @@
 - Step 46K alert volume controls are complete and tested: repeated simulator runs no longer spam duplicate untrusted-device `policy_failed` alerts for the same user/subscription/device when an unread or recent alert already exists.
 - Step 46J device trust enforcement is complete and tested: simulator usage records are created only for trusted connected devices, untrusted connected devices are blocked from simulator usage, and each blocked untrusted device can create a `policy_failed` alert.
 - Step 47C admin password reset resend polish is complete: forgot-password uses reset links and the UI supports sending another reset email after success.
+- Step 48C reset success UX is complete and tested: the shared web reset-password page no longer redirects to admin login after success and instead shows a neutral prompt telling the user to return to PulseFi and log in with the new credentials.
+- Step 48B mobile MFA resend UX is complete and tested: login email MFA, Profile email-MFA enable, email-based MFA disable verification, and backup-code email verification all support resending email codes and replacing the active challenge token.
+- Step 48B mobile password reset request flow is complete and tested: App User mobile login now includes Forgot Password, sends password reset email links through the deployed backend, supports sending another reset email, and keeps reset-token handling out of the mobile UI.
 - Step 47B admin Settings verification resend is complete: MFA settings, backup-code regeneration, and account identity verification support sending/resending email verification codes.
 - Step 47A admin login email MFA resend is complete: admin web shows send/resend code by email during MFA login and replaces the active challenge token after each resend.
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 47 complete - deployed email flows and admin resend-code/reset-email UX are working; next is the mobile auth/router-context improvement step**.
+Current phase: **Step 48 mobile auth polish in progress - mobile forgot-password request, reset-email resend UX, MFA resend actions, and neutral reset success handling are complete; next is selected-router context cleanup**.
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -58,11 +61,10 @@ Email delivery status:
   - `BREVO_API_URL`
   - `SMTP_FROM_EMAIL` and `SMTP_FROM_NAME` remain the sender identity fields for compatibility.
 - Brevo email delivery is working for deployed invitation and verification flows.
-- Current observed deployed invitation failure is `503 Service Unavailable` with message `Invitation email delivery failed...`, meaning the backend is reachable but the email provider request/settings still need verification.
 - For Brevo, keep `SMTP_FROM_EMAIL` aligned with the verified sender/domain configured in Brevo.
 
 Current deployment env direction:
-- `DEBUG=True` during first deployment/testing.
+- `DEBUG=False` in production/live testing.
 - `ENABLE_INTELLIGENCE_SCHEDULER=False` during first deployment.
 - Target email env for HTTP provider:
   - `EMAIL_DELIVERY_ENABLED=True`
@@ -2916,7 +2918,7 @@ Never commit Brevo API keys or any .env files.
 
 ### Current phase
 
-Current phase: **Step 47 complete - deployed email flows and admin resend-code/reset-email UX are working; next is the mobile auth/router-context improvement step**.
+Current phase: **Step 48 mobile auth polish in progress - mobile forgot-password request, reset-email resend UX, MFA resend actions, and neutral reset success handling are complete; next is selected-router context cleanup**.
 
 Live deployment notes:
 
@@ -3444,4 +3446,31 @@ Next step:
 - Mobile needs Forgot Password / Reset Password UX.
 - Mobile selected-router context must consistently drive Home, Usage, Devices, Alerts, Plan/Insights.
 - App User alerts may need backend/router_id filtering if the mobile alert view should become selected-router specific.
+
+### Step 48 mobile auth polish note
+
+Status: Step 48B/48C complete and pushed.
+
+Completed:
+- Mobile App User login screen now has Forgot Password.
+- Mobile forgot-password requests call `/auth/password/forgot` with `account_type=app_user`.
+- Mobile forgot-password supports sending another reset email after success.
+- Mobile login MFA supports resending email verification codes.
+- Mobile Profile/Settings MFA flows support resending email verification codes for:
+  - enabling Email MFA,
+  - disabling MFA with email verification,
+  - regenerating backup codes with email verification.
+- The shared deployed reset-password web page is now account-neutral after successful reset.
+- Reset success no longer redirects to admin login.
+- The success prompt tells the user to return to PulseFi and log in with the new credentials.
+
+Security notes:
+- Password reset remains link-based, not numeric-code based.
+- Mobile does not expose reset tokens or dev reset URLs.
+- Production must keep `DEBUG=False`.
+
+Next:
+- Step 49 selected-router context cleanup.
+- Selected router must consistently control Home, Usage, Devices, Alerts, Plan/Insights.
+- App User alerts may need backend `router_id` filtering if selected-router alert views should be precise.
 
