@@ -62,6 +62,7 @@ from app.services.isp_admin.subscription_service import (
 from app.services.isp_admin.summary_service import get_isp_admin_summary
 from app.services.isp_admin.usage_record_service import (
     get_usage_record_for_isp,
+    list_daily_usage_by_user_for_isp,
     list_daily_usage_for_isp,
     list_usage_records_for_isp,
 )

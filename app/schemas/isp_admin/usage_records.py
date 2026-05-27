@@ -22,6 +22,18 @@ class ISPAdminDailyUsageResponse(BaseModel):
     totals: ISPAdminUsageTotalsResponse
 
 
+class ISPAdminDailyUsageByUserResponse(BaseModel):
+    usage_date: date
+    user_id: UUID
+    user_full_name: str
+    user_email: str
+    user_subscription_id: UUID
+    subscription_label: str | None
+    router_id: UUID
+    router_name: str | None
+    totals: ISPAdminUsageTotalsResponse
+
+
 class ISPAdminUsageRecordResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timedelta
 from uuid import UUID
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.app_user import AppUser
+from app.models.router import Router
+from app.models.user_subscription import UserSubscription
 from app.models.usage_record import UsageRecord
+from app.schemas.isp_admin.usage_records import ISPAdminDailyUsageByUserResponse, ISPAdminDailyUsageResponse, ISPAdminUsageTotalsResponse
 from app.schemas.isp_admin.usage_records import ISPAdminDailyUsageResponse, ISPAdminUsageTotalsResponse
 from app.services.isp_admin.ownership_scope import (
     apply_usage_record_isp_ownership_scope,
@@ -199,6 +203,131 @@ async def list_daily_usage_for_isp(
         for row in sorted(
             rows_by_date.values(),
             key=lambda item: item.usage_date,
+            reverse=True,
+        )
+    ]
+
+
+async def list_daily_usage_by_user_for_isp(
+    *,
+    db: AsyncSession,
+    isp_id: UUID,
+    router_id: UUID | None = None,
+    user_id: UUID | None = None,
+    user_subscription_id: UUID | None = None,
+    source: str | None = None,
+    start_at: datetime | None = None,
+    end_at: datetime | None = None,
+    days: int = 7,
+) -> list[ISPAdminDailyUsageByUserResponse]:
+    if start_at is None and end_at is None:
+        now = datetime.utcnow()
+        today_start = datetime(year=now.year, month=now.month, day=now.day)
+        start_at = today_start - timedelta(days=max(days - 1, 0))
+
+    total_expr = _usage_total_expression()
+    usage_date_expr = func.date(UsageRecord.record_start).label("usage_date")
+
+    def build_daily_by_user_stmt():
+        stmt = apply_usage_record_isp_ownership_scope(
+            select(
+                usage_date_expr,
+                UsageRecord.user_id.label("user_id"),
+                AppUser.full_name.label("user_full_name"),
+                AppUser.email.label("user_email"),
+                UsageRecord.user_subscription_id.label("user_subscription_id"),
+                UserSubscription.subscription_label.label("subscription_label"),
+                UsageRecord.router_id.label("router_id"),
+                Router.router_name.label("router_name"),
+                func.coalesce(func.sum(UsageRecord.upload_mb), 0).label("upload_mb"),
+                func.coalesce(func.sum(UsageRecord.download_mb), 0).label("download_mb"),
+                func.coalesce(func.sum(total_expr), 0).label("total_mb"),
+                func.count(UsageRecord.id).label("record_count"),
+                func.min(UsageRecord.record_start).label("first_record_start"),
+                func.max(UsageRecord.record_end).label("last_record_end"),
+            ),
+            isp_id=isp_id,
+        ).group_by(
+            usage_date_expr,
+            UsageRecord.user_id,
+            AppUser.full_name,
+            AppUser.email,
+            UsageRecord.user_subscription_id,
+            UserSubscription.subscription_label,
+            UsageRecord.router_id,
+            Router.router_name,
+        ).order_by(
+            usage_date_expr.desc(),
+            AppUser.full_name.asc(),
+            Router.router_name.asc(),
+        )
+
+        if router_id is not None:
+            stmt = stmt.where(UsageRecord.router_id == router_id)
+
+        if user_id is not None:
+            stmt = stmt.where(UsageRecord.user_id == user_id)
+
+        if user_subscription_id is not None:
+            stmt = stmt.where(UsageRecord.user_subscription_id == user_subscription_id)
+
+        if source is not None:
+            stmt = stmt.where(UsageRecord.source == source)
+
+        if start_at is not None:
+            stmt = stmt.where(UsageRecord.record_start >= start_at)
+
+        if end_at is not None:
+            stmt = stmt.where(UsageRecord.record_end <= end_at)
+
+        return stmt
+
+    official_result = await db.execute(
+        build_daily_by_user_stmt().where(UsageRecord.device_id.is_(None))
+    )
+    estimated_result = await db.execute(
+        build_daily_by_user_stmt().where(UsageRecord.device_id.is_not(None))
+    )
+
+    rows_by_group = {}
+
+    for row in official_result:
+        key = (
+            row.usage_date,
+            row.user_id,
+            row.user_subscription_id,
+            row.router_id,
+        )
+        rows_by_group[key] = row
+
+    for row in estimated_result:
+        key = (
+            row.usage_date,
+            row.user_id,
+            row.user_subscription_id,
+            row.router_id,
+        )
+        rows_by_group.setdefault(key, row)
+
+    return [
+        ISPAdminDailyUsageByUserResponse(
+            usage_date=row.usage_date,
+            user_id=row.user_id,
+            user_full_name=row.user_full_name,
+            user_email=row.user_email,
+            user_subscription_id=row.user_subscription_id,
+            subscription_label=row.subscription_label,
+            router_id=row.router_id,
+            router_name=row.router_name,
+            totals=_build_totals_response(row),
+        )
+        for row in sorted(
+            rows_by_group.values(),
+            key=lambda item: (
+                item.usage_date,
+                item.user_full_name or "",
+                item.router_name or "",
+            ),
             reverse=True,
         )
     ]
