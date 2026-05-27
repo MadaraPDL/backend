@@ -9,7 +9,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 50D in progress - daily usage backend/mobile work started; next chat must repair mobile UsageScreen JSX before continuing.**
+Current phase: **Step 50D complete - App User mobile Daily Usage, usage total consistency, and records display are complete and verified; next is Step 50D3 ISP Admin daily usage view.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -27,6 +27,7 @@ Completed before deployment:
 - Step 45 added Settings toggle navigation polish in both admin dashboards, controlled full-simulator scenarios, scheduled intelligence alert generation, deterministic Explain-this response text, and tests for alert/recommendation coverage.
 - Step 46I ISP Admin selected-user Monitoring alerts is complete and live-tested: Monitoring now requires selecting an App User before alert details are shown, only high-usage and plan-limit alerts are shown (`high_usage` and `plan_exceed_risk`), Users no longer owns this alert workflow, the alert list is scroll-contained, ISP Admin login defaults to Overview, and admin session restore no longer clears valid tokens on temporary backend/network failures.
 - Step 46J device trust enforcement is complete and tested: simulator usage records are created only for trusted connected devices, untrusted connected devices are blocked from simulator usage, and each blocked untrusted device creates a `policy_failed` alert.
+- Step 50D App User mobile Daily Usage is complete and verified: backend exposes daily usage for App Users, Home and Usage totals now use the same selected-router summary source, Daily Usage is visible on mobile, Latest Records starts at 5 rows with Show 5 more, and device download/upload breakdown remains available.
 
 Deployment status:
 - Railway deployment was abandoned.
@@ -96,9 +97,9 @@ Active rules:
 - Do not store raw router passwords, ISP API keys, or RADIUS credentials until encrypted credential storage exists.
 
 Next recommended phase:
-- Finish Step 44E by verifying Resend HTTP email delivery in Render logs and successfully receiving an invitation email.
-- After email works, create ISP Admin and App User through the real deployed invitation flow.
-- Then continue Step 44D/44F mobile deployed-backend login check.
+- Continue Step 50D3 by adding an ISP Admin daily usage view for selected users/routers/service lines.
+- Keep ISP Admin daily usage queries scoped by `current_admin.isp_id`.
+- After Step 50D3, clean demo usage data and clarify official vs estimated usage for presentation.
 - Do not implement full push notifications until deployed mobile login and device-token storage are smoke-tested. Next required pieces are mobile push token registration, notification preferences, backend notification dispatch service, and tests.
 - Step 43D final full smoke test remains postponed until backend, admin web, email, and mobile are all ready.
 <!-- PULSEFI_SYNC_END -->
