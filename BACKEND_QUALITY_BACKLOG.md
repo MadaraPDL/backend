@@ -9,7 +9,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 48 mobile auth polish in progress - mobile forgot-password request, reset-email resend UX, MFA resend actions, and neutral reset success handling are complete; next is selected-router context cleanup**.
+Current phase: **Step 49 complete - mobile selected-router correctness is complete; next is mobile navigation restructure / More cleanup.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -2869,4 +2869,30 @@ Next:
 - Step 49 selected-router context cleanup.
 - Selected router must consistently control Home, Usage, Devices, Alerts, Plan/Insights.
 - App User alerts may need backend `router_id` filtering if selected-router alert views should be precise.
+
+### Step 49 mobile selected-router correctness
+
+Status: Step 49 complete and smoke-tested.
+
+Completed:
+- Mobile selected-router context now drives Home, Usage, Devices, and Alerts.
+- Duplicate router names are disambiguated with router ID prefixes.
+- More opens on Routers first instead of Plans/Subscriptions.
+- Usage screen now has a circular/donut usage graph.
+- Usage fetches selected-router summary and records using `router_id`.
+- Devices fetch selected-router devices and device-usage using `router_id`.
+- App User alerts now support selected-router filtering through backend `router_id`.
+- Backend alert filtering verifies router ownership through `Router.user_subscription_id -> UserSubscription.user_id`.
+- Mobile Alerts no longer shows internal server error after the backend ownership fix.
+- Full smoke test passed with two routers having the same display name but different usage totals.
+
+Security/data correctness notes:
+- Router IDs are never trusted alone.
+- Backend verifies router ownership before returning router-scoped alerts.
+- Selected-router data must remain consistent before ML/prediction upgrades.
+
+Next:
+- Mobile navigation restructure / More cleanup.
+- Move important screens out of More where appropriate.
+- Then continue chatbot, UI polish, live smoke test, push notifications, ML/data pipeline, and final report alignment.
 
