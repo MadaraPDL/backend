@@ -62,6 +62,7 @@ from app.schemas.isp_admin.usage_ingestion import (
     SimulatorUsageIngestionResponse,
 )
 from app.schemas.isp_admin.usage_records import (
+    ISPAdminDailyUsageByUserResponse,
     ISPAdminDailyUsageResponse,
     ISPAdminUsageRecordResponse,
     ISPAdminUsageTotalsResponse,
