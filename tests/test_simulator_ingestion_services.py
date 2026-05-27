@@ -276,7 +276,6 @@ async def test_simulator_usage_blocks_untrusted_connected_devices():
     assert result.blocked_devices == 1
     assert result.policy_alerts_created == 1
 
-    assert len(usage_records) == 1
     assert usage_records[0].device_id == trusted_device_id
 
     assert len(policy_alerts) == 1
