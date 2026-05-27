@@ -31,6 +31,8 @@ class ISPAdminDailyUsageByUserResponse(BaseModel):
     subscription_label: str | None
     router_id: UUID
     router_name: str | None
+    usage_kind: str
+    usage_note: str
     totals: ISPAdminUsageTotalsResponse
 
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timedelta
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from sqlalchemy import func, select
@@ -11,7 +11,6 @@ from app.models.router import Router
 from app.models.user_subscription import UserSubscription
 from app.models.usage_record import UsageRecord
 from app.schemas.isp_admin.usage_records import ISPAdminDailyUsageByUserResponse, ISPAdminDailyUsageResponse, ISPAdminUsageTotalsResponse
-from app.schemas.isp_admin.usage_records import ISPAdminDailyUsageResponse, ISPAdminUsageTotalsResponse
 from app.services.isp_admin.ownership_scope import (
     apply_usage_record_isp_ownership_scope,
 )
@@ -298,7 +297,7 @@ async def list_daily_usage_by_user_for_isp(
             row.user_subscription_id,
             row.router_id,
         )
-        rows_by_group[key] = row
+        rows_by_group[key] = (row, "official")
 
     for row in estimated_result:
         key = (
@@ -307,7 +306,7 @@ async def list_daily_usage_by_user_for_isp(
             row.user_subscription_id,
             row.router_id,
         )
-        rows_by_group.setdefault(key, row)
+        rows_by_group.setdefault(key, (row, "estimated"))
 
     return [
         ISPAdminDailyUsageByUserResponse(
@@ -319,14 +318,20 @@ async def list_daily_usage_by_user_for_isp(
             subscription_label=row.subscription_label,
             router_id=row.router_id,
             router_name=row.router_name,
+            usage_kind=usage_kind,
+            usage_note=(
+                "Official subscription/router usage total."
+                if usage_kind == "official"
+                else "Estimated router/CPE device usage total."
+            ),
             totals=_build_totals_response(row),
         )
-        for row in sorted(
+        for row, usage_kind in sorted(
             rows_by_group.values(),
             key=lambda item: (
-                item.usage_date,
-                item.user_full_name or "",
-                item.router_name or "",
+                item[0].usage_date,
+                item[0].user_full_name or "",
+                item[0].router_name or "",
             ),
             reverse=True,
         )
