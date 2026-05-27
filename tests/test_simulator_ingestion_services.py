@@ -263,21 +263,15 @@ async def test_simulator_usage_blocks_untrusted_connected_devices():
 
     assert result.records_created == 2
 
-    records = (
-        await db_session.execute(
-            select(UsageRecord).where(UsageRecord.router_id == router.id)
-        )
-    ).scalars().all()
-
-    assert len(records) == 2
+    assert len(usage_records) == 2
     assert any(
         record.device_id is None and record.source == "simulator_official_total"
-        for record in records
+        for record in usage_records
     )
     assert any(
         record.device_id is not None
         and record.source == "simulator_estimated_device"
-        for record in records
+        for record in usage_records
     )
     assert result.blocked_devices == 1
     assert result.policy_alerts_created == 1
