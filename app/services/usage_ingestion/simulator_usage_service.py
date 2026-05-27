@@ -392,13 +392,31 @@ async def run_simulator_usage_ingestion_for_router(
                     download_mb=download_mb,
                     record_start=final_record_start,
                     record_end=final_record_end,
-                    source="simulator",
+                    source="simulator_estimated_device",
                 )
             )
 
             total_upload_mb += upload_mb
             total_download_mb += download_mb
             records_created += 1
+
+        # Demo clarity:
+        # device_id=None represents the official router/subscription total.
+        # Device rows remain available as estimated per-device breakdown.
+        db.add(
+            UsageRecord(
+                user_id=user_subscription.user_id,
+                user_subscription_id=user_subscription.id,
+                router_id=router.id,
+                device_id=None,
+                upload_mb=total_upload_mb,
+                download_mb=total_download_mb,
+                record_start=final_record_start,
+                record_end=final_record_end,
+                source="simulator_official_total",
+            )
+        )
+        records_created += 1
     elif not devices:
         upload_mb, download_mb = usage_amounts[0]
 
