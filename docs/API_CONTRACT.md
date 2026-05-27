@@ -1,5 +1,8 @@
 - Step 46K alert volume controls are complete and tested: repeated simulator runs no longer spam duplicate untrusted-device `policy_failed` alerts for the same user/subscription/device when an unread or recent alert already exists.
 - Step 46J device trust enforcement is complete and tested: simulator usage records are created only for trusted connected devices, untrusted connected devices are blocked from simulator usage, and each blocked untrusted device can create a `policy_failed` alert.
+- Step 47C admin password reset resend polish is complete: forgot-password uses reset links and the UI supports sending another reset email after success.
+- Step 47B admin Settings verification resend is complete: MFA settings, backup-code regeneration, and account identity verification support sending/resending email verification codes.
+- Step 47A admin login email MFA resend is complete: admin web shows send/resend code by email during MFA login and replaces the active challenge token after each resend.
 - Step 46I ISP Admin selected-user Monitoring alerts is complete and live-tested: Monitoring now requires selecting an App User before alert details are shown, only high-usage and plan-limit alerts are shown (`high_usage` and `plan_exceed_risk`), Users no longer owns this alert workflow, the alert list is scroll-contained, ISP Admin login defaults to Overview, and admin session restore no longer clears valid tokens on temporary backend/network failures.
 - Step 46J device trust enforcement is complete and tested: simulator usage records are created only for trusted connected devices, untrusted connected devices are blocked from simulator usage, and each blocked untrusted device creates a `policy_failed` alert.
 
@@ -804,15 +807,15 @@ Environment variables:
 - `EMAIL_DELIVERY_ENABLED=True`
 - `EMAIL_DELIVERY_PROVIDER=smtp|resend`
 - `RESEND_API_KEY=<secret, Render only>`
-- `RESEND_API_URL=https://api.resend.com/emails`
+- `BREVO_API_URL`
 - `SMTP_FROM_EMAIL=<sender address>`
 - `SMTP_FROM_NAME=PulseFi`
 - `FRONTEND_ADMIN_URL=https://pulsefi-admin-web.vercel.app`
 
 Notes:
-- With `EMAIL_DELIVERY_PROVIDER=resend`, old Gmail SMTP connection variables are ignored for sending.
+- With `EMAIL_DELIVERY_PROVIDER=brevo`, old Gmail SMTP connection variables are ignored for sending.
 - `SMTP_FROM_EMAIL` and `SMTP_FROM_NAME` are still used as sender identity fields.
-- For quick Resend testing, use `SMTP_FROM_EMAIL=onboarding@resend.dev`.
+- For quick Resend testing, use `SMTP_FROM_EMAIL=<verified Brevo sender email>`.
 - A Gmail address such as `pulsefi.verify@gmail.com` should be used as a recipient unless a matching sender domain is verified in Resend.
 - API keys and provider secrets must never be committed or shared in chat.
 <!-- PULSEFI_EMAIL_DELIVERY_CONTRACT_END -->
@@ -869,7 +872,7 @@ Never commit Brevo API keys or any .env files.
 
 ### Current phase
 
-Current phase: **Step 46 complete/finalized - selected-user Monitoring alerts, simulator device trust enforcement, and alert volume controls are implemented/tested; mobile selected-router scoping remains a later mobile improvement item**.
+Current phase: **Step 47 complete - deployed email flows and admin resend-code/reset-email UX are working; next is the mobile auth/router-context improvement step**.
 
 Live deployment notes:
 
@@ -1343,4 +1346,28 @@ Known later mobile improvement:
 - App User mobile selected-router context still needs a dedicated mobile cleanup pass.
 - Usage endpoints already support `router_id`, but the mobile app must consistently pass the selected router.
 - App User alerts need router-aware filtering later so selected-router alert views do not remain user-wide.
+
+### Step 47 completion note - Deployed email and admin resend UX
+
+Status: complete and live-tested.
+
+What changed:
+- Invitations are working through deployed email delivery.
+- Password reset email/link flow has been tested from the admin web.
+- Admin login MFA now supports sending/resending email verification codes.
+- Admin Settings MFA actions now support resending email verification codes.
+- Backup-code regeneration verification now supports resending email verification codes.
+- Account identity/profile verification now supports resending email verification codes.
+- Password reset remains link-based, not numeric-code based, and the admin UI now says `Send another reset email` after a reset email is sent.
+
+Email provider note:
+- The deployed email provider is Brevo.
+- Do not commit Brevo API keys or any Render/Vercel/Neon secrets.
+- Production must keep DEBUG=False so dev-only reset URLs and email codes are not exposed.
+
+Next step:
+- Start mobile auth/router-context improvement.
+- Mobile needs Forgot Password / Reset Password UX.
+- Mobile selected-router context must consistently drive Home, Usage, Devices, Alerts, Plan/Insights.
+- App User alerts may need backend/router_id filtering if the mobile alert view should become selected-router specific.
 
