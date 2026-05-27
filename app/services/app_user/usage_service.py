@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from uuid import UUID
 
@@ -11,6 +11,7 @@ from app.models.app_user import AppUser
 from app.models.device import Device
 from app.models.usage_record import UsageRecord
 from app.schemas.app_user import (
+    MyDailyUsageResponse,
     MyDeviceUsageResponse,
     MyUsageRecordResponse,
     MyUsageSummaryResponse,
@@ -105,6 +106,58 @@ async def get_my_usage_summary(
         user_id=current_user.id,
         totals=_build_totals_response(row),
     )
+
+
+
+async def list_my_daily_usage(
+    db: AsyncSession,
+    current_user: AppUser,
+    user_subscription_id: UUID | None = None,
+    router_id: UUID | None = None,
+    device_id: UUID | None = None,
+    start_at: datetime | None = None,
+    end_at: datetime | None = None,
+    days: int = 7,
+) -> list[MyDailyUsageResponse]:
+    if start_at is None and end_at is None:
+        start_at = datetime.utcnow() - timedelta(days=max(days - 1, 0))
+
+    total_expr = _usage_total_expression()
+    usage_date_expr = func.date(UsageRecord.record_start).label("usage_date")
+
+    stmt = (
+        select(
+            usage_date_expr,
+            func.coalesce(func.sum(UsageRecord.upload_mb), 0).label("upload_mb"),
+            func.coalesce(func.sum(UsageRecord.download_mb), 0).label("download_mb"),
+            func.coalesce(func.sum(total_expr), 0).label("total_mb"),
+            func.count(UsageRecord.id).label("record_count"),
+            func.min(UsageRecord.record_start).label("first_record_start"),
+            func.max(UsageRecord.record_end).label("last_record_end"),
+        )
+        .where(UsageRecord.user_id == current_user.id)
+        .group_by(usage_date_expr)
+        .order_by(usage_date_expr.desc())
+    )
+
+    stmt = _apply_usage_filters(
+        stmt,
+        user_subscription_id=user_subscription_id,
+        router_id=router_id,
+        device_id=device_id,
+        start_at=start_at,
+        end_at=end_at,
+    )
+
+    result = await db.execute(stmt)
+
+    return [
+        MyDailyUsageResponse(
+            usage_date=row.usage_date,
+            totals=_build_totals_response(row),
+        )
+        for row in result
+    ]
 
 
 async def list_my_device_usage(

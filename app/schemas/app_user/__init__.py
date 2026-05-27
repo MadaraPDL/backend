@@ -12,6 +12,7 @@ from app.schemas.app_user.subscriptions import (
     MySubscriptionResponse,
 )
 from app.schemas.app_user.usage import (
+    MyDailyUsageResponse,
     MyDeviceUsageResponse,
     MyUsageRecordResponse,
     MyUsageSummaryResponse,
@@ -34,6 +35,7 @@ from app.schemas.app_user.device_policies import (
 __all__ = [
     "AppUserSummaryResponse",
     "MyDeviceResponse",
+    "MyDailyUsageResponse",
     "MyDeviceUsageResponse",
     "MyRouterCapabilitiesResponse",
     "MyRouterResponse",

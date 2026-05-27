@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from uuid import UUID
 
@@ -18,6 +18,12 @@ class MyUsageTotalsResponse(BaseModel):
 
 class MyUsageSummaryResponse(BaseModel):
     user_id: UUID
+    totals: MyUsageTotalsResponse
+
+
+
+class MyDailyUsageResponse(BaseModel):
+    usage_date: date
     totals: MyUsageTotalsResponse
 
 

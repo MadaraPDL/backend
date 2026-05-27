@@ -10,12 +10,14 @@ from app.api.dependencies import get_current_app_user
 from app.db.session import get_db
 from app.models.app_user import AppUser
 from app.schemas.app_user import (
+    MyDailyUsageResponse,
     MyDeviceUsageResponse,
     MyUsageRecordResponse,
     MyUsageSummaryResponse,
 )
 from app.services.app_user import (
     get_my_device_usage,
+    list_my_daily_usage,
     get_my_usage_summary,
     list_my_device_usage,
     list_my_usage_records,
@@ -101,6 +103,33 @@ async def get_my_device_usage_endpoint(
         )
 
     return device_usage
+
+
+
+@router.get(
+    "/daily",
+    response_model=list[MyDailyUsageResponse],
+)
+async def list_my_daily_usage_endpoint(
+    user_subscription_id: UUID | None = Query(default=None),
+    router_id: UUID | None = Query(default=None),
+    device_id: UUID | None = Query(default=None),
+    start_at: datetime | None = Query(default=None),
+    end_at: datetime | None = Query(default=None),
+    days: int = Query(default=7, ge=1, le=90),
+    db: AsyncSession = Depends(get_db),
+    current_user: AppUser = Depends(get_current_app_user),
+) -> list[MyDailyUsageResponse]:
+    return await list_my_daily_usage(
+        db=db,
+        current_user=current_user,
+        user_subscription_id=user_subscription_id,
+        router_id=router_id,
+        device_id=device_id,
+        start_at=start_at,
+        end_at=end_at,
+        days=days,
+    )
 
 
 @router.get(
