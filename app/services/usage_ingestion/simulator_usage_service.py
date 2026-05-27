@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, time, timedelta, timezone
@@ -10,6 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.models.alert import Alert
 from app.models.device import Device
 from app.models.router import Router
 from app.models.usage_record import UsageRecord
@@ -40,6 +41,8 @@ class SimulatorUsageIngestionResult:
     upload_mb: Decimal
     download_mb: Decimal
     total_mb: Decimal
+    blocked_devices: int = 0
+    policy_alerts_created: int = 0
 
 
 class UsageIngestionError(RuntimeError):
@@ -151,6 +154,38 @@ async def _get_cycle_usage_mb(
     )
 
     return _decimal_or_zero(result.scalar_one_or_none())
+
+
+def _add_untrusted_device_policy_alerts(
+    *,
+    db: AsyncSession,
+    router: Router,
+    user_subscription: UserSubscription,
+    devices: list[Device],
+) -> int:
+    alerts_created = 0
+
+    for device in devices:
+        device_label = device.device_name or device.mac_address
+
+        db.add(
+            Alert(
+                user_id=user_subscription.user_id,
+                user_subscription_id=user_subscription.id,
+                device_id=device.id,
+                alert_type="policy_failed",
+                severity="high",
+                title="Untrusted device usage blocked",
+                message=(
+                    "PulseFi blocked simulated usage for "
+                    f"{device_label} because the device is not trusted."
+                ),
+            )
+        )
+
+        alerts_created += 1
+
+    return alerts_created
 
 
 async def _scenario_total_usage_mb(
@@ -280,7 +315,17 @@ async def run_simulator_usage_ingestion_for_router(
     total_upload_mb = Decimal("0")
     total_download_mb = Decimal("0")
     records_created = 0
-    record_count = max(len(devices), 1)
+
+    trusted_devices = [device for device in devices if device.is_trusted]
+    blocked_devices = [device for device in devices if not device.is_trusted]
+    policy_alerts_created = _add_untrusted_device_policy_alerts(
+        db=db,
+        router=router,
+        user_subscription=user_subscription,
+        devices=blocked_devices,
+    )
+
+    record_count = max(len(trusted_devices), 1)
     total_usage_mb = await _scenario_total_usage_mb(
         db=db,
         user_subscription=user_subscription,
@@ -293,8 +338,8 @@ async def run_simulator_usage_ingestion_for_router(
         scenario=scenario,
     )
 
-    if devices:
-        for index, device in enumerate(devices):
+    if trusted_devices:
+        for index, device in enumerate(trusted_devices):
             upload_mb, download_mb = usage_amounts[index]
 
             db.add(
@@ -314,7 +359,7 @@ async def run_simulator_usage_ingestion_for_router(
             total_upload_mb += upload_mb
             total_download_mb += download_mb
             records_created += 1
-    else:
+    elif not devices:
         upload_mb, download_mb = usage_amounts[0]
 
         db.add(
@@ -347,5 +392,7 @@ async def run_simulator_usage_ingestion_for_router(
         upload_mb=total_upload_mb,
         download_mb=total_download_mb,
         total_mb=total_upload_mb + total_download_mb,
+        blocked_devices=len(blocked_devices),
+        policy_alerts_created=policy_alerts_created,
     )
 

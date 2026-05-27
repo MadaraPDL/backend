@@ -29,6 +29,8 @@ class SimulatorUsageIngestionResponse(BaseModel):
     download_mb: Decimal
     total_mb: Decimal
     alerts_created: int = 0
+    blocked_devices: int = 0
+    policy_alerts_created: int = 0
     scenario: SimulatorScenario = DEFAULT_SIMULATOR_SCENARIO
     source: str = "simulator"
 

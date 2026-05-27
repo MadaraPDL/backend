@@ -1,3 +1,5 @@
+- Step 46J device trust enforcement is complete and tested: simulator usage records are created only for trusted connected devices, untrusted connected devices are blocked from simulator usage, and each blocked untrusted device creates a `policy_failed` alert.
+
 # PulseFi Backend API Contract
 
 Generated at: `2026-05-18`
@@ -864,7 +866,7 @@ Never commit Brevo API keys or any .env files.
 
 ### Current phase
 
-Current phase: **Step 46 active/finalizing - usage visibility, alert correctness, event-driven intelligence, admin alert scoping, device trust enforcement, and mobile simplification preparation**.
+Current phase: **Step 46J complete - device trust enforcement is implemented/tested; next is Step 46K alert volume rules or final Step 46 cleanup**.
 
 Live deployment notes:
 
@@ -1282,4 +1284,27 @@ Required future SE updates:
 - Component Diagram: usage summary service, alert service, intelligence service, future ML module, future notification service, device trust enforcement
 - Mobile screen map: Home, Usage, Devices, Alerts, Profile
 - API/Feature coverage matrix: usage summaries, alert tiers, recommendation refresh, admin alert filters, device trust enforcement, auto-refresh/push status
+
+### Step 46J completion note - Device trust enforcement
+
+Status: complete and tested locally.
+
+What changed:
+- Simulator usage ingestion now separates connected devices into trusted and untrusted devices.
+- Trusted connected devices can still generate simulator usage records.
+- Untrusted connected devices no longer generate simulator usage records.
+- Every blocked untrusted device creates a `policy_failed` alert titled `Untrusted device usage blocked`.
+- Simulator usage responses now include:
+  - `blocked_devices`
+  - `policy_alerts_created`
+- This is simulator-backed enforcement, not real router enforcement yet.
+
+Networking meaning:
+- PulseFi now treats device trust as an enforcement rule in the simulator.
+- This models what a real router/controller/RADIUS integration would later do: block or prevent usage from untrusted devices.
+- Real router provisioning remains a future production integration layer through MikroTik RouterOS API, RADIUS/PPPoE, TR-069/USP, ISP APIs/webhooks, or a secure local router agent.
+
+Testing:
+- Focused simulator ingestion tests passed.
+- Full backend compile/test checks passed locally.
 

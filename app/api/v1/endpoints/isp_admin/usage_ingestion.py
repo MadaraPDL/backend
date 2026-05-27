@@ -87,7 +87,9 @@ async def run_simulator_usage_ingestion_endpoint(
         upload_mb=result.upload_mb,
         download_mb=result.download_mb,
         total_mb=result.total_mb,
-        alerts_created=alert_result.usage_alerts_created,
+        alerts_created=alert_result.usage_alerts_created + result.policy_alerts_created,
+        blocked_devices=result.blocked_devices,
+        policy_alerts_created=result.policy_alerts_created,
         scenario=request_data.scenario,
     )
 
@@ -232,7 +234,9 @@ async def run_full_simulator_ingestion_endpoint(
         upload_mb=usage_result.upload_mb,
         download_mb=usage_result.download_mb,
         total_mb=usage_result.total_mb,
-        alerts_created=alert_result.usage_alerts_created,
+        alerts_created=alert_result.usage_alerts_created + usage_result.policy_alerts_created,
+        blocked_devices=usage_result.blocked_devices,
+        policy_alerts_created=usage_result.policy_alerts_created,
         scenario=result.scenario,
     )
 
@@ -243,7 +247,9 @@ async def run_full_simulator_ingestion_endpoint(
         device_ingestion=device_response,
         usage_ingestion=usage_response,
         alerts_created=(
-            alert_result.alerts_created + int(result.policy_failure_alert_created)
+            alert_result.alerts_created
+            + int(result.policy_failure_alert_created)
+            + usage_result.policy_alerts_created
         ),
         scenario=result.scenario,
         policy_failure_alert_created=result.policy_failure_alert_created,

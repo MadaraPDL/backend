@@ -1,7 +1,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 46 active/finalizing - usage visibility, alert correctness, event-driven intelligence, admin alert scoping, device trust enforcement, and mobile simplification preparation**.
+Current phase: **Step 46J complete - device trust enforcement is implemented/tested; next is Step 46K alert volume rules or final Step 46 cleanup**.
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -17,6 +17,8 @@ Completed before deployment:
 - Step 43D final full smoke test remains intentionally postponed until deployment/email/mobile are ready.
 - Step 44F added protected Platform Admin team invitation backend routes so existing Platform Admins can invite/list/revoke Platform Admin invitations and list Platform Admin accounts.
 - Step 45 added Settings toggle navigation polish in both admin dashboards, controlled full-simulator scenarios, scheduled intelligence alert generation, deterministic Explain-this response text, and tests for alert/recommendation coverage.
+- Step 46I ISP Admin selected-user Monitoring alerts is complete and live-tested: Monitoring now requires selecting an App User before alert details are shown, only high-usage and plan-limit alerts are shown (`high_usage` and `plan_exceed_risk`), Users no longer owns this alert workflow, the alert list is scroll-contained, ISP Admin login defaults to Overview, and admin session restore no longer clears valid tokens on temporary backend/network failures.
+- Step 46J device trust enforcement is complete and tested: simulator usage records are created only for trusted connected devices, untrusted connected devices are blocked from simulator usage, and each blocked untrusted device creates a `policy_failed` alert.
 
 Deployment status:
 - Railway deployment was abandoned.
@@ -3907,7 +3909,7 @@ Never commit Brevo API keys or any .env files.
 
 ### Current phase
 
-Current phase: **Step 46 active/finalizing - usage visibility, alert correctness, event-driven intelligence, admin alert scoping, device trust enforcement, and mobile simplification preparation**.
+Current phase: **Step 46J complete - device trust enforcement is implemented/tested; next is Step 46K alert volume rules or final Step 46 cleanup**.
 
 Live deployment notes:
 
@@ -4325,4 +4327,57 @@ Required future SE updates:
 - Component Diagram: usage summary service, alert service, intelligence service, future ML module, future notification service, device trust enforcement
 - Mobile screen map: Home, Usage, Devices, Alerts, Profile
 - API/Feature coverage matrix: usage summaries, alert tiers, recommendation refresh, admin alert filters, device trust enforcement, auto-refresh/push status
+
+### Step 46I completion note - ISP Admin selected-user alerts
+
+Status: complete and live-tested.
+
+What changed:
+- ISP Admin Monitoring now keeps general analytics visible.
+- Alert review is selected-user based.
+- Alerts are not shown globally for all users in the Monitoring detail panel.
+- The selected-user alert list only shows:
+  - `high_usage`
+  - `plan_exceed_risk`
+- The Users page no longer owns this alert workflow.
+- The Monitoring alert list is scroll-contained instead of stretching the page.
+- ISP Admin login now defaults to Overview instead of restoring the last saved section.
+- Admin session restore no longer clears a valid saved token on temporary non-auth backend/network failures.
+
+API contract impact:
+- No backend endpoint change was required.
+- Existing `GET /api/v1/isp-admin/alerts` filters were reused:
+  - `user_id`
+  - `alert_type`
+  - `limit`
+  - `offset`
+- ISP Admin alert access remains scoped by `current_admin.isp_id`.
+
+Presentation/report note:
+- PulseFi currently implements logical provisioning and simulator-backed network events.
+- Real ISP database/API integration and real router provisioning are production integration layers.
+- In production, PulseFi would connect through secure ISP APIs/webhooks, RADIUS/PPPoE, MikroTik RouterOS API, TR-069/USP, or a local router agent.
+
+### Step 46J completion note - Device trust enforcement
+
+Status: complete and tested locally.
+
+What changed:
+- Simulator usage ingestion now separates connected devices into trusted and untrusted devices.
+- Trusted connected devices can still generate simulator usage records.
+- Untrusted connected devices no longer generate simulator usage records.
+- Every blocked untrusted device creates a `policy_failed` alert titled `Untrusted device usage blocked`.
+- Simulator usage responses now include:
+  - `blocked_devices`
+  - `policy_alerts_created`
+- This is simulator-backed enforcement, not real router enforcement yet.
+
+Networking meaning:
+- PulseFi now treats device trust as an enforcement rule in the simulator.
+- This models what a real router/controller/RADIUS integration would later do: block or prevent usage from untrusted devices.
+- Real router provisioning remains a future production integration layer through MikroTik RouterOS API, RADIUS/PPPoE, TR-069/USP, ISP APIs/webhooks, or a secure local router agent.
+
+Testing:
+- Focused simulator ingestion tests passed.
+- Full backend compile/test checks passed locally.
 

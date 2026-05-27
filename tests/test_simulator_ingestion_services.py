@@ -160,3 +160,209 @@ async def test_full_simulator_ingestion_runs_devices_before_usage(monkeypatch):
     assert result.device_ingestion.devices_updated == 3
     assert result.usage_ingestion.records_created == 3
     assert result.scenario == "heavy_device_usage"
+
+@pytest.mark.asyncio
+async def test_simulator_usage_blocks_untrusted_connected_devices():
+    from app.models.alert import Alert
+    from app.models.usage_record import UsageRecord
+    from app.services.usage_ingestion.simulator_usage_service import (
+        run_simulator_usage_ingestion_for_router,
+    )
+
+    class FakeRouterResult:
+        def __init__(self, router):
+            self.router = router
+
+        def scalar_one_or_none(self):
+            return self.router
+
+    class FakeDeviceScalars:
+        def __init__(self, devices):
+            self.devices = devices
+
+        def all(self):
+            return self.devices
+
+    class FakeDeviceResult:
+        def __init__(self, devices):
+            self.devices = devices
+
+        def scalars(self):
+            return FakeDeviceScalars(self.devices)
+
+    class FakeDb:
+        def __init__(self, router, devices):
+            self.execute_calls = 0
+            self.router = router
+            self.devices = devices
+            self.added = []
+
+        async def execute(self, stmt):
+            self.execute_calls += 1
+
+            if self.execute_calls == 1:
+                return FakeRouterResult(self.router)
+
+            return FakeDeviceResult(self.devices)
+
+        def add(self, item):
+            self.added.append(item)
+
+        async def flush(self):
+            return None
+
+    router_id = uuid4()
+    user_id = uuid4()
+    subscription_id = uuid4()
+    trusted_device_id = uuid4()
+    untrusted_device_id = uuid4()
+
+    subscription = SimpleNamespace(
+        id=subscription_id,
+        user_id=user_id,
+        status="active",
+        start_date=datetime(2026, 5, 1, tzinfo=timezone.utc).date(),
+        plan=None,
+    )
+    router = SimpleNamespace(
+        id=router_id,
+        status="active",
+        user_subscription=subscription,
+    )
+    trusted_device = SimpleNamespace(
+        id=trusted_device_id,
+        router_id=router_id,
+        user_id=user_id,
+        status="connected",
+        is_trusted=True,
+        device_name="Trusted Laptop",
+        mac_address="AA:BB:CC:DD:EE:01",
+    )
+    untrusted_device = SimpleNamespace(
+        id=untrusted_device_id,
+        router_id=router_id,
+        user_id=user_id,
+        status="connected",
+        is_trusted=False,
+        device_name="Unknown Phone",
+        mac_address="AA:BB:CC:DD:EE:02",
+    )
+    db = FakeDb(router=router, devices=[trusted_device, untrusted_device])
+
+    result = await run_simulator_usage_ingestion_for_router(
+        db=db,
+        router_id=router_id,
+        scenario="normal_usage",
+    )
+
+    usage_records = [item for item in db.added if isinstance(item, UsageRecord)]
+    policy_alerts = [item for item in db.added if isinstance(item, Alert)]
+
+    assert result.records_created == 1
+    assert result.blocked_devices == 1
+    assert result.policy_alerts_created == 1
+
+    assert len(usage_records) == 1
+    assert usage_records[0].device_id == trusted_device_id
+
+    assert len(policy_alerts) == 1
+    assert policy_alerts[0].device_id == untrusted_device_id
+    assert policy_alerts[0].alert_type == "policy_failed"
+    assert "blocked simulated usage" in policy_alerts[0].message
+
+
+@pytest.mark.asyncio
+async def test_simulator_usage_creates_no_records_when_all_connected_devices_untrusted():
+    from app.models.alert import Alert
+    from app.models.usage_record import UsageRecord
+    from app.services.usage_ingestion.simulator_usage_service import (
+        run_simulator_usage_ingestion_for_router,
+    )
+
+    class FakeRouterResult:
+        def __init__(self, router):
+            self.router = router
+
+        def scalar_one_or_none(self):
+            return self.router
+
+    class FakeDeviceScalars:
+        def __init__(self, devices):
+            self.devices = devices
+
+        def all(self):
+            return self.devices
+
+    class FakeDeviceResult:
+        def __init__(self, devices):
+            self.devices = devices
+
+        def scalars(self):
+            return FakeDeviceScalars(self.devices)
+
+    class FakeDb:
+        def __init__(self, router, devices):
+            self.execute_calls = 0
+            self.router = router
+            self.devices = devices
+            self.added = []
+
+        async def execute(self, stmt):
+            self.execute_calls += 1
+
+            if self.execute_calls == 1:
+                return FakeRouterResult(self.router)
+
+            return FakeDeviceResult(self.devices)
+
+        def add(self, item):
+            self.added.append(item)
+
+        async def flush(self):
+            return None
+
+    router_id = uuid4()
+    user_id = uuid4()
+    subscription_id = uuid4()
+    untrusted_device_id = uuid4()
+
+    subscription = SimpleNamespace(
+        id=subscription_id,
+        user_id=user_id,
+        status="active",
+        start_date=datetime(2026, 5, 1, tzinfo=timezone.utc).date(),
+        plan=None,
+    )
+    router = SimpleNamespace(
+        id=router_id,
+        status="active",
+        user_subscription=subscription,
+    )
+    untrusted_device = SimpleNamespace(
+        id=untrusted_device_id,
+        router_id=router_id,
+        user_id=user_id,
+        status="connected",
+        is_trusted=False,
+        device_name="Unknown Phone",
+        mac_address="AA:BB:CC:DD:EE:02",
+    )
+    db = FakeDb(router=router, devices=[untrusted_device])
+
+    result = await run_simulator_usage_ingestion_for_router(
+        db=db,
+        router_id=router_id,
+        scenario="normal_usage",
+    )
+
+    usage_records = [item for item in db.added if isinstance(item, UsageRecord)]
+    policy_alerts = [item for item in db.added if isinstance(item, Alert)]
+
+    assert result.records_created == 0
+    assert result.blocked_devices == 1
+    assert result.policy_alerts_created == 1
+    assert result.total_mb == 0
+
+    assert usage_records == []
+    assert len(policy_alerts) == 1
+    assert policy_alerts[0].alert_type == "policy_failed"
