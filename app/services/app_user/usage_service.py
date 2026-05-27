@@ -70,6 +70,62 @@ def _apply_usage_filters(
     return stmt
 
 
+async def _has_matching_official_usage_records(
+    db: AsyncSession,
+    current_user: AppUser,
+    user_subscription_id: UUID | None = None,
+    router_id: UUID | None = None,
+    start_at: datetime | None = None,
+    end_at: datetime | None = None,
+) -> bool:
+    stmt = (
+        select(func.count(UsageRecord.id))
+        .where(
+            UsageRecord.user_id == current_user.id,
+            UsageRecord.device_id.is_(None),
+        )
+    )
+
+    stmt = _apply_usage_filters(
+        stmt,
+        user_subscription_id=user_subscription_id,
+        router_id=router_id,
+        start_at=start_at,
+        end_at=end_at,
+    )
+
+    result = await db.execute(stmt)
+    return int(result.scalar_one() or 0) > 0
+
+
+async def _has_matching_official_usage_records(
+    db: AsyncSession,
+    current_user: AppUser,
+    user_subscription_id: UUID | None = None,
+    router_id: UUID | None = None,
+    start_at: datetime | None = None,
+    end_at: datetime | None = None,
+) -> bool:
+    stmt = (
+        select(func.count(UsageRecord.id))
+        .where(
+            UsageRecord.user_id == current_user.id,
+            UsageRecord.device_id.is_(None),
+        )
+    )
+
+    stmt = _apply_usage_filters(
+        stmt,
+        user_subscription_id=user_subscription_id,
+        router_id=router_id,
+        start_at=start_at,
+        end_at=end_at,
+    )
+
+    result = await db.execute(stmt)
+    return int(result.scalar_one() or 0) > 0
+
+
 async def get_my_usage_summary(
     db: AsyncSession,
     current_user: AppUser,
@@ -99,6 +155,23 @@ async def get_my_usage_summary(
         end_at=end_at,
     )
 
+    # Important:
+    # device_id NULL = official subscription/router total.
+    # device_id NOT NULL = estimated per-device usage.
+    # Do not add them together, or totals become wrong/double-counted.
+    if device_id is None:
+        has_official_rows = await _has_matching_official_usage_records(
+            db=db,
+            current_user=current_user,
+            user_subscription_id=user_subscription_id,
+            router_id=router_id,
+            start_at=start_at,
+            end_at=end_at,
+        )
+
+        if has_official_rows:
+            stmt = stmt.where(UsageRecord.device_id.is_(None))
+
     result = await db.execute(stmt)
     row = result.one()
 
@@ -106,7 +179,6 @@ async def get_my_usage_summary(
         user_id=current_user.id,
         totals=_build_totals_response(row),
     )
-
 
 
 async def list_my_daily_usage(
@@ -120,43 +192,74 @@ async def list_my_daily_usage(
     days: int = 7,
 ) -> list[MyDailyUsageResponse]:
     if start_at is None and end_at is None:
-        start_at = datetime.utcnow() - timedelta(days=max(days - 1, 0))
+        now = datetime.utcnow()
+        today_start = datetime(year=now.year, month=now.month, day=now.day)
+        start_at = today_start - timedelta(days=max(days - 1, 0))
 
     total_expr = _usage_total_expression()
     usage_date_expr = func.date(UsageRecord.record_start).label("usage_date")
 
-    stmt = (
-        select(
-            usage_date_expr,
-            func.coalesce(func.sum(UsageRecord.upload_mb), 0).label("upload_mb"),
-            func.coalesce(func.sum(UsageRecord.download_mb), 0).label("download_mb"),
-            func.coalesce(func.sum(total_expr), 0).label("total_mb"),
-            func.count(UsageRecord.id).label("record_count"),
-            func.min(UsageRecord.record_start).label("first_record_start"),
-            func.max(UsageRecord.record_end).label("last_record_end"),
+    def build_daily_stmt():
+        stmt = (
+            select(
+                usage_date_expr,
+                func.coalesce(func.sum(UsageRecord.upload_mb), 0).label("upload_mb"),
+                func.coalesce(func.sum(UsageRecord.download_mb), 0).label("download_mb"),
+                func.coalesce(func.sum(total_expr), 0).label("total_mb"),
+                func.count(UsageRecord.id).label("record_count"),
+                func.min(UsageRecord.record_start).label("first_record_start"),
+                func.max(UsageRecord.record_end).label("last_record_end"),
+            )
+            .where(UsageRecord.user_id == current_user.id)
+            .group_by(usage_date_expr)
+            .order_by(usage_date_expr.desc())
         )
-        .where(UsageRecord.user_id == current_user.id)
-        .group_by(usage_date_expr)
-        .order_by(usage_date_expr.desc())
+
+        return _apply_usage_filters(
+            stmt,
+            user_subscription_id=user_subscription_id,
+            router_id=router_id,
+            device_id=device_id,
+            start_at=start_at,
+            end_at=end_at,
+        )
+
+    if device_id is not None:
+        result = await db.execute(build_daily_stmt())
+
+        return [
+            MyDailyUsageResponse(
+                usage_date=row.usage_date,
+                totals=_build_totals_response(row),
+            )
+            for row in result
+        ]
+
+    official_result = await db.execute(
+        build_daily_stmt().where(UsageRecord.device_id.is_(None))
+    )
+    estimated_result = await db.execute(
+        build_daily_stmt().where(UsageRecord.device_id.is_not(None))
     )
 
-    stmt = _apply_usage_filters(
-        stmt,
-        user_subscription_id=user_subscription_id,
-        router_id=router_id,
-        device_id=device_id,
-        start_at=start_at,
-        end_at=end_at,
-    )
+    rows_by_date = {}
 
-    result = await db.execute(stmt)
+    for row in official_result:
+        rows_by_date[row.usage_date] = row
+
+    for row in estimated_result:
+        rows_by_date.setdefault(row.usage_date, row)
 
     return [
         MyDailyUsageResponse(
             usage_date=row.usage_date,
             totals=_build_totals_response(row),
         )
-        for row in result
+        for row in sorted(
+            rows_by_date.values(),
+            key=lambda item: item.usage_date,
+            reverse=True,
+        )
     ]
 
 
