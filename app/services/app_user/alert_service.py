@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.alert import Alert
 from app.models.app_user import AppUser
+from app.models.router import Router
 
 
 async def list_my_alerts(
@@ -17,6 +18,7 @@ async def list_my_alerts(
         status: str | None = None,
         severity: str | None = None,
         alert_type: str | None = None,
+        router_id: UUID | None = None,
         limit: int = 20,
         offset: int = 0,
 ) -> list[Alert]:
@@ -39,6 +41,19 @@ async def list_my_alerts(
     if alert_type is not None:
         stmt = stmt.where(Alert.alert_type == alert_type)
 
+    if router_id is not None:
+        router_result = await db.execute(
+            select(Router.user_subscription_id).where(
+                Router.id == router_id,
+                Router.user_id == current_user.id,
+            )
+        )
+        user_subscription_id = router_result.scalar_one_or_none()
+
+        if user_subscription_id is None:
+            return []
+
+        stmt = stmt.where(Alert.user_subscription_id == user_subscription_id)
 
     result = await db.execute(stmt)
     return result.scalars().all()

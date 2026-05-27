@@ -23,6 +23,7 @@ async def list_my_alerts_endpoint(
     status_filter: str | None = Query(default=None, alias="status"),
     severity: str | None = Query(default=None),
     alert_type: str | None = Query(default=None),
+    router_id: UUID | None = Query(default=None),
     limit: int = Query(default=50, ge=1, le=100),
     offset: int = Query(default=0, ge=0),
     db: AsyncSession = Depends(get_db),
@@ -34,6 +35,7 @@ async def list_my_alerts_endpoint(
         status=status_filter,
         severity=severity,
         alert_type=alert_type,
+        router_id=router_id,
         limit=limit,
         offset=offset,
     )
