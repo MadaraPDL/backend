@@ -9,7 +9,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 50A complete - ISP Admin router creation UX simplified; next is mobile navigation restructure / More cleanup.**
+Current phase: **Step 50D in progress - daily usage backend/mobile work started; next chat must repair mobile UsageScreen JSX before continuing.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -4523,4 +4523,80 @@ Reason:
 Next:
 - Step 50B mobile navigation restructure / More cleanup.
 - Make the mobile app more user-friendly before chatbot, push notifications, ML, and final report alignment.
+
+### Step 50D daily usage handoff
+
+Status: Step 50D is in progress, not complete.
+
+Confirmed completed before this handoff:
+- Step 49 selected-router correctness was smoke-tested:
+  - Home, Usage, Devices, and Alerts follow the selected router.
+  - Duplicate router names are disambiguated with router ID prefix.
+  - Usage has a circular/donut graph.
+  - Alerts are router-scoped through backend router ownership filtering.
+- Step 50A ISP Admin router creation UX cleanup was completed and pushed:
+  - Removed confusing `New service line` / `Existing service line` create flow.
+  - Router creation now follows the real demo workflow: select App User, select package/plan, enter subscription label/start date, enter router details.
+  - PulseFi creates a linked subscription automatically for the router.
+  - MAC address is required.
+  - API endpoint and router username remain optional future router-integration fields.
+  - Advanced router integration helper text was removed.
+
+Current Step 50D goal:
+- Add Daily Usage views before ML work.
+- App User mobile should show daily usage for the selected router.
+- ISP Admin web should later show daily usage by selected App User/router.
+- Daily usage should be a real feature, not future work.
+
+Backend Step 50D1:
+- App User daily usage endpoint was started:
+  - intended endpoint: `GET /api/v1/me/usage/daily?router_id=<router-id>&days=7`
+  - intended response: one row per usage day with upload/download/total/record count.
+- In the next chat, verify whether this backend patch was committed/pushed by checking git status/log.
+- If it is not committed, complete backend daily endpoint first.
+
+Mobile Step 50D2 problem:
+- Mobile daily usage/device-breakdown patch caused JSX/TypeScript errors in `src/screens/UsageScreen.tsx`.
+- The last known TypeScript errors were around broken JSX parent/fragment/closing tags.
+- Do not continue adding features until `UsageScreen.tsx` is repaired.
+- Safer next-chat approach:
+  1. Inspect current `src/screens/UsageScreen.tsx`.
+  2. Either revert only the broken patch or replace the screen with a clean version.
+  3. Preserve existing working features:
+     - selected-router usage summary,
+     - circular usage graph,
+     - download/upload totals,
+     - latest records,
+     - router ID prefix display.
+  4. Re-add daily usage carefully in a smaller patch.
+  5. Limit Latest Records to 10 initially with a `Show 10 more records` button to avoid endless scrolling.
+  6. Add device download/upload breakdown only after the screen compiles.
+
+Important feature decisions:
+- True live usage updates are future/advanced work.
+- Current demo-friendly behavior should be:
+  - refresh when Home/Usage opens,
+  - pull-to-refresh,
+  - optional polling while the Usage screen is focused.
+- True live telemetry requires continuous router/CPE/ISP ingestion plus WebSocket/SSE or another streaming mechanism.
+
+Next required order:
+1. Repair mobile `UsageScreen.tsx` JSX and make `npx.cmd tsc --noEmit` pass.
+2. Verify/commit backend daily usage endpoint if not already committed.
+3. Add mobile Daily Usage card safely.
+4. Add record pagination/limit so Latest Records does not scroll endlessly.
+5. Then add ISP Admin daily usage view.
+6. Only after daily usage is stable, continue mobile UX polish, chatbot, push notifications, ML/data pipeline, and final report alignment.
+
+Commands for next chat:
+- Mobile:
+  - `cd C:\PulseFi\pulsefi-mobile-app`
+  - `git status`
+  - `npx.cmd tsc --noEmit`
+  - inspect `src/screens/UsageScreen.tsx`
+- Backend:
+  - `cd C:\PulseFi\backend`
+  - `git status`
+  - `git log --oneline -5`
+  - verify whether Step 50D1 backend daily endpoint is committed.
 
