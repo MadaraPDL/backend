@@ -1,3 +1,74 @@
+<!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_START -->
+## Step 50P Remaining Status + Immediate Mobile Behavior Fixes (2026-05-28)
+
+Status: Planned next coding step, not complete yet.
+
+Overall remaining-step status:
+
+- Mobile auth + account recovery: done for current scope.
+  - Mobile MFA settings, email MFA resend, backup-code/email verification, and mobile password reset request flow are already complete.
+
+- Mobile selected-router context cleanup: done for current scope.
+  - Home, Usage, Devices, Alerts, Service Requests, and Insights already follow selected-router context for the current scope.
+
+- Mobile UI/UX polish: done for current scope.
+  - Shared mobile pagination exists.
+  - Service Requests tabs exist.
+  - Alerts, Routers, Subscriptions/My Package, Devices, Usage, and Insights were polished for the current scope.
+
+- Mobile navigation restructure: partially done.
+  - More/Service Requests/Insights/Usage flows were improved.
+  - A full navigation redesign is not separately complete.
+
+- Chatbot / AI Assistant: partially done.
+  - A rules-based Assistant MVP exists.
+  - Assistant quality pass is still needed because it should not feel like a static rules bot.
+
+- ML/data pipeline + prediction upgrade: not fully done as real ML.
+  - Current prediction/recommendation behavior is closer to rules/data-driven intelligence.
+  - Final report/presentation must clearly explain current rules-based intelligence versus future real ML upgrade.
+
+- Push notifications: not done.
+  - In-app alerts exist.
+  - Real push notifications are not implemented yet.
+
+- Mobile deployed full smoke test: not done.
+  - Full final live smoke remains intentionally deferred.
+
+- Final report/presentation alignment: not done.
+  - Needs final alignment after remaining app behavior fixes and Assistant quality pass.
+
+Immediate Step 50P mobile bugs to fix before Assistant quality pass:
+
+1. Home usage source should follow the Usage tab source selection.
+   - Current problem: after simulator creates official rows, Home can show Official usage even when the user wants Estimated/device usage.
+   - Required behavior:
+     - If App User chooses Estimated in Usage, Home should show Estimated device total.
+     - If App User chooses Official in Usage, Home should show Official service total.
+   - Suggested implementation:
+     - Add shared mobile app state/context for `official` vs `estimated` usage display source.
+     - Usage screen should use that shared state instead of local-only `totalDisplaySource`.
+     - Home screen should load both official and estimated usage summaries and render the shared selected source.
+     - Home label should clearly say `Official service total` or `Estimated device total`.
+
+2. Old upgrade/downgrade recommendations must be actionable.
+   - Current problem: some older recommendations say upgrade/downgrade but show no button because they do not have `recommendation_plan_id`.
+   - Required behavior:
+     - If upgrade/downgrade recommendation has `recommendation_plan_id`, show direct action:
+       - `Request this upgrade`
+       - `Request this downgrade`
+     - If upgrade/downgrade recommendation has no `recommendation_plan_id`, show:
+       - `Open Service requests`
+     - The fallback button should route the user to Service Requests so they can manually choose a plan.
+   - Detection should consider recommendation type, recommendation text, and reason so older recommendations still become actionable when they clearly mention upgrade/downgrade.
+
+Do these Step 50P fixes before starting the Assistant quality pass.
+
+Keep final full live smoke deferred.
+Focused Expo checks are allowed after this mobile fix.
+<!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_END -->
+
+
 <!-- PULSEFI_ASSISTANT_REQUIREMENTS_START -->
 ## PulseFi Assistant Requirements / Planned Quality Pass (2026-05-28)
 
@@ -203,7 +274,7 @@ Next recommended work:
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 50O complete - mobile UX pagination/service-request polish is complete; final full live smoke test remains deferred until all remaining project steps are finished.**
+Current phase: **Step 50O complete - mobile UX pagination/service-request polish is complete; Step 50P immediate mobile behavior fixes are planned next; final full live smoke test remains deferred until all remaining project steps are finished.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
