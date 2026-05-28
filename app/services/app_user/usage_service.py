@@ -201,6 +201,7 @@ async def list_my_daily_usage(
             device_id=device_id,
             start_at=start_at,
             end_at=end_at,
+            source_kind=source_kind,
         )
 
     if device_id is not None or source_kind is not None:

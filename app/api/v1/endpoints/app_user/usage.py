@@ -74,7 +74,6 @@ async def list_my_device_usage_endpoint(
         status=status_filter,
         start_at=start_at,
         end_at=end_at,
-        source_kind=source_kind,
         limit=limit,
         offset=offset,
     )
@@ -161,6 +160,7 @@ async def list_my_usage_records_endpoint(
         device_id=device_id,
         start_at=start_at,
         end_at=end_at,
+        source_kind=source_kind,
         limit=limit,
         offset=offset,
     )
