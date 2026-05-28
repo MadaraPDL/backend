@@ -1,3 +1,4 @@
+- Step 50J is complete: mobile Usage was simplified, mobile Insights now uses Predictions/Recommendations tabs with page controls, and ISP Admin Network Activity tables now use page controls instead of long scrolling; final full live smoke remains deferred.
 - Step 50G PulseFi Assistant mobile MVP is complete and checked: More now includes a rules-based PulseFi Assistant that answers quick usage, plan-limit, alert, device-total, and next-action questions from existing mobile API data; no external AI call, backend schema change, or API behavior change was added.
 - Step 50F mobile UX polish is complete and checked: mobile Home/Usage now include retry refresh actions and clearer selected-router/demo usage guidance; no backend schema or API behavior changed; final full live smoke remains deferred.
 - Step 46K alert volume controls are complete and tested: repeated simulator runs no longer spam duplicate untrusted-device `policy_failed` alerts for the same user/subscription/device when an unread or recent alert already exists.
@@ -11,7 +12,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 50G complete - PulseFi Assistant mobile MVP is done; full live smoke test remains deferred until all remaining project steps are finished.**
+Current phase: **Step 50J complete - mobile usage/insights cleanup and ISP Admin Network Activity pagination are done; full live smoke test remains deferred until all remaining project steps are finished.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -4608,3 +4609,9 @@ Commands for next chat:
 
 
 - Full live smoke testing is intentionally deferred until the remaining project steps are finished; do not mark Step 50 fully complete until the final live smoke pass is done.
+
+- Step 50H mobile usage cleanup is complete: Home no longer fails completely when usage summary fails, Usage now has a cleaner Monthly/Daily layout, Refresh labels were simplified, Official and Estimated totals are shown separately, and the user can choose which source the main usage graph displays.
+
+- Step 50I mobile Insights cleanup is complete: Predictions and Recommendations are split into tabs, each list uses page controls like records/logs, and older user-facing insights are hidden from the mobile UI while remaining in backend/admin data.
+
+- Step 50J admin Network Activity pagination is complete: ISP Admin Network tables now paginate Daily Usage by User, Recent Usage Records, Device Connection Logs, and Router Action Logs with compact table controls instead of long scrolling lists.
