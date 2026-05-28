@@ -1,3 +1,57 @@
+<!-- STEP_50M_ADMIN_WEB_POLISH_SYNC_START -->
+## Step 50M Admin Web Polish / Pagination Sync (2026-05-28)
+
+Status: Step 50M is complete.
+
+Completed admin web/mobile UX cleanup since Step 50E:
+
+- Step 50H mobile Usage cleanup is complete:
+  - Home no longer fails completely when usage summary fails.
+  - Mobile Usage has a cleaner Monthly/Daily layout.
+  - Refresh labels were simplified.
+  - Official and Estimated totals remain visible separately.
+  - App User can choose which source the main usage graph shows.
+
+- Step 50I mobile Insights cleanup is complete:
+  - Predictions and Recommendations are split into tabs.
+  - Prediction/recommendation lists use page controls instead of long scrolling.
+  - Older user-facing insights are hidden from the mobile UI while remaining in backend/admin data.
+
+- Step 50J ISP Admin Network Activity pagination is complete:
+  - Daily Usage by User, Recent Usage Records, Device Connection Logs, and Router Action Logs use page controls.
+
+- Step 50K ISP Admin Intelligence pagination is complete:
+  - Recommendation History, Recent Reports, and run-detail items use page controls.
+
+- Step 50L ISP Admin Monitoring pagination is complete:
+  - Selected-user alerts use page controls.
+
+- Step 50M shared admin pagination/polish is complete:
+  - Shared admin pagination component/utilities were added.
+  - App Users, Subscription Plans, Routers, App User Invitations, ISP Admin Invitations, Operations reports, and Operations service requests use page controls.
+  - Pagination styling now lives in the real admin stylesheet: `src/styles/pulsefi-admin.css`.
+
+Important deployment/testing notes:
+
+- Admin Web is deployed on Vercel.
+- Backend is deployed on Render.
+- Mobile is tested through Expo / Expo Go.
+- Full final live smoke testing is still intentionally deferred.
+- Focused live checks are allowed after each pushed feature/polish batch.
+- Keep production `DEBUG=False`; do not expose debug tokens in production.
+- Continue protecting secrets and never print or commit environment values.
+- Keep ISP Admin backend queries scoped by `current_admin.isp_id`.
+- Do not store router passwords until encrypted credential storage exists.
+
+Next recommended work:
+
+1. Update/finalize mobile UX around Assistant placement and wording if still needed.
+2. Prepare final report/demo alignment.
+3. Prepare ML/data-pipeline explanation for presentation.
+4. Run full live smoke only after remaining project steps are complete.
+<!-- STEP_50M_ADMIN_WEB_POLISH_SYNC_END -->
+
+
 - Step 50J is complete: mobile Usage was simplified, mobile Insights now uses Predictions/Recommendations tabs with page controls, and ISP Admin Network Activity tables now use page controls instead of long scrolling; final full live smoke remains deferred.
 - Step 50G PulseFi Assistant mobile MVP is complete and checked: More now includes a rules-based PulseFi Assistant that answers quick usage, plan-limit, alert, device-total, and next-action questions from existing mobile API data; no external AI call, backend schema change, or API behavior change was added.
 - Step 50F mobile UX polish is complete and checked: mobile Home/Usage now include retry refresh actions and clearer selected-router/demo usage guidance; no backend schema or API behavior changed; final full live smoke remains deferred.
@@ -19,7 +73,7 @@
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 50J complete - mobile usage/insights cleanup and ISP Admin Network Activity pagination are done; full live smoke test remains deferred until all remaining project steps are finished.**
+Current phase: **Step 50M complete - admin web pagination/polish is complete for the current scope; final full live smoke test remains deferred until all remaining project steps are finished.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -119,7 +173,6 @@ This backend is being built step by step by the student/developer, so changes sh
 
 ## Current Backend Position
 
-Current phase: **Step 26 complete - final backend hardening before frontend integration**.
 
 Recently completed and tested:
 
@@ -2660,7 +2713,6 @@ FINAL DEMO CHECKPOINT: Backend Render, DB Neon, Admin web Vercel, Mobile Android
 
 ### Current phase
 
-Current phase: **Step 48 mobile auth polish in progress - mobile forgot-password request, reset-email resend UX, MFA resend actions, and neutral reset success handling are complete; next is selected-router context cleanup**.
 
 Live deployment notes:
 
