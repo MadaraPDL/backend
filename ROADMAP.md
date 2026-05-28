@@ -3852,3 +3852,21 @@ Commands for next chat:
 
 - Step 50J admin Network Activity pagination is complete: ISP Admin Network tables now paginate Daily Usage by User, Recent Usage Records, Device Connection Logs, and Router Action Logs with compact table controls instead of long scrolling lists.
 
+## 2026-05-28 - UI/UX Live QA Checkpoint
+
+Completed:
+- Mobile Insights recommendation action cleanup.
+- Admin web ISP Admin Service Requests readability pass.
+- Admin web Monitoring pagination visibility pass.
+- Admin web Overview Recent Activity pagination.
+- Admin web management table cleanup for Routers, Users, and Plans.
+
+Current focus:
+- Continue live-only UI QA for deployed admin web and mobile app.
+- Keep checking admin pages after each Vercel deployment with hard refresh.
+- Do not add new Overview sections unless explicitly requested; improve existing panels only.
+- Keep router simulator actions available from Router Management.
+
+Next:
+- Final live smoke test across Platform Admin, ISP Admin, and App User mobile flows.
+- Update presentation/demo notes after live UI stabilizes.

@@ -3249,3 +3249,10 @@ Commands for next chat:
 
 - Step 50J admin Network Activity pagination is complete: ISP Admin Network tables now paginate Daily Usage by User, Recent Usage Records, Device Connection Logs, and Router Action Logs with compact table controls instead of long scrolling lists.
 
+## 2026-05-28 - Frontend/Mobile QA Notes
+
+- No new backend defect was introduced or identified during the latest mobile/admin UI polish.
+- Recommendation plan-change fallback remains frontend-side for now: when a recommendation text mentions a plan but backend `recommendation_plan_id` is null, mobile resolves the plan from `/me/plans` and creates a normal plan-change request.
+- Future backend improvement: intelligence/recommendation creation should attach `recommendation_plan_id` whenever the recommended plan is known, so clients do not need text matching.
+- Future QA item: add integration coverage for recommendation-generated plan-change requests with and without `recommendation_plan_id`.
+- Live deployment QA remains required for UI layout fixes because local browser dimensions did not match deployed usage well enough.

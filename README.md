@@ -3203,3 +3203,15 @@ Commands for next chat:
 
 - Step 50J admin Network Activity pagination is complete: ISP Admin Network tables now paginate Daily Usage by User, Recent Usage Records, Device Connection Logs, and Router Action Logs with compact table controls instead of long scrolling lists.
 
+## Latest frontend/mobile QA checkpoint - 2026-05-28
+
+Recent live QA focused on the deployed admin web and mobile app rather than localhost-only testing.
+
+Highlights:
+- ISP Admin Overview now paginates existing Recent Activity tables.
+- ISP Admin Monitoring keeps pagination visible outside the scrollable content.
+- ISP Admin Service Requests were improved for readability.
+- ISP Admin Routers, Users, and Plans tables were polished through live deployment testing.
+- Mobile Insights recommendation actions now avoid creating/opening requests for stay/current-plan recommendations and handle plan-name fallback for actionable recommendations.
+
+Backend API changes were not required for this checkpoint.

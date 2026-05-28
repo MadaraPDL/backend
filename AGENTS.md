@@ -3587,3 +3587,10 @@ Commands for next chat:
 
 - Step 50J admin Network Activity pagination is complete: ISP Admin Network tables now paginate Daily Usage by User, Recent Usage Records, Device Connection Logs, and Router Action Logs with compact table controls instead of long scrolling lists.
 
+## 2026-05-28 - PulseFi Assistant/Codex Workflow Update
+
+- For deployed PulseFi UI work, run local static checks/builds before pushing, but treat the live deployed admin/mobile URLs as the final UI QA target.
+- Do not rely on localhost screenshots when the user explicitly says live deployment is the target.
+- For Overview changes, improve existing panels first; do not add new sections unless the user explicitly requests them.
+- For ISP Admin Router UI, preserve both actions: View and Run full simulator.
+- For recommendation UI, do not show plan-change actions for stay/current/no-change recommendations.

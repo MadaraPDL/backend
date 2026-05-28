@@ -4851,3 +4851,17 @@ Commands for next chat:
 
 - Step 50J admin Network Activity pagination is complete: ISP Admin Network tables now paginate Daily Usage by User, Recent Usage Records, Device Connection Logs, and Router Action Logs with compact table controls instead of long scrolling lists.
 
+## 2026-05-28 - Frontend/Mobile Live UI Polish Checkpoint
+
+- Mobile app Insights recommendation actions were corrected so plan-change recommendations do not show actions for stay/current-plan recommendations.
+- Mobile app can now handle recommendations that mention a visible plan name such as "Work" even when the backend recommendation record does not include `recommendation_plan_id`; it resolves available plans and creates the normal plan-change request with `requested_plan_id`.
+- Mobile app Recent Requests can show pending upgrade/downgrade requests after recommendation request submission.
+- Admin web live UI polish was performed for ISP Admin pages:
+  - Service requests were changed away from cramped table behavior into a readable card-style layout.
+  - Monitoring pagination behavior was corrected so list/table content scrolls while pagination remains visible outside the scroll area.
+  - Overview Recent Activity now paginates existing Recent Usage Records, Device Connection Logs, and Router Action Logs without adding new sections.
+  - Routers, Users, and Plans management tables received table-specific classes and CSS cleanup after several live-test iterations.
+  - Users View action was fixed to stay horizontal/readable.
+  - Router table action layout was stabilized while keeping both View and Run full simulator available.
+- Live deployment QA is now the default validation target for frontend/admin/mobile UI behavior. Local checks are still required before pushing, but final UI validation should happen on the deployed frontend/backend URLs.
+- No backend API contract changes were required for this checkpoint.
