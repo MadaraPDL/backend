@@ -1,3 +1,4 @@
+- Step 50G PulseFi Assistant mobile MVP is complete and checked: More now includes a rules-based PulseFi Assistant that answers quick usage, plan-limit, alert, device-total, and next-action questions from existing mobile API data; no external AI call, backend schema change, or API behavior change was added.
 - Step 50F mobile UX polish is complete and checked: mobile Home/Usage now include retry refresh actions and clearer selected-router/demo usage guidance; no backend schema or API behavior changed; final full live smoke remains deferred.
 - Step 46K alert volume controls are complete and tested: repeated simulator runs no longer spam duplicate untrusted-device `policy_failed` alerts for the same user/subscription/device when an unread or recent alert already exists.
 - Step 46J device trust enforcement is complete and tested: simulator usage records are created only for trusted connected devices, untrusted connected devices are blocked from simulator usage, and each blocked untrusted device can create a `policy_failed` alert.
@@ -12,11 +13,12 @@
 - Step 50D App User mobile Daily Usage is complete and verified: backend exposes daily usage for App Users, Home and Usage totals now use the same selected-router summary source, Daily Usage is visible on mobile, Latest Records starts at 5 rows with Show 5 more, and device download/upload breakdown remains available.
 - Step 50E demo usage clarity is complete: ISP Admin Daily Usage by User now shows usage kind as Official/Service total vs Estimated/Device estimate, includes All/Official/Estimated filters, and future simulator usage creates an official service total row plus estimated per-device rows for cleaner presentation data.
 - Step 50F mobile UX polish is complete: mobile Home and Usage now have explicit retry refresh actions and clearer selected-router/demo usage guidance; no backend API/schema changes were made.
+- Step 50G PulseFi Assistant mobile MVP is complete: More now includes a rules-based assistant that uses existing mobile data for quick usage, package-limit, alert, Official-vs-Estimated, and next-action explanations; no external AI/backend assistant service was added.
 
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 50F complete - mobile demo UX polish is done; full live smoke test remains deferred until all remaining project steps are finished.**
+Current phase: **Step 50G complete - PulseFi Assistant mobile MVP is done; full live smoke test remains deferred until all remaining project steps are finished.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
