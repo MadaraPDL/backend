@@ -1,3 +1,61 @@
+<!-- STEP_50O_MOBILE_POLISH_SYNC_START -->
+## Step 50O Mobile UX Pagination / Service Request Polish Sync (2026-05-28)
+
+Status: Step 50O is complete.
+
+Completed mobile polish:
+
+- Shared mobile pagination utilities/components were added:
+  - `src/components/MobilePager.tsx`
+  - `src/utils/mobilePagination.ts`
+
+- Mobile Service Requests polish is complete:
+  - More menu now uses `Service requests` instead of `Request a plan change`.
+  - Change Plan, Suspend Subscription, and Suspend Account are shown as top tabs.
+  - Target plans paginate when there are more than five.
+  - Recent service requests paginate.
+
+- Mobile Insights recommendation actions are improved:
+  - Upgrade/downgrade recommendations with a target plan can create a request directly.
+  - Upgrade/downgrade recommendations without a target plan route users to Service requests.
+  - Predictions and Recommendations remain split into tab-style pages.
+
+- Mobile list pagination is complete for current scope:
+  - Alerts paginate.
+  - Routers paginate.
+  - Subscriptions / My package paginate.
+  - Devices paginate.
+  - Filters/search reset the relevant list back to page 1.
+
+- Mobile Usage cleanup is complete:
+  - Monthly/Daily usage remains the main usage style.
+  - Official and Estimated usage remain separately visible.
+  - User can choose what the main usage graph displays.
+  - Monthly Daily Breakdown card was removed to keep Usage less cramped.
+
+Important testing/deployment notes:
+
+- Mobile is tested through Expo / Expo Go.
+- Admin Web is deployed on Vercel.
+- Backend is deployed on Render.
+- Full final live smoke testing is still intentionally deferred.
+- Focused live/mobile checks are allowed after each pushed feature/polish batch.
+- Keep production `DEBUG=False`.
+- Do not expose debug tokens in production.
+- Continue protecting secrets and never print or commit environment values.
+- Keep ISP Admin backend queries scoped by `current_admin.isp_id`.
+- Do not store router passwords until encrypted credential storage exists.
+
+Next recommended work:
+
+1. Focused Expo check for Step 50O mobile polish.
+2. PulseFi Assistant quality pass, if still needed.
+3. Final report/demo alignment.
+4. ML/data-pipeline explanation for presentation.
+5. Full live smoke only after remaining project steps are complete.
+<!-- STEP_50O_MOBILE_POLISH_SYNC_END -->
+
+
 <!-- STEP_50M_ADMIN_WEB_POLISH_SYNC_START -->
 ## Step 50M Admin Web Polish / Pagination Sync (2026-05-28)
 
@@ -932,7 +990,7 @@ Never commit Brevo API keys or any .env files.
 
 ### Current phase
 
-Current phase: **Step 50M complete - admin web pagination/polish is complete for the current scope; final full live smoke test remains deferred until all remaining project steps are finished.**
+Current phase: **Step 50O complete - mobile UX pagination/service-request polish is complete; final full live smoke test remains deferred until all remaining project steps are finished.**
 
 Live deployment notes:
 
