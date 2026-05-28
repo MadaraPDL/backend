@@ -1,3 +1,82 @@
+<!-- PULSEFI_ASSISTANT_REQUIREMENTS_START -->
+## PulseFi Assistant Requirements / Planned Quality Pass (2026-05-28)
+
+Status: Planned next quality pass, not complete yet.
+
+The current PulseFi Assistant direction must be improved before final demo because the user does not want it to feel like a simple rules bot.
+
+Required product direction:
+
+- The assistant should feel like a contextual PulseFi helper, not a static FAQ/rules bot.
+- It should use the App User's current PulseFi context where available:
+  - selected router
+  - selected service line/subscription
+  - current monthly/daily usage
+  - official vs estimated usage totals
+  - connected devices
+  - alerts
+  - predictions
+  - recommendations
+  - plan/package details
+  - recent service requests
+- It should answer in plain language and explain why it is saying something.
+- It should avoid pretending to know data that was not loaded.
+- It should clearly say when data is missing, outdated, or unavailable.
+- It should never expose secrets, debug tokens, internal IDs unnecessarily, or admin-only details.
+
+Required mobile placement:
+
+- Assistant entry should be visible from Home.
+- Assistant/help actions should also be available near Recommendations/Insights where the user naturally asks:
+  - Why am I getting this recommendation?
+  - Should I upgrade or downgrade?
+  - What does this prediction mean?
+  - Why is my usage high?
+- Recommendations should remain actionable:
+  - If upgrade/downgrade recommendation has a target plan, user can request it directly.
+  - If no target plan is attached, user can open Service requests and choose manually.
+
+Desired MVP behavior:
+
+- Start with a safer contextual assistant MVP using backend/app data summaries.
+- It may use structured local logic first, but the UX should not look like a rigid rules bot.
+- Answers should be generated from a compact context object and friendly templates.
+- Later, it can evolve into a real LLM-backed assistant if deployment/security allows.
+
+Suggested assistant intents for MVP:
+
+1. Usage explanation:
+   - Explain current daily/monthly usage.
+   - Explain official vs estimated totals.
+   - Explain why the graph shows a selected source.
+
+2. Recommendation explanation:
+   - Explain upgrade/downgrade recommendation.
+   - Explain whether user should request the recommended plan.
+   - Route user to Service requests when needed.
+
+3. Prediction explanation:
+   - Explain predicted usage, confidence, and risk level.
+   - Explain what the user can do next.
+
+4. Device explanation:
+   - Explain which devices appear high usage.
+   - Explain trusted/untrusted device meaning.
+   - Explain limits/priority only if router supports it.
+
+5. Alerts explanation:
+   - Explain alert severity and next steps.
+   - Keep language calm and practical.
+
+Implementation notes:
+
+- Keep assistant responses scoped to the current App User.
+- Keep selected router/service line behavior consistent with the rest of mobile.
+- Do not run final full live smoke test yet.
+- Focused Expo checks are allowed after implementation.
+<!-- PULSEFI_ASSISTANT_REQUIREMENTS_END -->
+
+
 <!-- STEP_50O_MOBILE_POLISH_SYNC_START -->
 ## Step 50O Mobile UX Pagination / Service Request Polish Sync (2026-05-28)
 
