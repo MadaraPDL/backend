@@ -1,4 +1,4 @@
-﻿<!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_START -->
+<!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_START -->
 ## Step 50P Remaining Status + Immediate Mobile Behavior Fixes (2026-05-28)
 
 Status: Complete for current scope.
@@ -31,24 +31,78 @@ Verification:
   - `git diff --check`
 
 Remaining after Step 50P:
-- Assistant quality pass is still next.
+- Step 52 Assistant quality pass is complete for current mobile scope.
 - ML/data pipeline is still not real ML yet.
 - Push notifications are still not implemented.
 - Full final deployed mobile smoke test remains intentionally deferred.
 - Final report/presentation alignment is still pending.
 
-Do not mark the Assistant quality pass complete yet.
+Step 52 Assistant quality pass is now marked complete for the focused mobile scope.
 Keep final full live smoke deferred.
 Focused Expo checks are allowed after this mobile fix.
 <!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_END -->
 
 
+<!-- STEP_52_ASSISTANT_QUALITY_PASS_START -->
+## Step 52 PulseFi Assistant Quality Pass (2026-05-28)
+
+Status: Corrected and complete for chatbot-style mobile MVP.
+
+Completed mobile assistant quality pass:
+
+- Corrected the Step 52 UX from contextual helper cards into a chatbot-style Assistant screen.
+- Added a local contextual PulseFi Assistant response engine in the mobile app.
+- Assistant now has a welcome message, chat history, user/assistant message bubbles, typed input, send button, and suggested question chips.
+- Suggested chips send questions into the chat instead of only switching static cards.
+- Home now has a visible Assistant entry that opens the chatbot with an initial question.
+- More still has a dedicated PulseFi Assistant entry.
+- Insights now has assistant help actions near predictions and recommendations that open the chatbot with contextual questions:
+  - `What does this prediction mean?`
+  - `Why am I getting this recommendation?`
+  - `Should I upgrade?`
+  - `Should I downgrade?`
+- Assistant answers use loaded App User context where available:
+  - selected router
+  - selected service line/subscription
+  - official and estimated usage totals
+  - current package/plan details
+  - connected devices and device usage
+  - alerts
+  - predictions
+  - recommendations
+  - recent service requests
+- Assistant answers explain why they are saying something, give next steps, and clearly call out missing/unavailable data.
+- The implementation remains a local/contextual chatbot MVP and does not call an external AI/LLM.
+- Future LLM integration must go through a backend endpoint/proxy; never put OpenAI/LLM/API keys in the mobile app.
+- No backend API change, schema change, environment change, or secret change was made.
+- Existing recommendation request behavior remains intact:
+  - direct target-plan recommendations can still create requests
+  - older upgrade/downgrade recommendations without a target plan still route users to Service requests
+  - stay/current/no-change recommendations do not show request actions
+
+Verification:
+
+- Mobile TypeScript check passed:
+  - `npx.cmd tsc --noEmit`
+- Mobile whitespace check passed:
+  - `git diff --check`
+
+Still deferred / pending:
+
+- Full final live smoke remains deferred.
+- Push notifications remain future work.
+- Step 53 Real ML MVP remains next.
+- ML/data-pipeline explanation remains next/pending as part of Step 53/report alignment.
+- No backend API/schema migration was needed.
+<!-- STEP_52_ASSISTANT_QUALITY_PASS_END -->
+
+
 <!-- PULSEFI_ASSISTANT_REQUIREMENTS_START -->
-## PulseFi Assistant Requirements / Planned Quality Pass (2026-05-28)
+## PulseFi Assistant Requirements / Step 52 Quality Pass (2026-05-28)
 
-Status: Planned next quality pass, not complete yet.
+Status: Corrected complete as chatbot-style mobile MVP after Step 52.
 
-The current PulseFi Assistant direction must be improved before final demo because the user does not want it to feel like a simple rules bot.
+The PulseFi Assistant direction was corrected in Step 52 so the mobile assistant feels like a contextual chatbot instead of helper cards or a simple rules bot.
 
 Required product direction:
 
@@ -86,7 +140,7 @@ Desired MVP behavior:
 - Start with a safer contextual assistant MVP using backend/app data summaries.
 - It may use structured local logic first, but the UX should not look like a rigid rules bot.
 - Answers should be generated from a compact context object and friendly templates.
-- Later, it can evolve into a real LLM-backed assistant if deployment/security allows.
+- Later, it can evolve into a real LLM-backed assistant only through a backend endpoint/proxy; never put LLM/API keys in the mobile client.
 
 Suggested assistant intents for MVP:
 
@@ -173,7 +227,7 @@ Important testing/deployment notes:
 Next recommended work:
 
 1. Focused Expo check for Step 50O mobile polish.
-2. PulseFi Assistant quality pass, if still needed.
+2. Step 52 Assistant quality pass is now complete for current mobile scope.
 3. Final report/demo alignment.
 4. ML/data-pipeline explanation for presentation.
 5. Full live smoke only after remaining project steps are complete.
@@ -227,7 +281,7 @@ Important deployment/testing notes:
 
 Next recommended work:
 
-1. Update/finalize mobile UX around Assistant placement and wording if still needed.
+1. Step 52 Assistant quality pass is now complete for current mobile scope.
 2. Prepare final report/demo alignment.
 3. Prepare ML/data-pipeline explanation for presentation.
 4. Run full live smoke only after remaining project steps are complete.
@@ -248,7 +302,7 @@ Next recommended work:
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 50O complete - mobile UX pagination/service-request polish is complete; Step 50P immediate mobile behavior fixes are planned next; final full live smoke test remains deferred until all remaining project steps are finished.**
+Current phase: **Step 52 corrected complete - PulseFi Assistant is now a local/contextual chatbot-style mobile MVP; Step 53 Real ML MVP remains next; report/demo alignment follows; push notifications and final full live smoke remain deferred.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
@@ -3256,3 +3310,36 @@ Commands for next chat:
 - Future backend improvement: intelligence/recommendation creation should attach `recommendation_plan_id` whenever the recommended plan is known, so clients do not need text matching.
 - Future QA item: add integration coverage for recommendation-generated plan-change requests with and without `recommendation_plan_id`.
 - Live deployment QA remains required for UI layout fixes because local browser dimensions did not match deployed usage well enough.
+
+<!-- PULSEFI_REAL_ML_REQUIRED_UPDATE_START -->
+## Real ML MVP Backlog Requirement (2026-05-28)
+
+Status: Required backlog item before final freeze.
+
+Problem:
+- Current intelligence is rules-based/heuristic.
+- For the final project, PulseFi should include a real ML MVP because ML is a core project strength.
+
+Required quality tasks:
+1. Add a reproducible ML data preparation workflow.
+2. Add model training for usage prediction and/or exceed-risk prediction.
+3. Add model evaluation output with clear metrics.
+4. Keep rules-based intelligence as fallback.
+5. Avoid production instability:
+   - no secrets,
+   - no external paid ML dependency,
+   - no unscoped data access,
+   - no breaking API contract unless documented.
+6. Add tests or at least deterministic script-level checks for the ML pipeline.
+7. Update docs after implementation.
+
+Potential backend follow-up:
+- If model integration is safe, expose ML-generated predictions through the existing intelligence service.
+- If not safe before deadline, keep the ML pipeline as an offline/demo-supported artifact and explain integration path in the report.
+
+Do not mark this item complete until:
+- training/evaluation commands run successfully,
+- metrics are produced,
+- docs explain model inputs/outputs/limitations,
+- no existing backend/admin/mobile checks are broken.
+<!-- PULSEFI_REAL_ML_REQUIRED_UPDATE_END -->
