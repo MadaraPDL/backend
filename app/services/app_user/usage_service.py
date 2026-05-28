@@ -51,6 +51,7 @@ def _apply_usage_filters(
     device_id: UUID | None = None,
     start_at: datetime | None = None,
     end_at: datetime | None = None,
+    source_kind: str | None = None,
 ):
     if user_subscription_id is not None:
         stmt = stmt.where(UsageRecord.user_subscription_id == user_subscription_id)
@@ -60,6 +61,12 @@ def _apply_usage_filters(
 
     if device_id is not None:
         stmt = stmt.where(UsageRecord.device_id == device_id)
+
+    if source_kind == "official":
+        stmt = stmt.where(UsageRecord.device_id.is_(None))
+
+    if source_kind == "estimated":
+        stmt = stmt.where(UsageRecord.device_id.is_not(None))
 
     if start_at is not None:
         stmt = stmt.where(UsageRecord.record_start >= start_at)
@@ -98,62 +105,6 @@ async def _has_matching_official_usage_records(
     return int(result.scalar_one() or 0) > 0
 
 
-async def _has_matching_official_usage_records(
-    db: AsyncSession,
-    current_user: AppUser,
-    user_subscription_id: UUID | None = None,
-    router_id: UUID | None = None,
-    start_at: datetime | None = None,
-    end_at: datetime | None = None,
-) -> bool:
-    stmt = (
-        select(func.count(UsageRecord.id))
-        .where(
-            UsageRecord.user_id == current_user.id,
-            UsageRecord.device_id.is_(None),
-        )
-    )
-
-    stmt = _apply_usage_filters(
-        stmt,
-        user_subscription_id=user_subscription_id,
-        router_id=router_id,
-        start_at=start_at,
-        end_at=end_at,
-    )
-
-    result = await db.execute(stmt)
-    return int(result.scalar_one() or 0) > 0
-
-
-async def _has_matching_official_usage_records(
-    db: AsyncSession,
-    current_user: AppUser,
-    user_subscription_id: UUID | None = None,
-    router_id: UUID | None = None,
-    start_at: datetime | None = None,
-    end_at: datetime | None = None,
-) -> bool:
-    stmt = (
-        select(func.count(UsageRecord.id))
-        .where(
-            UsageRecord.user_id == current_user.id,
-            UsageRecord.device_id.is_(None),
-        )
-    )
-
-    stmt = _apply_usage_filters(
-        stmt,
-        user_subscription_id=user_subscription_id,
-        router_id=router_id,
-        start_at=start_at,
-        end_at=end_at,
-    )
-
-    result = await db.execute(stmt)
-    return int(result.scalar_one() or 0) > 0
-
-
 async def get_my_usage_summary(
     db: AsyncSession,
     current_user: AppUser,
@@ -162,6 +113,7 @@ async def get_my_usage_summary(
     device_id: UUID | None = None,
     start_at: datetime | None = None,
     end_at: datetime | None = None,
+    source_kind: str | None = None,
 ) -> MyUsageSummaryResponse:
     total_expr = _usage_total_expression()
 
@@ -181,9 +133,10 @@ async def get_my_usage_summary(
         device_id=device_id,
         start_at=start_at,
         end_at=end_at,
+        source_kind=source_kind,
     )
 
-    if device_id is None:
+    if device_id is None and source_kind is None:
         has_official_rows = await _has_matching_official_usage_records(
             db=db,
             current_user=current_user,
@@ -191,6 +144,7 @@ async def get_my_usage_summary(
             router_id=router_id,
             start_at=start_at,
             end_at=end_at,
+            source_kind=source_kind,
         )
 
         if has_official_rows:
@@ -213,6 +167,7 @@ async def list_my_daily_usage(
     device_id: UUID | None = None,
     start_at: datetime | None = None,
     end_at: datetime | None = None,
+    source_kind: str | None = None,
     days: int = 7,
 ) -> list[MyDailyUsageResponse]:
     if start_at is None and end_at is None:
@@ -248,7 +203,7 @@ async def list_my_daily_usage(
             end_at=end_at,
         )
 
-    if device_id is not None:
+    if device_id is not None or source_kind is not None:
         result = await db.execute(build_daily_stmt())
 
         return [
@@ -452,6 +407,7 @@ async def list_my_usage_records(
     device_id: UUID | None = None,
     start_at: datetime | None = None,
     end_at: datetime | None = None,
+    source_kind: str | None = None,
     limit: int = 100,
     offset: int = 0,
 ) -> list[MyUsageRecordResponse]:
@@ -468,6 +424,7 @@ async def list_my_usage_records(
         device_id=device_id,
         start_at=start_at,
         end_at=end_at,
+        source_kind=source_kind,
     )
 
     stmt = stmt.limit(limit).offset(offset)

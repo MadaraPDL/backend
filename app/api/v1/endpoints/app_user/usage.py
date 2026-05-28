@@ -37,6 +37,7 @@ async def get_my_usage_summary_endpoint(
     device_id: UUID | None = Query(default=None),
     start_at: datetime | None = Query(default=None),
     end_at: datetime | None = Query(default=None),
+    source_kind: str | None = Query(default=None, pattern="^(official|estimated)$"),
     db: AsyncSession = Depends(get_db),
     current_user: AppUser = Depends(get_current_app_user),
 ) -> MyUsageSummaryResponse:
@@ -48,6 +49,7 @@ async def get_my_usage_summary_endpoint(
         device_id=device_id,
         start_at=start_at,
         end_at=end_at,
+        source_kind=source_kind,
     )
 
 
@@ -72,6 +74,7 @@ async def list_my_device_usage_endpoint(
         status=status_filter,
         start_at=start_at,
         end_at=end_at,
+        source_kind=source_kind,
         limit=limit,
         offset=offset,
     )
@@ -116,6 +119,7 @@ async def list_my_daily_usage_endpoint(
     device_id: UUID | None = Query(default=None),
     start_at: datetime | None = Query(default=None),
     end_at: datetime | None = Query(default=None),
+    source_kind: str | None = Query(default=None, pattern="^(official|estimated)$"),
     days: int = Query(default=7, ge=1, le=90),
     db: AsyncSession = Depends(get_db),
     current_user: AppUser = Depends(get_current_app_user),
@@ -128,6 +132,7 @@ async def list_my_daily_usage_endpoint(
         device_id=device_id,
         start_at=start_at,
         end_at=end_at,
+        source_kind=source_kind,
         days=days,
     )
 
@@ -142,6 +147,7 @@ async def list_my_usage_records_endpoint(
     device_id: UUID | None = Query(default=None),
     start_at: datetime | None = Query(default=None),
     end_at: datetime | None = Query(default=None),
+    source_kind: str | None = Query(default=None, pattern="^(official|estimated)$"),
     limit: int = Query(default=100, ge=1, le=200),
     offset: int = Query(default=0, ge=0),
     db: AsyncSession = Depends(get_db),
