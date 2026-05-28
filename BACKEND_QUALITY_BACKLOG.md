@@ -1,69 +1,43 @@
-<!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_START -->
+﻿<!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_START -->
 ## Step 50P Remaining Status + Immediate Mobile Behavior Fixes (2026-05-28)
 
-Status: Planned next coding step, not complete yet.
+Status: Complete for current scope.
 
-Overall remaining-step status:
+Completed Step 50P mobile behavior fixes:
 
-- Mobile auth + account recovery: done for current scope.
-  - Mobile MFA settings, email MFA resend, backup-code/email verification, and mobile password reset request flow are already complete.
+1. Home usage source now follows the Usage tab source selection.
+   - Added shared mobile app state for the usage display source:
+     - `official`
+     - `estimated`
+   - Usage now uses the shared source state instead of local-only display state.
+   - Home now loads both official and estimated usage summaries for the selected router.
+   - Home renders the selected shared source instead of forcing official-first behavior.
+   - Home labels the selected total clearly:
+     - `Official service total`
+     - `Estimated device total`
 
-- Mobile selected-router context cleanup: done for current scope.
-  - Home, Usage, Devices, Alerts, Service Requests, and Insights already follow selected-router context for the current scope.
+2. Old upgrade/downgrade recommendations are now actionable.
+   - Recommendations with `recommendation_plan_id` still show direct actions:
+     - `Request this upgrade`
+     - `Request this downgrade`
+   - Recommendations without `recommendation_plan_id` now still become actionable when type, text, or reason clearly mentions upgrade/downgrade.
+   - Those older recommendations show `Open Service requests` so the App User can manually choose a plan.
+   - The existing `createPlanChangeRequestFromRecommendation` flow remains the direct request path when a target plan exists.
 
-- Mobile UI/UX polish: done for current scope.
-  - Shared mobile pagination exists.
-  - Service Requests tabs exist.
-  - Alerts, Routers, Subscriptions/My Package, Devices, Usage, and Insights were polished for the current scope.
+Verification:
+- Mobile TypeScript check passed with:
+  - `npx.cmd tsc --noEmit`
+- Mobile whitespace check passed with:
+  - `git diff --check`
 
-- Mobile navigation restructure: partially done.
-  - More/Service Requests/Insights/Usage flows were improved.
-  - A full navigation redesign is not separately complete.
+Remaining after Step 50P:
+- Assistant quality pass is still next.
+- ML/data pipeline is still not real ML yet.
+- Push notifications are still not implemented.
+- Full final deployed mobile smoke test remains intentionally deferred.
+- Final report/presentation alignment is still pending.
 
-- Chatbot / AI Assistant: partially done.
-  - A rules-based Assistant MVP exists.
-  - Assistant quality pass is still needed because it should not feel like a static rules bot.
-
-- ML/data pipeline + prediction upgrade: not fully done as real ML.
-  - Current prediction/recommendation behavior is closer to rules/data-driven intelligence.
-  - Final report/presentation must clearly explain current rules-based intelligence versus future real ML upgrade.
-
-- Push notifications: not done.
-  - In-app alerts exist.
-  - Real push notifications are not implemented yet.
-
-- Mobile deployed full smoke test: not done.
-  - Full final live smoke remains intentionally deferred.
-
-- Final report/presentation alignment: not done.
-  - Needs final alignment after remaining app behavior fixes and Assistant quality pass.
-
-Immediate Step 50P mobile bugs to fix before Assistant quality pass:
-
-1. Home usage source should follow the Usage tab source selection.
-   - Current problem: after simulator creates official rows, Home can show Official usage even when the user wants Estimated/device usage.
-   - Required behavior:
-     - If App User chooses Estimated in Usage, Home should show Estimated device total.
-     - If App User chooses Official in Usage, Home should show Official service total.
-   - Suggested implementation:
-     - Add shared mobile app state/context for `official` vs `estimated` usage display source.
-     - Usage screen should use that shared state instead of local-only `totalDisplaySource`.
-     - Home screen should load both official and estimated usage summaries and render the shared selected source.
-     - Home label should clearly say `Official service total` or `Estimated device total`.
-
-2. Old upgrade/downgrade recommendations must be actionable.
-   - Current problem: some older recommendations say upgrade/downgrade but show no button because they do not have `recommendation_plan_id`.
-   - Required behavior:
-     - If upgrade/downgrade recommendation has `recommendation_plan_id`, show direct action:
-       - `Request this upgrade`
-       - `Request this downgrade`
-     - If upgrade/downgrade recommendation has no `recommendation_plan_id`, show:
-       - `Open Service requests`
-     - The fallback button should route the user to Service Requests so they can manually choose a plan.
-   - Detection should consider recommendation type, recommendation text, and reason so older recommendations still become actionable when they clearly mention upgrade/downgrade.
-
-Do these Step 50P fixes before starting the Assistant quality pass.
-
+Do not mark the Assistant quality pass complete yet.
 Keep final full live smoke deferred.
 Focused Expo checks are allowed after this mobile fix.
 <!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_END -->
@@ -2286,7 +2260,7 @@ Impact:
 - No database change.
 - Password reset flow is safer before frontend integration.
 
-## Current Backend Quality Backlog ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Auth/UI Integration Issues
+## Current Backend Quality Backlog ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Auth/UI Integration Issues
 
 Status update - 2026-05-18:
 
@@ -2297,7 +2271,7 @@ Status update - 2026-05-18:
 - Step 27C follow-up: page load now validates existing admin tokens with `GET /api/v1/auth/me`; invalid, expired, or App User tokens clear the admin session and return to login.
 - Remaining production hardening: replace in-memory rate limiting with Redis/shared-store rate limiting before multi-worker deployment.
 
-### P1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Admin login rate limit blocks local development
+### P1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Admin login rate limit blocks local development
 Frontend login now sends the required `account_type: "admin"` field, but backend returns:
 - `429 rate_limited`
 - Message: `Too many attempts. Please try again later.`
@@ -2313,7 +2287,7 @@ Required:
   - Done: repeated failures return 429
   - Done: successful login attempt behavior after reset
 
-### P1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Verify `/auth/me` role contract
+### P1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Verify `/auth/me` role contract
 Frontend now falls back to `GET /api/v1/auth/me` to determine admin role.
 
 Required:
@@ -2325,7 +2299,7 @@ Required:
 - Done: Platform Admin is distinguishable from ISP Admin by `role`.
 - Done in frontend: App User is not accepted in admin web login.
 
-### P1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â MFA-required flow incomplete in frontend
+### P1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â MFA-required flow incomplete in frontend
 Backend exposes:
 - `/api/v1/auth/mfa/verify`
 - `/api/v1/auth/mfa/setup/confirm`
@@ -2336,7 +2310,7 @@ Required:
 - Done: `mfa_required=true` and `mfa_enabled=false` returns `mfa_setup_required` and no access token.
 - Done: frontend setup flow calls `POST /api/v1/auth/mfa/setup/confirm`; setup-only flow cannot bypass token issuance.
 
-### P1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Frontend/admin production routing
+### P1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Frontend/admin production routing
 Current real frontend shell still uses design preview dashboard components as temporary dashboard views.
 
 Required:
@@ -2350,7 +2324,7 @@ Required:
 - Done: password reset requests now send a reset link email instead of relying
   on a manual token-copy flow; DEBUG can return a local reset URL for testing.
 
-### P2 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Tests needed
+### P2 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Tests needed
 Add or expand tests for:
 - admin login
 - `/auth/me`
@@ -3274,3 +3248,4 @@ Commands for next chat:
 - Step 50I mobile Insights cleanup is complete: Predictions and Recommendations are split into tabs, each list uses page controls like records/logs, and older user-facing insights are hidden from the mobile UI while remaining in backend/admin data.
 
 - Step 50J admin Network Activity pagination is complete: ISP Admin Network tables now paginate Daily Usage by User, Recent Usage Records, Device Connection Logs, and Router Action Logs with compact table controls instead of long scrolling lists.
+

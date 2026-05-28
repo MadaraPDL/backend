@@ -1,69 +1,43 @@
-<!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_START -->
+﻿<!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_START -->
 ## Step 50P Remaining Status + Immediate Mobile Behavior Fixes (2026-05-28)
 
-Status: Planned next coding step, not complete yet.
+Status: Complete for current scope.
 
-Overall remaining-step status:
+Completed Step 50P mobile behavior fixes:
 
-- Mobile auth + account recovery: done for current scope.
-  - Mobile MFA settings, email MFA resend, backup-code/email verification, and mobile password reset request flow are already complete.
+1. Home usage source now follows the Usage tab source selection.
+   - Added shared mobile app state for the usage display source:
+     - `official`
+     - `estimated`
+   - Usage now uses the shared source state instead of local-only display state.
+   - Home now loads both official and estimated usage summaries for the selected router.
+   - Home renders the selected shared source instead of forcing official-first behavior.
+   - Home labels the selected total clearly:
+     - `Official service total`
+     - `Estimated device total`
 
-- Mobile selected-router context cleanup: done for current scope.
-  - Home, Usage, Devices, Alerts, Service Requests, and Insights already follow selected-router context for the current scope.
+2. Old upgrade/downgrade recommendations are now actionable.
+   - Recommendations with `recommendation_plan_id` still show direct actions:
+     - `Request this upgrade`
+     - `Request this downgrade`
+   - Recommendations without `recommendation_plan_id` now still become actionable when type, text, or reason clearly mentions upgrade/downgrade.
+   - Those older recommendations show `Open Service requests` so the App User can manually choose a plan.
+   - The existing `createPlanChangeRequestFromRecommendation` flow remains the direct request path when a target plan exists.
 
-- Mobile UI/UX polish: done for current scope.
-  - Shared mobile pagination exists.
-  - Service Requests tabs exist.
-  - Alerts, Routers, Subscriptions/My Package, Devices, Usage, and Insights were polished for the current scope.
+Verification:
+- Mobile TypeScript check passed with:
+  - `npx.cmd tsc --noEmit`
+- Mobile whitespace check passed with:
+  - `git diff --check`
 
-- Mobile navigation restructure: partially done.
-  - More/Service Requests/Insights/Usage flows were improved.
-  - A full navigation redesign is not separately complete.
+Remaining after Step 50P:
+- Assistant quality pass is still next.
+- ML/data pipeline is still not real ML yet.
+- Push notifications are still not implemented.
+- Full final deployed mobile smoke test remains intentionally deferred.
+- Final report/presentation alignment is still pending.
 
-- Chatbot / AI Assistant: partially done.
-  - A rules-based Assistant MVP exists.
-  - Assistant quality pass is still needed because it should not feel like a static rules bot.
-
-- ML/data pipeline + prediction upgrade: not fully done as real ML.
-  - Current prediction/recommendation behavior is closer to rules/data-driven intelligence.
-  - Final report/presentation must clearly explain current rules-based intelligence versus future real ML upgrade.
-
-- Push notifications: not done.
-  - In-app alerts exist.
-  - Real push notifications are not implemented yet.
-
-- Mobile deployed full smoke test: not done.
-  - Full final live smoke remains intentionally deferred.
-
-- Final report/presentation alignment: not done.
-  - Needs final alignment after remaining app behavior fixes and Assistant quality pass.
-
-Immediate Step 50P mobile bugs to fix before Assistant quality pass:
-
-1. Home usage source should follow the Usage tab source selection.
-   - Current problem: after simulator creates official rows, Home can show Official usage even when the user wants Estimated/device usage.
-   - Required behavior:
-     - If App User chooses Estimated in Usage, Home should show Estimated device total.
-     - If App User chooses Official in Usage, Home should show Official service total.
-   - Suggested implementation:
-     - Add shared mobile app state/context for `official` vs `estimated` usage display source.
-     - Usage screen should use that shared state instead of local-only `totalDisplaySource`.
-     - Home screen should load both official and estimated usage summaries and render the shared selected source.
-     - Home label should clearly say `Official service total` or `Estimated device total`.
-
-2. Old upgrade/downgrade recommendations must be actionable.
-   - Current problem: some older recommendations say upgrade/downgrade but show no button because they do not have `recommendation_plan_id`.
-   - Required behavior:
-     - If upgrade/downgrade recommendation has `recommendation_plan_id`, show direct action:
-       - `Request this upgrade`
-       - `Request this downgrade`
-     - If upgrade/downgrade recommendation has no `recommendation_plan_id`, show:
-       - `Open Service requests`
-     - The fallback button should route the user to Service Requests so they can manually choose a plan.
-   - Detection should consider recommendation type, recommendation text, and reason so older recommendations still become actionable when they clearly mention upgrade/downgrade.
-
-Do these Step 50P fixes before starting the Assistant quality pass.
-
+Do not mark the Assistant quality pass complete yet.
 Keep final full live smoke deferred.
 Focused Expo checks are allowed after this mobile fix.
 <!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_END -->
@@ -3228,3 +3202,4 @@ Commands for next chat:
 - Step 50I mobile Insights cleanup is complete: Predictions and Recommendations are split into tabs, each list uses page controls like records/logs, and older user-facing insights are hidden from the mobile UI while remaining in backend/admin data.
 
 - Step 50J admin Network Activity pagination is complete: ISP Admin Network tables now paginate Daily Usage by User, Recent Usage Records, Device Connection Logs, and Router Action Logs with compact table controls instead of long scrolling lists.
+
