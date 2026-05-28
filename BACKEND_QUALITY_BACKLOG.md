@@ -32,6 +32,7 @@ Verification:
 
 Remaining after Step 50P:
 - Step 52 Assistant quality pass is complete for current mobile scope.
+- Step 52B Assistant polish pass is complete; the Assistant remains local/contextual and not external LLM-backed.
 - ML/data pipeline is still not real ML yet.
 - Push notifications are still not implemented.
 - Full final deployed mobile smoke test remains intentionally deferred.
@@ -95,6 +96,40 @@ Still deferred / pending:
 - ML/data-pipeline explanation remains next/pending as part of Step 53/report alignment.
 - No backend API/schema migration was needed.
 <!-- STEP_52_ASSISTANT_QUALITY_PASS_END -->
+
+<!-- STEP_52B_ASSISTANT_POLISH_PASS_START -->
+## Step 52B PulseFi Assistant Polish Pass (2026-05-28)
+
+Status: Complete for the mobile local/contextual chatbot MVP.
+
+Completed mobile assistant polish:
+
+- Insights assistant help now passes structured launch context for the exact prediction or recommendation card the App User tapped, without showing raw IDs in the UI.
+- The Assistant resolves that exact selected-service-line item from loaded context; if it cannot find it after refresh, it says so and falls back to the latest relevant item.
+- Typed question intent detection now uses weighted scoring instead of first-match keywords, so prediction-risk, usage-high, plan-decision, device, alert, and service-request questions route more accurately.
+- Assistant context now tracks source status as loaded, empty, or failed for routers, subscriptions, usage, devices, alerts, predictions, recommendations, service requests, plans, and router capabilities.
+- Assistant answers can now explain failed refreshes separately from loaded-but-empty data, without exposing raw HTTP errors or internal details.
+- Chat now adds the user bubble immediately, shows a short "checking your router context" assistant typing state, prevents duplicate sends while processing, and then adds the assistant response.
+- Assistant response bubbles now include contextual action chips such as Open Usage, Open Insights, Open Devices, Open Alerts, and Open Service requests when those navigation targets are available.
+- Suggested prompts were polished to natural App User questions and kept compact for mobile screens.
+- Existing recommendation request behavior remains separate and intact: stay/current/no-change recommendations do not show request actions, and actionable upgrade/downgrade recommendations still use the existing Insights request flow.
+
+Validation:
+
+- Mobile `npx.cmd tsc --noEmit` passed.
+- Mobile `git diff --check` passed with only Git CRLF normalization warnings.
+- Mobile changes were committed and pushed to `MadaraPDL/pulsefi-mobile-app` main as `09230f0` (`Polish PulseFi assistant chat experience`).
+- Focused Expo/manual mobile checking remains allowed, but final full live smoke remains deferred.
+
+Architecture / safety:
+
+- Assistant remains a local/contextual chatbot MVP using existing App User APIs and local response logic.
+- No external AI/LLM call and no OpenAI/LLM/API key was added to the mobile app.
+- Future LLM integration must go through a backend endpoint/proxy, never direct client-side keys.
+- No backend API, schema, environment, or secret change was made.
+- No admin web change was made.
+- Step 53 Real ML MVP remains next.
+<!-- STEP_52B_ASSISTANT_POLISH_PASS_END -->
 
 
 <!-- PULSEFI_ASSISTANT_REQUIREMENTS_START -->
@@ -302,7 +337,7 @@ Next recommended work:
 <!-- PULSEFI_SYNC_START -->
 ## Current Synchronized PulseFi Checkpoint - 2026-05-24
 
-Current phase: **Step 52 corrected complete - PulseFi Assistant is now a local/contextual chatbot-style mobile MVP; Step 53 Real ML MVP remains next; report/demo alignment follows; push notifications and final full live smoke remain deferred.**
+Current phase: **Step 52B Assistant polish pass complete - PulseFi Assistant remains a local/contextual chatbot-style mobile MVP with targeted Insights explanations, weighted typed-question routing, source load-status notes, typing state, and contextual action chips; Step 53 Real ML MVP remains next; report/demo alignment follows; push notifications and final full live smoke remain deferred.**
 
 Completed before deployment:
 - Step 41 admin auth/lifecycle/layout polish is complete.
