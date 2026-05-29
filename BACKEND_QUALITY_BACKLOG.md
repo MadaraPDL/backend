@@ -1,3 +1,90 @@
+<!-- STEP_53A_REAL_ML_MVP_START -->
+## Step 53A Real ML MVP - Offline Usage Prediction Pipeline (2026-05-29)
+
+Status: Complete for the safe offline/demo ML scope.
+
+What was added:
+
+- Added a reproducible PulseFi offline ML pipeline for next-day usage prediction.
+- Added reusable ML helpers under pp/ml/:
+  - usage_features.py
+  - usage_metrics.py
+  - usage_model.py
+- Added reproducible scripts under scripts/ml/:
+  - generate_demo_usage_dataset.py
+  - 	rain_usage_prediction_model.py
+  - evaluate_usage_prediction_model.py
+- Added deterministic ML tests under 	ests/ml/.
+- Added rtifacts/ml/.gitkeep and gitignored generated ML artifacts.
+- Kept generated datasets, model files, metrics, and evaluations out of Git.
+
+Dataset:
+
+- Source: deterministic generated PulseFi-style demo usage records.
+- Dataset rows: 896
+- Demo service lines: 8
+- Date range: 2026-01-08 to 2026-04-29
+- Target: 	arget_next_day_usage_gb, meaning next-day usage in GB.
+
+Features:
+
+- plan_monthly_limit_gb
+- plan_speed_mbps
+- device_count
+- day_of_week
+- is_weekend
+- previous_day_usage_gb
+-
+olling_3_day_avg_gb
+-
+olling_7_day_avg_gb
+- month_progress_ratio
+- current_day_usage_gb
+
+Model:
+
+- Type: $modelType
+- The model is trained from supervised historical usage rows.
+- The model is saved as JSON, not pickle, to keep the artifact readable and safer for demo use.
+
+Evaluation:
+
+- Train rows: 716
+- Test rows: 180
+- MAE: 0.7203 GB
+- RMSE: 1.302 GB
+
+Architecture decision:
+
+- This is intentionally an offline/demo ML MVP for the project report and demo.
+- It does not require .env, secrets, live database access, Render, Vercel, Neon, or Brevo.
+- It does not change production runtime behavior.
+- Existing backend rules-based intelligence remains the safe deployed fallback.
+- Backend integration can be considered later only if it is optional, artifact-safe, and falls back cleanly.
+
+Limitations:
+
+- The current dataset is generated demo data, not real ISP production data.
+- The model proves a real reproducible ML workflow, but real-world accuracy would require real historical usage records.
+- Future improvements can train on exported anonymized PulseFi usage records, compare multiple model types, and optionally connect the best model to backend intelligence behind a safe fallback.
+
+Verification commands used/planned:
+
+- python -m compileall app tests scripts
+- python -m pytest tests\ml
+- python scripts\ml\generate_demo_usage_dataset.py
+- python scripts\ml\train_usage_prediction_model.py
+- python scripts\ml\evaluate_usage_prediction_model.py
+- python -m pytest
+- git diff --check
+
+Still deferred:
+
+- Final full live smoke remains deferred.
+- Push notifications remain future work.
+- No production ML runtime integration was added in Step 53A.
+<!-- STEP_53A_REAL_ML_MVP_END -->
+
 <!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_START -->
 ## Step 50P Remaining Status + Immediate Mobile Behavior Fixes (2026-05-28)
 
@@ -2349,7 +2436,7 @@ Impact:
 - No database change.
 - Password reset flow is safer before frontend integration.
 
-## Current Backend Quality Backlog ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Auth/UI Integration Issues
+## Current Backend Quality Backlog ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Auth/UI Integration Issues
 
 Status update - 2026-05-18:
 
@@ -2360,7 +2447,7 @@ Status update - 2026-05-18:
 - Step 27C follow-up: page load now validates existing admin tokens with `GET /api/v1/auth/me`; invalid, expired, or App User tokens clear the admin session and return to login.
 - Remaining production hardening: replace in-memory rate limiting with Redis/shared-store rate limiting before multi-worker deployment.
 
-### P1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Admin login rate limit blocks local development
+### P1 ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Admin login rate limit blocks local development
 Frontend login now sends the required `account_type: "admin"` field, but backend returns:
 - `429 rate_limited`
 - Message: `Too many attempts. Please try again later.`
@@ -2376,7 +2463,7 @@ Required:
   - Done: repeated failures return 429
   - Done: successful login attempt behavior after reset
 
-### P1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Verify `/auth/me` role contract
+### P1 ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Verify `/auth/me` role contract
 Frontend now falls back to `GET /api/v1/auth/me` to determine admin role.
 
 Required:
@@ -2388,7 +2475,7 @@ Required:
 - Done: Platform Admin is distinguishable from ISP Admin by `role`.
 - Done in frontend: App User is not accepted in admin web login.
 
-### P1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â MFA-required flow incomplete in frontend
+### P1 ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â MFA-required flow incomplete in frontend
 Backend exposes:
 - `/api/v1/auth/mfa/verify`
 - `/api/v1/auth/mfa/setup/confirm`
@@ -2399,7 +2486,7 @@ Required:
 - Done: `mfa_required=true` and `mfa_enabled=false` returns `mfa_setup_required` and no access token.
 - Done: frontend setup flow calls `POST /api/v1/auth/mfa/setup/confirm`; setup-only flow cannot bypass token issuance.
 
-### P1 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Frontend/admin production routing
+### P1 ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Frontend/admin production routing
 Current real frontend shell still uses design preview dashboard components as temporary dashboard views.
 
 Required:
@@ -2413,7 +2500,7 @@ Required:
 - Done: password reset requests now send a reset link email instead of relying
   on a manual token-copy flow; DEBUG can return a local reset URL for testing.
 
-### P2 ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Tests needed
+### P2 ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Tests needed
 Add or expand tests for:
 - admin login
 - `/auth/me`

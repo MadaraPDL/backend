@@ -27,3 +27,5 @@ alembic/__pycache__/
 alembic/versions/__pycache__/
 LOCAL_TEST_ACCOUNTS.md
 .pytest_cache/
+artifacts/ml/*
+!artifacts/ml/.gitkeep

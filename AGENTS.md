@@ -1,3 +1,90 @@
+<!-- STEP_53A_REAL_ML_MVP_START -->
+## Step 53A Real ML MVP - Offline Usage Prediction Pipeline (2026-05-29)
+
+Status: Complete for the safe offline/demo ML scope.
+
+What was added:
+
+- Added a reproducible PulseFi offline ML pipeline for next-day usage prediction.
+- Added reusable ML helpers under pp/ml/:
+  - usage_features.py
+  - usage_metrics.py
+  - usage_model.py
+- Added reproducible scripts under scripts/ml/:
+  - generate_demo_usage_dataset.py
+  - 	rain_usage_prediction_model.py
+  - evaluate_usage_prediction_model.py
+- Added deterministic ML tests under 	ests/ml/.
+- Added rtifacts/ml/.gitkeep and gitignored generated ML artifacts.
+- Kept generated datasets, model files, metrics, and evaluations out of Git.
+
+Dataset:
+
+- Source: deterministic generated PulseFi-style demo usage records.
+- Dataset rows: 896
+- Demo service lines: 8
+- Date range: 2026-01-08 to 2026-04-29
+- Target: 	arget_next_day_usage_gb, meaning next-day usage in GB.
+
+Features:
+
+- plan_monthly_limit_gb
+- plan_speed_mbps
+- device_count
+- day_of_week
+- is_weekend
+- previous_day_usage_gb
+-
+olling_3_day_avg_gb
+-
+olling_7_day_avg_gb
+- month_progress_ratio
+- current_day_usage_gb
+
+Model:
+
+- Type: $modelType
+- The model is trained from supervised historical usage rows.
+- The model is saved as JSON, not pickle, to keep the artifact readable and safer for demo use.
+
+Evaluation:
+
+- Train rows: 716
+- Test rows: 180
+- MAE: 0.7203 GB
+- RMSE: 1.302 GB
+
+Architecture decision:
+
+- This is intentionally an offline/demo ML MVP for the project report and demo.
+- It does not require .env, secrets, live database access, Render, Vercel, Neon, or Brevo.
+- It does not change production runtime behavior.
+- Existing backend rules-based intelligence remains the safe deployed fallback.
+- Backend integration can be considered later only if it is optional, artifact-safe, and falls back cleanly.
+
+Limitations:
+
+- The current dataset is generated demo data, not real ISP production data.
+- The model proves a real reproducible ML workflow, but real-world accuracy would require real historical usage records.
+- Future improvements can train on exported anonymized PulseFi usage records, compare multiple model types, and optionally connect the best model to backend intelligence behind a safe fallback.
+
+Verification commands used/planned:
+
+- python -m compileall app tests scripts
+- python -m pytest tests\ml
+- python scripts\ml\generate_demo_usage_dataset.py
+- python scripts\ml\train_usage_prediction_model.py
+- python scripts\ml\evaluate_usage_prediction_model.py
+- python -m pytest
+- git diff --check
+
+Still deferred:
+
+- Final full live smoke remains deferred.
+- Push notifications remain future work.
+- No production ML runtime integration was added in Step 53A.
+<!-- STEP_53A_REAL_ML_MVP_END -->
+
 <!-- STEP_50P_REMAINING_STATUS_AND_MOBILE_FIXES_START -->
 ## Step 50P Remaining Status + Immediate Mobile Behavior Fixes (2026-05-28)
 
@@ -2731,7 +2818,7 @@ Next work:
 
 
 
-## Current Assistant/Codex Instructions ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Frontend/Auth Handoff
+## Current Assistant/Codex Instructions ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â Frontend/Auth Handoff
 
 When continuing PulseFi from this point:
 
