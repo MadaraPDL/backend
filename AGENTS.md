@@ -1,3 +1,49 @@
+<!-- STEP_54C_ALIGNMENT_CHECKPOINT_START -->
+## Step 54C Report/Demo + Final Smoke Prep Checkpoint (2026-05-29)
+
+Status: Complete for documentation/checklist scope.
+
+Completed:
+
+- Step 53A Real ML MVP is complete and pushed.
+- Step 53A documentation formatting hotfix is complete and pushed.
+- Step 53C dedicated ML MVP documentation is complete and pushed:
+  - docs/ML_MVP.md
+- Step 54A report/demo alignment guide is complete and pushed:
+  - docs/REPORT_DEMO_ALIGNMENT.md
+- Step 54B final live smoke checklist prep is complete and pushed:
+  - docs/FINAL_LIVE_SMOKE_CHECKLIST.md
+
+Current ML status:
+
+- PulseFi now includes a real reproducible offline ML MVP for next-day usage prediction.
+- The ML MVP uses deterministic PulseFi-style generated demo usage data.
+- The ML model target is next-day usage in GB.
+- Evaluation metrics are MAE and RMSE.
+- Generated ML artifacts remain local-only and gitignored.
+- The deployed backend does not depend on ML artifacts.
+- Existing rules-based intelligence remains the safe deployed fallback.
+
+Current report/demo status:
+
+- Report and presentation claims should now follow docs/REPORT_DEMO_ALIGNMENT.md.
+- ML explanation should follow docs/ML_MVP.md.
+- Final deployed smoke should follow docs/FINAL_LIVE_SMOKE_CHECKLIST.md when it is time to execute it.
+
+Still deferred / future work:
+
+- Final full live smoke is still deferred.
+- Push notifications remain future work.
+- Production ML runtime integration remains future work unless explicitly selected.
+- Router password storage remains deferred until encrypted credential storage exists.
+- Do not expose secrets, .env values, database URLs, API keys, JWT secrets, Render/Vercel/Neon/Brevo secrets, or MFA codes.
+
+Recommended next step:
+
+- Step 54D should be a final pre-smoke repo cleanliness check across backend, admin web, and mobile.
+- Do not run full final live smoke until explicitly starting the final smoke phase.
+<!-- STEP_54C_ALIGNMENT_CHECKPOINT_END -->
+
 <!-- STEP_53A_REAL_ML_MVP_START -->
 ## Step 53A Real ML MVP - Offline Usage Prediction Pipeline (2026-05-29)
 
@@ -2816,7 +2862,7 @@ Next work:
 
 
 
-## Current Assistant/Codex Instructions ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Frontend/Auth Handoff
+## Current Assistant/Codex Instructions ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â Frontend/Auth Handoff
 
 When continuing PulseFi from this point:
 
