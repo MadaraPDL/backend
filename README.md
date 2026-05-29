@@ -1,3 +1,48 @@
+<!-- STEP_54D_REPO_CLEANLINESS_CHECKPOINT_START -->
+## Step 54D Repo Cleanliness Checkpoint (2026-05-29)
+
+Status: Complete for backend/admin-web/mobile local cleanliness scope.
+
+Backend:
+
+- Backend repo was up to date with origin/main.
+- Backend working tree was clean.
+- Local test overrides were used only for test execution:
+  - DEBUG=true
+  - EMAIL_DELIVERY_ENABLED=false
+  - BREVO_API_KEY empty
+- Backend compile check passed.
+- Backend ML tests passed.
+- Backend full pytest passed.
+- Backend whitespace check passed.
+
+Admin web:
+
+- Admin web repo was up to date with origin/main.
+- Admin web working tree was clean.
+- npm lint passed.
+- npm build passed.
+- git diff --check passed.
+
+Mobile app:
+
+- Mobile repo was up to date with origin/main.
+- Mobile working tree was clean.
+- TypeScript check passed with npx tsc --noEmit.
+- git diff --check passed.
+
+Still deferred:
+
+- Final full live smoke is still deferred.
+- Push notifications remain future work.
+- Production ML runtime integration remains future work unless explicitly selected.
+- No secrets, .env values, database URLs, API keys, JWT secrets, Render/Vercel/Neon/Brevo secrets, or MFA codes were exposed.
+
+Recommended next step:
+
+- Start the final deployed smoke phase only when explicitly ready.
+<!-- STEP_54D_REPO_CLEANLINESS_CHECKPOINT_END -->
+
 <!-- STEP_54C_ALIGNMENT_CHECKPOINT_START -->
 ## Step 54C Report/Demo + Final Smoke Prep Checkpoint (2026-05-29)
 
