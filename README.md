@@ -6,16 +6,16 @@ Status: Complete for the safe offline/demo ML scope.
 What was added:
 
 - Added a reproducible PulseFi offline ML pipeline for next-day usage prediction.
-- Added reusable ML helpers under pp/ml/:
+- Added reusable ML helpers under app/ml/:
   - usage_features.py
   - usage_metrics.py
   - usage_model.py
 - Added reproducible scripts under scripts/ml/:
   - generate_demo_usage_dataset.py
-  - 	rain_usage_prediction_model.py
+  - train_usage_prediction_model.py
   - evaluate_usage_prediction_model.py
-- Added deterministic ML tests under 	ests/ml/.
-- Added rtifacts/ml/.gitkeep and gitignored generated ML artifacts.
+- Added deterministic ML tests under tests/ml/.
+- Added artifacts/ml/.gitkeep and gitignored generated ML artifacts.
 - Kept generated datasets, model files, metrics, and evaluations out of Git.
 
 Dataset:
@@ -24,7 +24,7 @@ Dataset:
 - Dataset rows: 896
 - Demo service lines: 8
 - Date range: 2026-01-08 to 2026-04-29
-- Target: 	arget_next_day_usage_gb, meaning next-day usage in GB.
+- Target: target_next_day_usage_gb, meaning next-day usage in GB.
 
 Features:
 
@@ -34,16 +34,14 @@ Features:
 - day_of_week
 - is_weekend
 - previous_day_usage_gb
--
-olling_3_day_avg_gb
--
-olling_7_day_avg_gb
+- rolling_3_day_avg_gb
+- rolling_7_day_avg_gb
 - month_progress_ratio
 - current_day_usage_gb
 
 Model:
 
-- Type: $modelType
+- Type: normalized_linear_regression_gradient_descent
 - The model is trained from supervised historical usage rows.
 - The model is saved as JSON, not pickle, to keep the artifact readable and safer for demo use.
 
@@ -68,13 +66,13 @@ Limitations:
 - The model proves a real reproducible ML workflow, but real-world accuracy would require real historical usage records.
 - Future improvements can train on exported anonymized PulseFi usage records, compare multiple model types, and optionally connect the best model to backend intelligence behind a safe fallback.
 
-Verification commands used/planned:
+Verification commands used:
 
 - python -m compileall app tests scripts
-- python -m pytest tests\ml
-- python scripts\ml\generate_demo_usage_dataset.py
-- python scripts\ml\train_usage_prediction_model.py
-- python scripts\ml\evaluate_usage_prediction_model.py
+- python -m pytest tests/ml
+- python scripts/ml/generate_demo_usage_dataset.py
+- python scripts/ml/train_usage_prediction_model.py
+- python scripts/ml/evaluate_usage_prediction_model.py
 - python -m pytest
 - git diff --check
 
