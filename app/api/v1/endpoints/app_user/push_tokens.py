@@ -14,6 +14,7 @@ from app.services.app_user import (
     list_my_push_tokens,
     register_my_push_token,
 )
+from app.services.notifications import dispatch_push_to_user
 
 router = APIRouter(prefix="/me/push-tokens", tags=["App User"])
 
@@ -29,6 +30,29 @@ async def register_my_push_token_endpoint(
         current_user=current_user,
         payload=payload,
     )
+
+
+@router.post("/test")
+async def send_test_push_notification_endpoint(
+    db: AsyncSession = Depends(get_db),
+    current_user: AppUser = Depends(get_current_app_user),
+) -> dict[str, int]:
+    result = await dispatch_push_to_user(
+        db=db,
+        user_id=current_user.id,
+        title="PulseFi test notification",
+        body="Push notifications are connected for this device.",
+        data={
+            "screen": "Alerts",
+            "type": "test_push",
+        },
+    )
+
+    return {
+        "attempted": result.attempted,
+        "accepted": result.accepted,
+        "failed": result.failed,
+    }
 
 
 @router.get("", response_model=list[PushTokenResponse])
