@@ -17,6 +17,7 @@ async def test_run_intelligence_for_isp_generates_prediction_recommendation_and_
     isp_id = uuid4()
     subscription_id = uuid4()
     router_id = uuid4()
+    user_id = uuid4()
     prediction_id = uuid4()
     recommendation_id = uuid4()
     seen_prediction_isp_ids: list[object] = []
@@ -34,7 +35,11 @@ async def test_run_intelligence_for_isp_generates_prediction_recommendation_and_
 
     async def fake_generate_usage_alerts_for_subscription(**kwargs):
         assert kwargs["user_subscription_id"] == subscription_id
-        return SimpleNamespace(alerts_created=1)
+        return intelligence_service.AlertGenerationResult(
+            alerts_created=1,
+            usage_alerts_created=1,
+            high_usage_alert_created=True,
+        )
 
     async def fake_list_router_ids_for_subscription(db, subscription_id, isp_id):
         assert subscription_id is not None
@@ -43,7 +48,23 @@ async def test_run_intelligence_for_isp_generates_prediction_recommendation_and_
 
     async def fake_generate_new_device_alerts_for_router(**kwargs):
         assert kwargs["router_id"] == router_id
-        return SimpleNamespace(new_device_alerts_created=1)
+        return intelligence_service.AlertGenerationResult(
+            alerts_created=1,
+            new_device_alerts_created=1,
+        )
+
+    async def fake_get_subscription_user_id(db, subscription_id):
+        assert subscription_id is not None
+        return user_id
+
+    dispatched_pushes = []
+
+    async def fake_dispatch_push_for_alert_generation_result(**kwargs):
+        dispatched_pushes.append(kwargs)
+        assert kwargs["user_id"] == user_id
+        assert kwargs["alert_generation_result"].alerts_created == 2
+        assert kwargs["alert_generation_result"].high_usage_alert_created is True
+        assert kwargs["alert_generation_result"].new_device_alerts_created == 1
 
     async def fake_get_existing_prediction_for_today(db, subscription_id):
         return None
@@ -89,6 +110,16 @@ async def test_run_intelligence_for_isp_generates_prediction_recommendation_and_
     )
     monkeypatch.setattr(
         intelligence_service,
+        "get_subscription_user_id",
+        fake_get_subscription_user_id,
+    )
+    monkeypatch.setattr(
+        intelligence_service,
+        "dispatch_push_for_alert_generation_result",
+        fake_dispatch_push_for_alert_generation_result,
+    )
+    monkeypatch.setattr(
+        intelligence_service,
         "get_existing_prediction_for_today",
         fake_get_existing_prediction_for_today,
     )
@@ -117,3 +148,4 @@ async def test_run_intelligence_for_isp_generates_prediction_recommendation_and_
     assert result.items[0].alerts_created == 2
     assert seen_prediction_isp_ids == [isp_id]
     assert seen_recommendation_isp_ids == [isp_id]
+    assert len(dispatched_pushes) == 1

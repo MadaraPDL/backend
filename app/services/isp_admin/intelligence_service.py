@@ -27,8 +27,13 @@ from app.services.recommendations import (
     generate_recommendation_for_prediction,
 )
 from app.services.alerts import (
+    AlertGenerationResult,
     generate_new_device_alerts_for_router,
     generate_usage_alerts_for_subscription,
+)
+from app.services.notifications import (
+    notify_new_device_push,
+    notify_usage_alert_push,
 )
 
 
@@ -123,6 +128,46 @@ async def list_router_ids_for_subscription(
     return list(result.scalars().all())
 
 
+async def get_subscription_user_id(
+    db: AsyncSession,
+    subscription_id: UUID,
+) -> UUID | None:
+    result = await db.execute(
+        select(UserSubscription.user_id).where(UserSubscription.id == subscription_id)
+    )
+
+    return result.scalar_one_or_none()
+
+
+async def dispatch_push_for_alert_generation_result(
+    *,
+    db: AsyncSession,
+    user_id: UUID,
+    alert_generation_result: AlertGenerationResult,
+) -> None:
+    if alert_generation_result.plan_exceed_alert_created:
+        await notify_usage_alert_push(
+            db=db,
+            user_id=user_id,
+            alert_kind="plan_exceed",
+        )
+    elif (
+        alert_generation_result.high_usage_alert_created
+        or alert_generation_result.unusual_consumption_alert_created
+    ):
+        await notify_usage_alert_push(
+            db=db,
+            user_id=user_id,
+            alert_kind="high_usage",
+        )
+
+    if alert_generation_result.new_device_alerts_created:
+        await notify_new_device_push(
+            db=db,
+            user_id=user_id,
+        )
+
+
 
 def _prediction_needs_refresh(
     *,
@@ -196,6 +241,28 @@ async def run_intelligence_for_isp(
                     usage_alert_result.alerts_created + new_device_alerts_created
                 )
                 alerts_created += item_alerts_created
+
+                if item_alerts_created:
+                    subscription_user_id = await get_subscription_user_id(
+                        db=db,
+                        subscription_id=subscription_id,
+                    )
+
+                    if subscription_user_id is not None:
+                        await dispatch_push_for_alert_generation_result(
+                            db=db,
+                            user_id=subscription_user_id,
+                            alert_generation_result=AlertGenerationResult(
+                                alerts_created=item_alerts_created,
+                                usage_alerts_created=usage_alert_result.usage_alerts_created,
+                                new_device_alerts_created=new_device_alerts_created,
+                                high_usage_alert_created=usage_alert_result.high_usage_alert_created,
+                                plan_exceed_alert_created=usage_alert_result.plan_exceed_alert_created,
+                                unusual_consumption_alert_created=(
+                                    usage_alert_result.unusual_consumption_alert_created
+                                ),
+                            ),
+                        )
 
             existing_prediction = await get_existing_prediction_for_today(
                 db=db,
