@@ -5261,3 +5261,15 @@ Verification:
 - pytest tests/services/test_intelligence_service.py tests/services/test_intelligence_alert_push_dispatch.py -q
 - pytest -q
 - git diff --check
+
+## Step 57B - Intelligence alert push dispatch fix
+
+Status: complete pending deploy.
+
+Backend intelligence-created alerts now dispatch Expo push notifications when new usage, plan-limit, unusual-consumption, or new-device alerts are created. This fixes the case where alerts appeared in the mobile app after refresh/login but no push notification was received. Service request push behavior was already working and remains unchanged.
+
+Verification:
+- compileall app tests scripts
+- pytest tests/services/test_intelligence_service.py tests/services/test_intelligence_alert_push_dispatch.py -q
+- pytest -q
+- git diff --check
