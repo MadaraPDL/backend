@@ -14,6 +14,7 @@ from app.models.prediction import Prediction
 from app.models.recommendation import Recommendation
 from app.models.subscription_plan import SubscriptionPlan
 from app.models.user_subscription import UserSubscription
+from app.services.notifications import notify_recommendation_push
 
 
 UPGRADE_THRESHOLD_PERCENT = Decimal("100")
@@ -363,6 +364,11 @@ async def generate_recommendation_for_prediction(
     db.add(recommendation)
     await db.flush()
     await db.refresh(recommendation)
+
+    await notify_recommendation_push(
+        db=db,
+        recommendation=recommendation,
+    )
 
     return RecommendationGenerationResult(
         recommendation=recommendation,

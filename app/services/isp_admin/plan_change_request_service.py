@@ -12,6 +12,7 @@ from app.models.subscription_change_request import SubscriptionChangeRequest
 from app.models.subscription_plan import SubscriptionPlan
 from app.models.user_subscription import UserSubscription
 from app.schemas.isp_admin import ISPAdminPlanChangeRequestReviewRequest
+from app.services.notifications import notify_plan_request_review_push
 
 
 class StalePlanChangeRequestApprovalError(RuntimeError):
@@ -173,5 +174,10 @@ async def review_plan_change_request_for_isp(
 
     await db.flush()
     await db.refresh(change_request)
+
+    await notify_plan_request_review_push(
+        db=db,
+        change_request=change_request,
+    )
 
     return change_request

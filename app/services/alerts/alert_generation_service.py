@@ -16,6 +16,10 @@ from app.models.device_network_policy import DeviceNetworkPolicy
 from app.models.router import Router
 from app.models.usage_record import UsageRecord
 from app.models.user_subscription import UserSubscription
+from app.services.notifications import (
+    notify_new_device_push,
+    notify_usage_alert_push,
+)
 
 
 WARNING_USAGE_PERCENT = Decimal("50")
@@ -615,7 +619,7 @@ async def generate_alerts_after_router_ingestion(
             event_start=device_event_start,
         )
 
-    return AlertGenerationResult(
+    combined_result = AlertGenerationResult(
         alerts_created=usage_result.alerts_created + new_device_result.alerts_created,
         usage_alerts_created=usage_result.usage_alerts_created,
         new_device_alerts_created=new_device_result.new_device_alerts_created,
@@ -623,6 +627,36 @@ async def generate_alerts_after_router_ingestion(
         plan_exceed_alert_created=usage_result.plan_exceed_alert_created,
         unusual_consumption_alert_created=usage_result.unusual_consumption_alert_created,
     )
+
+    if combined_result.alerts_created:
+        subscription_result = await db.execute(
+            select(UserSubscription).where(
+                UserSubscription.id == router.user_subscription_id
+            )
+        )
+        subscription = subscription_result.scalar_one_or_none()
+
+        if subscription is not None:
+            if combined_result.plan_exceed_alert_created:
+                await notify_usage_alert_push(
+                    db=db,
+                    user_id=subscription.user_id,
+                    alert_kind="plan_exceed",
+                )
+            elif combined_result.high_usage_alert_created:
+                await notify_usage_alert_push(
+                    db=db,
+                    user_id=subscription.user_id,
+                    alert_kind="high_usage",
+                )
+
+            if combined_result.new_device_alerts_created:
+                await notify_new_device_push(
+                    db=db,
+                    user_id=subscription.user_id,
+                )
+
+    return combined_result
 
 
 async def generate_policy_failed_alert_for_policy(
