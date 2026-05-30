@@ -1,3 +1,61 @@
+<!-- STEP_55F_PUSH_NOTIFICATIONS_DOCS_START -->
+## Step 55F Push Notifications MVP Documentation Checkpoint (2026-05-30)
+
+Status: Complete for documentation/truth-doc alignment scope.
+
+Completed push notification MVP steps:
+
+- Step 55A: Backend App User Expo push token storage is complete and pushed.
+- Step 55B: Mobile Expo notification permission/token registration is complete and pushed.
+- Step 55C: Backend Expo push sender service is complete and pushed.
+- Step 55D: Backend event triggers for important notifications are complete and pushed.
+- Step 55E: Mobile notification tap routing is complete and pushed.
+- Step 55E hotfix: Mobile push routing files were normalized and pushed.
+
+Implemented behavior:
+
+- App Users can register Expo push tokens with the backend.
+- Push tokens are scoped to the authenticated App User.
+- Backend push dispatch uses safe generic notification bodies.
+- Push dispatch is best-effort and must not break core backend behavior.
+- Important events can dispatch push notifications:
+  - high usage / plan limit alerts,
+  - rapid high usage alerts,
+  - new device alerts,
+  - meaningful recommendation updates,
+  - approved/rejected service request updates.
+- `stay_current` recommendations do not dispatch push notifications.
+- Mobile notification taps route users to:
+  - Alerts tab,
+  - More > Predictions & recommendations,
+  - More > Service requests.
+
+Documentation added:
+
+- docs/PUSH_NOTIFICATIONS_MVP.md
+
+Current push notification status:
+
+- Push notifications are no longer only future work.
+- They are implemented as an MVP across backend and mobile.
+- Final live push smoke is still pending.
+- A rebuilt APK/development build is required before proper Android remote push testing.
+- Expo delivery should be treated as best-effort, not guaranteed.
+- Push receipt polling/storage and token cleanup from receipt errors remain future improvements.
+
+Still deferred:
+
+- Final full live smoke is still deferred.
+- Final APK rebuild is not done yet.
+- Production ML runtime integration remains future work unless explicitly selected.
+- Router password storage remains deferred until encrypted credential storage exists.
+- No secrets, .env values, database URLs, API keys, JWT secrets, Render/Vercel/Neon/Brevo secrets, Expo credentials, or MFA codes were exposed.
+
+Recommended next step:
+
+- Rebuild the mobile APK/development build, then perform focused push notification smoke testing before the final full live smoke.
+<!-- STEP_55F_PUSH_NOTIFICATIONS_DOCS_END -->
+
 <!-- STEP_54D_REPO_CLEANLINESS_CHECKPOINT_START -->
 ## Step 54D Repo Cleanliness Checkpoint (2026-05-29)
 

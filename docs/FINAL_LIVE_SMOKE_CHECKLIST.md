@@ -1,3 +1,47 @@
+<!-- STEP_55F_PUSH_SMOKE_CHECKLIST_START -->
+## Push Notification Smoke Checklist
+
+Run this only after rebuilding/installing the mobile APK or development build.
+
+Do not expose secrets, push tokens, .env values, database URLs, API keys, JWT secrets, Expo credentials, Render/Vercel/Neon/Brevo secrets, or MFA codes.
+
+Backend checks:
+
+- Confirm backend is deployed after Step 55A/55C/55D.
+- Confirm the `app_user_push_tokens` migration has applied.
+- Login as an App User from the rebuilt mobile app.
+- Confirm the mobile app can register a push token without showing it in the UI.
+- Confirm token registration does not break login/session restore if permission is denied.
+
+Mobile checks:
+
+- Install rebuilt APK/development build.
+- Login as App User.
+- Accept notification permission.
+- Close/background the app.
+- Trigger one important event from backend/admin/simulator:
+  - high usage / plan limit alert,
+  - new device alert,
+  - meaningful recommendation update,
+  - approved/rejected service request update.
+- Confirm a notification appears on device.
+- Tap alert notification and confirm it opens Alerts.
+- Tap recommendation notification and confirm it opens More > Predictions & recommendations.
+- Tap service request update notification and confirm it opens More > Service requests.
+
+Anti-spam checks:
+
+- Repeat normal high usage within the normal alert repeat window and confirm duplicate notification spam does not occur.
+- Confirm `stay_current` recommendations do not send push notifications.
+- Confirm backend event still succeeds if push sending fails or no token exists.
+
+Deferred/future checks:
+
+- Expo receipt polling/storage is future work.
+- Automated token cleanup from invalid receipt errors is future work.
+- Direct Firebase integration is future work unless explicitly selected.
+<!-- STEP_55F_PUSH_SMOKE_CHECKLIST_END -->
+
 # PulseFi Final Live Smoke Checklist
 
 ## Purpose
@@ -116,4 +160,3 @@ Final live smoke can be marked complete only after:
 - production debug-token exposure is verified absent,
 - no critical production regressions are found,
 - report/presentation claims match implemented behavior.
-

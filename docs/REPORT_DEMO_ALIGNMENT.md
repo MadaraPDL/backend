@@ -1,3 +1,36 @@
+<!-- STEP_55F_PUSH_REPORT_ALIGNMENT_START -->
+## Push Notifications MVP Report/Demo Alignment
+
+PulseFi now includes a push notification MVP.
+
+Accurate report/demo claim:
+
+> PulseFi includes a push notification MVP where the mobile app registers an Expo push token, the backend stores it for the authenticated App User, and important events can dispatch safe generic push notifications. Notification taps route users to the relevant mobile screen.
+
+Implemented push notification events:
+
+- high usage / plan limit alerts,
+- rapid high usage alerts,
+- new device alerts,
+- meaningful recommendation updates,
+- approved/rejected service request updates.
+
+Important limitations:
+
+- Final live push smoke is still pending.
+- A rebuilt APK/development build is required for Android remote push testing.
+- Push delivery is best-effort and cannot be guaranteed.
+- Expo push receipts are not yet stored or monitored.
+- Firebase direct integration was not added.
+
+Avoid claiming:
+
+- push notifications are fully production-hardened,
+- delivery is guaranteed,
+- Firebase Cloud Messaging is directly integrated,
+- push receipt lifecycle cleanup is implemented.
+<!-- STEP_55F_PUSH_REPORT_ALIGNMENT_END -->
+
 # PulseFi Report and Demo Alignment
 
 ## Purpose
@@ -123,4 +156,3 @@ Next safe tasks:
 2. Align final report and presentation wording with this document.
 3. Prepare final live smoke checklist.
 4. Only after that, perform final deployed backend/admin/mobile smoke testing.
-
