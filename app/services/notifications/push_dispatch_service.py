@@ -129,11 +129,17 @@ async def notify_usage_alert_push(
     alert_kind: str,
 ) -> ExpoPushSendResult:
     if alert_kind == "plan_exceed":
-        title = "Plan usage limit reached"
-        body = "Open PulseFi to review your current internet usage."
+        title = "Plan limit alert"
+        body = (
+            "Your internet usage reached or exceeded the plan limit. "
+            "Open PulseFi to review details."
+        )
     else:
-        title = "High internet usage"
-        body = "Open PulseFi to review your latest usage alert."
+        title = "High usage alert"
+        body = (
+            "Your internet usage is unusually high. "
+            "Open PulseFi to review details."
+        )
 
     return await dispatch_push_to_user(
         db=db,
