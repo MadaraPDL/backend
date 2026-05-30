@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter
+from fastapi import APIRouter
 
 from app.api.v1.endpoints.app_user import (
     alerts,
@@ -12,6 +12,7 @@ from app.api.v1.endpoints.app_user import (
     recommendations,
     plan_change_requests,
     device_policies,
+    push_tokens,
 )
 
 

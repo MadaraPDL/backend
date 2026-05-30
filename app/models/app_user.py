@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from app.models.mfa_challenge import MFAChallenge
     from app.models.mfa_setup_challenge import MFASetupChallenge
     from app.models.password_reset_token import PasswordResetToken
+    from app.models.app_user_push_token import AppUserPushToken
     from app.models.prediction import Prediction
     from app.models.recommendation import Recommendation
     from app.models.subscription_change_request import SubscriptionChangeRequest
@@ -169,6 +170,12 @@ class AppUser(Base):
     alerts: Mapped[list["Alert"]] = relationship(
         "Alert",
         back_populates="user",
+    )
+
+    push_tokens: Mapped[list["AppUserPushToken"]] = relationship(
+        "AppUserPushToken",
+        back_populates="user",
+        cascade="all, delete-orphan",
     )
 
     requested_device_network_policies: Mapped[list["DeviceNetworkPolicy"]] = relationship(

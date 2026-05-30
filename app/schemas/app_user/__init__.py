@@ -54,4 +54,11 @@ __all__ = [
     "MyDevicePolicyExecutionResponse",
     "MyDevicePolicyResponse",
     "MyRouterActionLogResponse",
+    "PushTokenRegisterRequest",
+    "PushTokenResponse",
 ]
+
+from app.schemas.app_user.push_tokens import (
+    PushTokenRegisterRequest,
+    PushTokenResponse,
+)

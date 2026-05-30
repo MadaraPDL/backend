@@ -1,6 +1,7 @@
 from app.models.admin import Admin
 from app.models.alert import Alert
 from app.models.app_user import AppUser
+from app.models.app_user_push_token import AppUserPushToken
 from app.models.device import Device
 from app.models.device_connection_log import DeviceConnectionLog
 from app.models.device_network_policy import DeviceNetworkPolicy
@@ -24,6 +25,7 @@ __all__ = [
     "Admin",
     "Alert",
     "AppUser",
+    "AppUserPushToken",
     "Device",
     "DeviceConnectionLog",
     "DeviceNetworkPolicy",
