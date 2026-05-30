@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -28,6 +28,14 @@ from app.services.mfa_service import (
 from app.services.mfa_setup_service import build_mfa_setup_response
 
 
+
+def get_access_token_expires_delta(account_type: AccountType) -> timedelta:
+    if account_type == "app_user":
+        return timedelta(minutes=settings.APP_USER_ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    return timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+
+
 class EmailDeliveryRequiredError(RuntimeError):
     """Raised when an email-based auth flow is requested without email delivery."""
 
@@ -43,6 +51,7 @@ def build_auth_token_response(
     access_token = create_access_token(
         subject=account.id,
         account_type=account_type,
+        expires_delta=get_access_token_expires_delta(account_type),
     )
 
     return {

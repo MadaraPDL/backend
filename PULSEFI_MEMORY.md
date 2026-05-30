@@ -5237,3 +5237,15 @@ Updated remaining order:
 4. Step 55 - Final full live smoke test.
 5. Step 56 - Project freeze for presentation.
 <!-- PULSEFI_REAL_ML_REQUIRED_UPDATE_END -->
+
+## Step 57A - Mobile App User session duration polish
+
+Status: complete pending deploy.
+
+Backend now keeps admin access tokens on the standard short session window while App User mobile access tokens use a longer mobile-friendly session window through APP_USER_ACCESS_TOKEN_EXPIRE_MINUTES. This improves mobile UX when opening the app or tapping push notifications later, while push notifications remain independent from the login session because Expo push tokens are stored server-side after registration.
+
+Verification:
+- compileall app tests scripts
+- pytest tests/core/test_auth_token_lifetimes.py -q
+- pytest -q
+- git diff --check
