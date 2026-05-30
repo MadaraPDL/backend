@@ -5285,3 +5285,15 @@ Verification:
 - pytest tests/api/test_app_user_plan_change_request_errors.py tests/integration/test_app_user_action_ownership_integration.py -q
 - pytest -q
 - git diff --check
+
+## Step 57E - Prevent random scheduled alert push spam
+
+Status: complete pending deploy.
+
+Scheduled intelligence now refreshes predictions/recommendations without generating usage/new-device alerts. This prevents background scheduler ticks from creating random high-usage alerts and push notifications while the user is not actively testing. Usage alerts and push notifications still work through event-driven router ingestion/simulator flows.
+
+Verification:
+- compileall app tests scripts
+- pytest tests/services/test_intelligence_scheduler.py -q
+- pytest -q
+- git diff --check

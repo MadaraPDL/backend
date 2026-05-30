@@ -26,7 +26,11 @@ async def run_intelligence_for_all_isps_once() -> None:
 
         for isp_id in isp_ids:
             try:
-                run_result = await run_intelligence_for_isp(db=db, isp_id=isp_id)
+                run_result = await run_intelligence_for_isp(
+                    db=db,
+                    isp_id=isp_id,
+                    include_alert_generation=False,
+                )
                 logger.info(
                     "PulseFi intelligence run completed for ISP %s: checked=%s predictions=%s recommendations=%s skipped=%s failed=%s",
                     isp_id,
