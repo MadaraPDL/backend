@@ -31,6 +31,18 @@ _CONFIRMATION_TEXT_BY_REQUEST_TYPE = {
 }
 
 
+_REQUEST_TYPE_LABELS = {
+    "upgrade": "plan upgrade",
+    "downgrade": "plan downgrade",
+    "suspend_subscription": "subscription suspension",
+    "suspend_account": "account suspension",
+}
+
+
+class PlanChangeRequestValidationError(ValueError):
+    """Raised when an App User service request is invalid."""
+
+
 def _confirmation_matches(*, request_type: str, confirmation_text: str | None) -> bool:
     expected = _CONFIRMATION_TEXT_BY_REQUEST_TYPE.get(request_type)
 
@@ -187,17 +199,25 @@ async def create_my_plan_change_request(
     )
 
     if subscription is None:
-        return None
+        raise PlanChangeRequestValidationError(
+            "Selected subscription does not belong to this account."
+        )
 
     if not _confirmation_matches(
         request_type=data.request_type,
         confirmation_text=data.confirmation_text,
     ):
-        return None
+        expected_confirmation = _CONFIRMATION_TEXT_BY_REQUEST_TYPE.get(
+            data.request_type,
+            "the required confirmation phrase",
+        )
+        raise PlanChangeRequestValidationError(
+            f"Type {expected_confirmation} exactly to confirm this request."
+        )
 
     if data.request_type in _PLAN_CHANGE_REQUEST_TYPES:
         if data.requested_plan_id is None:
-            return None
+            raise PlanChangeRequestValidationError("Select a target plan first.")
 
         requested_plan = await _get_active_isp_plan(
             db=db,
@@ -206,14 +226,20 @@ async def create_my_plan_change_request(
         )
 
         if requested_plan is None:
-            return None
+            raise PlanChangeRequestValidationError(
+                "Selected target plan is not active or does not belong to this ISP."
+            )
 
         if subscription.plan_id == requested_plan.id:
-            return None
+            raise PlanChangeRequestValidationError(
+                "You already have this plan on the selected service line."
+            )
 
     elif data.request_type == "suspend_subscription":
         if subscription.status == "suspended":
-            return None
+            raise PlanChangeRequestValidationError(
+                "This subscription is already suspended."
+            )
 
         requested_plan = await _get_isp_plan_by_id(
             db=db,
@@ -222,11 +248,15 @@ async def create_my_plan_change_request(
         )
 
         if requested_plan is None:
-            return None
+            raise PlanChangeRequestValidationError(
+                "The current plan for this subscription no longer exists."
+            )
 
     elif data.request_type == "suspend_account":
         if current_user.status == "suspended":
-            return None
+            raise PlanChangeRequestValidationError(
+                "Your account is already suspended."
+            )
 
         requested_plan = await _get_isp_plan_by_id(
             db=db,
@@ -235,14 +265,18 @@ async def create_my_plan_change_request(
         )
 
         if requested_plan is None:
-            return None
+            raise PlanChangeRequestValidationError(
+                "The current plan for this account no longer exists."
+            )
 
     else:
-        return None
+        raise PlanChangeRequestValidationError("Unsupported service request type.")
 
     if data.recommendation_id is not None:
         if data.request_type not in _PLAN_CHANGE_REQUEST_TYPES:
-            return None
+            raise PlanChangeRequestValidationError(
+                "Recommendations can only create plan upgrade or downgrade requests."
+            )
 
         recommendation = await _get_owned_recommendation(
             db=db,
@@ -251,34 +285,48 @@ async def create_my_plan_change_request(
         )
 
         if recommendation is None:
-            return None
+            raise PlanChangeRequestValidationError(
+                "Selected recommendation does not belong to this account."
+            )
 
         expected_request_type = _RECOMMENDATION_TYPE_TO_REQUEST_TYPE.get(
             recommendation.recommendation_type
         )
 
         if expected_request_type is None:
-            return None
+            raise PlanChangeRequestValidationError(
+                "Selected recommendation cannot create a plan change request."
+            )
 
         if data.request_type != expected_request_type:
-            return None
+            raise PlanChangeRequestValidationError(
+                "Selected recommendation does not match this request type."
+            )
 
         if recommendation.user_subscription_id != subscription.id:
-            return None
+            raise PlanChangeRequestValidationError(
+                "Selected recommendation does not match this subscription."
+            )
 
         if recommendation.recommendation_plan_id != requested_plan.id:
-            return None
+            raise PlanChangeRequestValidationError(
+                "Selected recommendation does not match the requested plan."
+            )
 
         if recommendation.current_plan_id is not None:
             if recommendation.current_plan_id != subscription.plan_id:
-                return None
+                raise PlanChangeRequestValidationError(
+                    "Selected recommendation is no longer valid for your current plan."
+                )
 
         if await _has_pending_request_for_recommendation(
             db=db,
             current_user=current_user,
             recommendation_id=recommendation.id,
         ):
-            return None
+            raise PlanChangeRequestValidationError(
+                "A pending request already exists for this recommendation."
+            )
 
         recommendation.status = "accepted"
 
@@ -288,7 +336,10 @@ async def create_my_plan_change_request(
         subscription_id=subscription.id,
         request_type=data.request_type,
     ):
-        return None
+        request_label = _REQUEST_TYPE_LABELS.get(data.request_type, "service")
+        raise PlanChangeRequestValidationError(
+            f"A pending {request_label} request already exists for this service line."
+        )
 
     change_request = SubscriptionChangeRequest(
         user_id=current_user.id,

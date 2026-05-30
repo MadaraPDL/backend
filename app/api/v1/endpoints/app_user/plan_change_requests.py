@@ -17,6 +17,9 @@ from app.services.app_user import (
     get_my_plan_change_request,
     list_my_plan_change_requests,
 )
+from app.services.app_user.plan_change_request_service import (
+    PlanChangeRequestValidationError,
+)
 
 
 router = APIRouter(prefix="/me/plan-change-requests", tags=["App User"])
@@ -32,16 +35,22 @@ async def create_my_plan_change_request_endpoint(
     db: AsyncSession = Depends(get_db),
     current_user: AppUser = Depends(get_current_app_user),
 ) -> MyPlanChangeRequestResponse:
-    change_request = await create_my_plan_change_request(
-        db=db,
-        current_user=current_user,
-        data=data,
-    )
+    try:
+        change_request = await create_my_plan_change_request(
+            db=db,
+            current_user=current_user,
+            data=data,
+        )
+    except PlanChangeRequestValidationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        ) from exc
 
     if change_request is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Invalid subscription, requested plan, recommendation, request type, or confirmation text",
+            detail="Plan change request could not be created",
         )
 
     return change_request

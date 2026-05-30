@@ -19,6 +19,7 @@ from app.models.subscription_plan import SubscriptionPlan
 from app.models.user_subscription import UserSubscription
 from app.schemas.app_user import MyDevicePolicyCreate, MyPlanChangeRequestCreate
 from app.services.app_user.device_policy_service import create_my_device_policy
+from app.services.app_user.plan_change_request_service import PlanChangeRequestValidationError
 from app.services.app_user.plan_change_request_service import (
     create_my_plan_change_request,
 )
@@ -176,35 +177,41 @@ async def test_app_user_cannot_create_actions_using_other_users_resources(
 
     assert policy_result is None
 
-    other_subscription_request = await create_my_plan_change_request(
-        db=integration_db,
-        current_user=user_a,
-        data=MyPlanChangeRequestCreate(
-            user_subscription_id=subscription_b.id,
-            requested_plan_id=requested_plan.id,
-            recommendation_id=None,
-            request_type="upgrade",
-            confirmation_text="CHANGE PLAN",
-            reason="Trying to use another user's subscription.",
-        ),
+    with pytest.raises(PlanChangeRequestValidationError) as subscription_error:
+        await create_my_plan_change_request(
+            db=integration_db,
+            current_user=user_a,
+            data=MyPlanChangeRequestCreate(
+                user_subscription_id=subscription_b.id,
+                requested_plan_id=requested_plan.id,
+                recommendation_id=None,
+                request_type="upgrade",
+                confirmation_text="CHANGE PLAN",
+                reason="Trying to use another user's subscription.",
+            ),
+        )
+
+    assert str(subscription_error.value) == (
+        "Selected subscription does not belong to this account."
     )
 
-    assert other_subscription_request is None
+    with pytest.raises(PlanChangeRequestValidationError) as recommendation_error:
+        await create_my_plan_change_request(
+            db=integration_db,
+            current_user=user_a,
+            data=MyPlanChangeRequestCreate(
+                user_subscription_id=subscription_a.id,
+                requested_plan_id=requested_plan.id,
+                recommendation_id=recommendation_b.id,
+                request_type="upgrade",
+                confirmation_text="CHANGE PLAN",
+                reason="Trying to use another user's recommendation.",
+            ),
+        )
 
-    other_recommendation_request = await create_my_plan_change_request(
-        db=integration_db,
-        current_user=user_a,
-        data=MyPlanChangeRequestCreate(
-            user_subscription_id=subscription_a.id,
-            requested_plan_id=requested_plan.id,
-            recommendation_id=recommendation_b.id,
-            request_type="upgrade",
-            confirmation_text="CHANGE PLAN",
-            reason="Trying to use another user's recommendation.",
-        ),
+    assert str(recommendation_error.value) == (
+        "Selected recommendation does not belong to this account."
     )
-
-    assert other_recommendation_request is None
 
     policy_rows = await integration_db.execute(
         select(DeviceNetworkPolicy).where(

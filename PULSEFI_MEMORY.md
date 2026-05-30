@@ -5273,3 +5273,15 @@ Verification:
 - pytest tests/services/test_intelligence_service.py tests/services/test_intelligence_alert_push_dispatch.py -q
 - pytest -q
 - git diff --check
+
+## Step 57D - Service request validation message polish
+
+Status: complete pending deploy.
+
+Backend App User service request creation now returns specific validation errors instead of one generic invalid request message. Duplicate pending requests now explain that a pending plan upgrade/downgrade/suspension request already exists for the selected service line. Invalid subscription ownership, invalid recommendation ownership, wrong confirmation text, same-plan selection, inactive target plans, and suspended-account cases now return clear 400 responses. Mobile already displays backend detail strings, so this improves upgrade bundle/service request feedback after backend deploy.
+
+Verification:
+- compileall app tests scripts
+- pytest tests/api/test_app_user_plan_change_request_errors.py tests/integration/test_app_user_action_ownership_integration.py -q
+- pytest -q
+- git diff --check
