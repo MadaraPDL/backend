@@ -14,6 +14,7 @@ from app.services.intelligence_scheduler import (
     start_intelligence_scheduler,
     stop_intelligence_scheduler,
 )
+from app.maintenance.push_token_table import ensure_app_user_push_token_table
 
 
 def create_application() -> FastAPI:
@@ -56,6 +57,7 @@ app = create_application()
 
 @app.on_event("startup")
 async def start_background_services() -> None:
+    await ensure_app_user_push_token_table()
     start_intelligence_scheduler()
 
 

@@ -1,4 +1,4 @@
-﻿from uuid import uuid4
+from uuid import uuid4
 
 from app.models.recommendation import Recommendation
 from app.services.notifications.push_dispatch_service import (
@@ -75,3 +75,37 @@ def test_should_notify_recommendation_allows_meaningful_plan_changes() -> None:
     )
 
     assert should_notify_recommendation(recommendation) is True
+
+
+import pytest
+
+from app.services.notifications.push_dispatch_service import dispatch_push_to_user
+
+
+@pytest.mark.asyncio
+async def test_dispatch_push_to_user_skips_lookup_errors_without_using_caller_transaction(
+    monkeypatch,
+) -> None:
+    class CallerDb:
+        touched = False
+
+    async def broken_lookup(*, user_id):
+        raise RuntimeError("push token table unavailable")
+
+    monkeypatch.setattr(
+        "app.services.notifications.push_dispatch_service.list_active_expo_tokens_for_user_isolated",
+        broken_lookup,
+    )
+
+    result = await dispatch_push_to_user(
+        db=CallerDb(),
+        user_id=uuid4(),
+        title="PulseFi",
+        body="Open PulseFi.",
+        data={"screen": "Alerts"},
+    )
+
+    assert result.attempted == 0
+    assert result.accepted == 0
+    assert result.failed == 0
+    assert CallerDb.touched is False

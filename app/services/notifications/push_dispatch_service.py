@@ -7,6 +7,8 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.db.session import AsyncSessionLocal
+
 from app.models.app_user_push_token import AppUserPushToken
 from app.models.recommendation import Recommendation
 from app.models.subscription_change_request import SubscriptionChangeRequest
@@ -71,6 +73,17 @@ def build_push_messages_for_user(
     ]
 
 
+async def list_active_expo_tokens_for_user_isolated(
+    *,
+    user_id: UUID,
+) -> list[str]:
+    async with AsyncSessionLocal() as push_db:
+        return await list_active_expo_tokens_for_user(
+            db=push_db,
+            user_id=user_id,
+        )
+
+
 async def dispatch_push_to_user(
     *,
     db: AsyncSession,
@@ -79,9 +92,13 @@ async def dispatch_push_to_user(
     body: str,
     data: dict[str, Any],
 ) -> ExpoPushSendResult:
+    # Push dispatch is intentionally isolated from the caller transaction.
+    # A push lookup/send failure must never abort simulator, intelligence,
+    # alert, recommendation, or service-request business logic.
+    _ = db
+
     try:
-        expo_push_tokens = await list_active_expo_tokens_for_user(
-            db=db,
+        expo_push_tokens = await list_active_expo_tokens_for_user_isolated(
             user_id=user_id,
         )
     except Exception as exc:
