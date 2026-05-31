@@ -5,7 +5,7 @@ from datetime import datetime, time, timedelta, timezone
 from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -59,6 +59,16 @@ def _usage_total_expression():
     return func.coalesce(
         UsageRecord.total_mb,
         UsageRecord.upload_mb + UsageRecord.download_mb,
+    )
+
+
+def _countable_usage_filter():
+    # Simulator stores one official total row plus estimated per-device rows.
+    # Usage/alert totals must use the official total and ignore estimated rows,
+    # otherwise simulator usage is counted twice.
+    return or_(
+        UsageRecord.source.is_(None),
+        UsageRecord.source != "simulator_estimated_device",
     )
 
 
@@ -139,6 +149,7 @@ async def _get_latest_window_total_mb(
         UsageRecord.user_subscription_id == user_subscription_id,
         UsageRecord.record_start == record_start,
         UsageRecord.record_end == record_end,
+        _countable_usage_filter(),
     )
 
     result = await db.execute(stmt)
@@ -158,6 +169,7 @@ async def _get_recent_ingestion_total_mb(
     stmt = select(func.coalesce(func.sum(total_expr), 0)).where(
         UsageRecord.user_subscription_id == user_subscription_id,
         UsageRecord.created_at >= since_created_at,
+        _countable_usage_filter(),
     )
 
     result = await db.execute(stmt)
@@ -175,6 +187,7 @@ async def _get_recent_usage_total_mb(
     stmt = select(func.coalesce(func.sum(total_expr), 0)).where(
         UsageRecord.user_subscription_id == user_subscription_id,
         UsageRecord.record_start >= since_record_start,
+        _countable_usage_filter(),
     )
 
     result = await db.execute(stmt)
@@ -199,6 +212,7 @@ async def _get_previous_window_totals_mb(
         .where(
             UsageRecord.user_subscription_id == user_subscription_id,
             UsageRecord.record_end <= before_record_start,
+            _countable_usage_filter(),
         )
         .group_by(UsageRecord.record_start, UsageRecord.record_end)
         .order_by(UsageRecord.record_end.desc())
@@ -253,6 +267,7 @@ async def generate_usage_alerts_for_subscription(
     cycle_usage_stmt = select(func.coalesce(func.sum(total_expr), 0)).where(
         UsageRecord.user_subscription_id == subscription.id,
         UsageRecord.record_start >= cycle_start,
+        _countable_usage_filter(),
     )
 
     cycle_usage_result = await db.execute(cycle_usage_stmt)

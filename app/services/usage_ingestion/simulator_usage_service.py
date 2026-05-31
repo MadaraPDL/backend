@@ -69,6 +69,13 @@ def _usage_total_expression():
     )
 
 
+def _countable_usage_filter():
+    return or_(
+        UsageRecord.source.is_(None),
+        UsageRecord.source != "simulator_estimated_device",
+    )
+
+
 def _decimal_or_zero(value: object) -> Decimal:
     if value is None:
         return Decimal("0")
@@ -151,6 +158,7 @@ async def _get_cycle_usage_mb(
         select(func.coalesce(func.sum(_usage_total_expression()), 0)).where(
             UsageRecord.user_subscription_id == user_subscription_id,
             UsageRecord.record_start >= cycle_start,
+            _countable_usage_filter(),
         )
     )
 
@@ -453,4 +461,3 @@ async def run_simulator_usage_ingestion_for_router(
         blocked_devices=len(blocked_devices),
         policy_alerts_created=policy_alerts_created,
     )
-

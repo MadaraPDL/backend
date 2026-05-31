@@ -5297,3 +5297,19 @@ Verification:
 - pytest tests/services/test_intelligence_scheduler.py -q
 - pytest -q
 - git diff --check
+
+## Step 58D - Fix simulator usage double-counting in alerts
+
+Status: complete pending deploy.
+
+Fixed alert and simulator usage calculations so simulator estimated per-device rows are not counted together with the official router/subscription total row. This prevents alerts from showing roughly double the visible usage, such as visible usage around 10.6 GB while alert text says about 21 GB.
+
+Notes:
+- Existing old alerts keep their old message text.
+- New alerts after backend deploy should use corrected totals.
+- Backend-only change; no APK rebuild required for this fix.
+
+Verification:
+- compileall app tests scripts
+- pytest -q
+- git diff --check
