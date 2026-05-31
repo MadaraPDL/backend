@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from types import SimpleNamespace
 from uuid import uuid4
@@ -228,7 +228,6 @@ async def test_recommendation_generation_upgrade_path():
     db = FakeDb(
         execute_values=[
             FakeScalarResult(prediction),
-            FakeScalarResult(None),
             FakeScalarResult(recommended_plan),
             FakeScalarResult(None),
         ]
@@ -255,7 +254,9 @@ async def test_recommendation_generation_returns_existing_new_recommendation():
     prediction_id = uuid4()
     existing_recommendation = SimpleNamespace(
         id=uuid4(),
+        recommendation_type="stay_current",
         recommendation_plan_id=None,
+        created_at=datetime.now(timezone.utc),
     )
 
     current_plan = SimpleNamespace(
@@ -415,7 +416,6 @@ async def test_recommendation_generation_downgrade_path():
     db = FakeDb(
         execute_values=[
             FakeScalarResult(prediction),
-            FakeScalarResult(None),
             FakeScalarResult(recommended_plan),
             FakeScalarResult(None),
         ]

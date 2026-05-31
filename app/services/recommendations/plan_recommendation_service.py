@@ -244,34 +244,6 @@ async def generate_recommendation_for_prediction(
     predicted_usage_gb = prediction.predicted_usage_gb
     current_plan_limit_gb = current_plan.data_limit_gb
 
-    existing = await _find_existing_new_recommendation(
-        db=db,
-        prediction_id=prediction.id,
-    )
-
-    if existing is not None:
-        recommended_limit = None
-
-        if existing.recommendation_plan_id is not None:
-            plan_stmt = select(SubscriptionPlan).where(
-                SubscriptionPlan.id == existing.recommendation_plan_id
-            )
-            plan_result = await db.execute(plan_stmt)
-            recommended_plan = plan_result.scalar_one_or_none()
-            recommended_limit = (
-                recommended_plan.data_limit_gb
-                if recommended_plan is not None
-                else None
-            )
-
-        return RecommendationGenerationResult(
-            recommendation=existing,
-            created=False,
-            predicted_usage_gb=predicted_usage_gb,
-            current_plan_limit_gb=current_plan_limit_gb,
-            recommended_plan_limit_gb=recommended_limit,
-        )
-
     usage_percent = _usage_percent(
         predicted_usage_gb=predicted_usage_gb,
         plan_limit_gb=current_plan_limit_gb,
