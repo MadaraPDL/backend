@@ -5342,3 +5342,19 @@ Verification:
 - compileall app tests scripts
 - pytest -q
 - git diff --check
+
+## Step 58H - Refresh recommendations from intelligence runs
+
+Status: complete pending deploy.
+
+Fixed ISP Admin intelligence runs so recommendation generation is called again when a prediction is refreshed after new usage. Previously, the intelligence run reused an existing recommendation before calling the recommendation generator, which could keep stale recommendations even when the prediction changed.
+
+Notes:
+- The UI counters count newly created records, so refreshed/reused predictions or recommendations may not increase the created counter.
+- The run details message now indicates whether the recommendation was generated, refreshed, reused, or already existed.
+- Backend-only change; no APK rebuild required.
+
+Verification:
+- compileall app tests scripts
+- pytest -q
+- git diff --check
