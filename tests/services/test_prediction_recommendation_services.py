@@ -257,7 +257,12 @@ async def test_recommendation_generation_returns_existing_new_recommendation():
     existing_recommendation = SimpleNamespace(
         id=uuid4(),
         recommendation_type="stay_current",
+        current_plan_id=None,
         recommendation_plan_id=None,
+        prediction_id=None,
+        recommendation_text="Old text",
+        reason="Old reason",
+        confidence_score=None,
         created_at=datetime.now(timezone.utc),
     )
 
@@ -292,8 +297,13 @@ async def test_recommendation_generation_returns_existing_new_recommendation():
 
     assert result.created is False
     assert result.recommendation == existing_recommendation
+    assert existing_recommendation.prediction_id == prediction_id
+    assert existing_recommendation.recommendation_text == "Stay on your current plan."
+    assert "70.00 GB" in existing_recommendation.reason
+    assert existing_recommendation.confidence_score == Decimal("0.80")
     assert db.added == []
-    assert db.flush_called is False
+    assert db.flush_called is True
+    assert existing_recommendation in db.refreshed
 
 
 @pytest.mark.asyncio

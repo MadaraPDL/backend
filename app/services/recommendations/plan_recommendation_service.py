@@ -308,6 +308,16 @@ async def generate_recommendation_for_prediction(
         # Non-stay-current states should not duplicate unless state changes.
         # stay_current should only create a fresh daily record, not every usage run.
         if recommendation_type != "stay_current" or latest_created_date == today:
+            latest_recommendation.current_plan_id = current_plan.id
+            latest_recommendation.recommendation_plan_id = recommendation_plan_id
+            latest_recommendation.prediction_id = prediction.id
+            latest_recommendation.recommendation_text = text
+            latest_recommendation.reason = reason
+            latest_recommendation.confidence_score = prediction.confidence_score
+
+            await db.flush()
+            await db.refresh(latest_recommendation)
+
             return RecommendationGenerationResult(
                 recommendation=latest_recommendation,
                 created=False,

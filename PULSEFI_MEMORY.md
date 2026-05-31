@@ -5374,3 +5374,14 @@ Verification:
 - compileall app tests scripts
 - pytest -q
 - git diff --check
+
+## Step 58J - Update reused recommendation text
+
+Status: complete pending deploy.
+
+Fixed recommendation reuse so when the recommendation state stays the same, such as downgrade_plan to the same recommended plan, the existing recommendation row is refreshed with the latest prediction text, reason, confidence score, and prediction_id. This prevents stale recommendation text such as showing 22.27GB while the latest prediction is 334.08GB.
+
+Verification:
+- compileall app tests scripts
+- pytest -q
+- git diff --check
