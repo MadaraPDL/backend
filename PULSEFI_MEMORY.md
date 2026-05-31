@@ -5358,3 +5358,19 @@ Verification:
 - compileall app tests scripts
 - pytest -q
 - git diff --check
+
+## Step 58I - Fix ISP Admin analytics usage double-counting
+
+Status: complete pending deploy.
+
+Fixed ISP Admin analytics summary usage so simulator estimated per-device rows are not counted together with the official router/subscription total row. This prevents the Intelligence Center top usage card from showing roughly double the real visible usage, such as 22.27GB when the official usage is around 11.14GB.
+
+Notes:
+- Backend-only change; no APK rebuild required.
+- Existing usage records are not deleted; totals now filter them correctly.
+- This matches the previous alert and prediction countable-usage fixes.
+
+Verification:
+- compileall app tests scripts
+- pytest -q
+- git diff --check

@@ -1,10 +1,10 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from datetime import datetime, timezone
 from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.alert import Alert
@@ -21,6 +21,15 @@ from app.services.isp_admin.ownership_scope import apply_usage_record_isp_owners
 async def _count(db: AsyncSession, stmt) -> int:
     result = await db.execute(stmt)
     return int(result.scalar_one() or 0)
+
+
+def _countable_usage_filter():
+    # Simulator stores one official total row plus estimated per-device rows.
+    # ISP analytics totals must ignore estimated rows to avoid showing double usage.
+    return or_(
+        UsageRecord.source.is_(None),
+        UsageRecord.source != "simulator_estimated_device",
+    )
 
 
 async def get_isp_admin_analytics_summary(
@@ -162,7 +171,7 @@ async def get_isp_admin_analytics_summary(
     usage_stmt = apply_usage_record_isp_ownership_scope(
         select(func.coalesce(func.sum(UsageRecord.total_mb), 0)).select_from(UsageRecord),
         isp_id=isp_id,
-    )
+    ).where(_countable_usage_filter())
 
     if period_start is not None:
         usage_stmt = usage_stmt.where(UsageRecord.record_start >= period_start)
@@ -197,7 +206,3 @@ async def get_isp_admin_analytics_summary(
         total_usage_mb=total_usage_mb,
         total_usage_gb=total_usage_gb,
     )
-
-
-
-
