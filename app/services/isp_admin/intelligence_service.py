@@ -297,7 +297,7 @@ async def run_intelligence_for_isp(
                 prediction_id=prediction.id,
             )
 
-            if existing_recommendation is None:
+            if existing_recommendation is None or should_refresh_prediction:
                 recommendation_result = await generate_recommendation_for_prediction(
                     db=db,
                     prediction_id=prediction.id,
@@ -307,8 +307,9 @@ async def run_intelligence_for_isp(
 
                 if recommendation_result.created:
                     recommendations_created += 1
-
-                recommendation_message = "Recommendation generated."
+                    recommendation_message = "Recommendation generated."
+                else:
+                    recommendation_message = "Recommendation refreshed or reused."
             else:
                 recommendation = existing_recommendation
                 recommendation_message = "Recommendation already exists."
