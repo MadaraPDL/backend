@@ -5313,3 +5313,16 @@ Verification:
 - compileall app tests scripts
 - pytest -q
 - git diff --check
+
+## Step 58G - Improve prediction projection logic
+
+Status: complete pending deploy.
+
+Improved rule-based prediction so projected end-of-cycle usage uses active usage days from actual usage records instead of relying only on subscription calendar elapsed days. This makes demo predictions more realistic when the user has current usage early in the cycle, instead of projecting almost the same amount for the full month.
+
+Also made prediction date handling support both datetime and date values in tests/DB rows.
+
+Verification:
+- compileall app tests scripts
+- pytest -q
+- git diff --check

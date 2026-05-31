@@ -94,6 +94,8 @@ async def test_prediction_generation_calculates_full_cycle_usage():
     usage_row = SimpleNamespace(
         total_mb=Decimal("10240"),
         record_count=5,
+        first_usage_at=start_date,
+        latest_usage_at=prediction_date,
     )
 
     db = FakeDb(

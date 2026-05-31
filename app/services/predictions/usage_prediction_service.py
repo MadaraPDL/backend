@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -54,9 +54,26 @@ def _usage_total_expression():
     )
 
 
+def _countable_usage_filter():
+    # Simulator stores one official total row plus estimated per-device rows.
+    # Predictions must use the official total and ignore estimated rows,
+    # otherwise projected usage is doubled.
+    return or_(
+        UsageRecord.source.is_(None),
+        UsageRecord.source != "simulator_estimated_device",
+    )
+
+
 def _safe_days_between(start_date: date, end_date: date) -> int:
     days = (end_date - start_date).days + 1
     return max(days, 1)
+
+
+def _as_date(value: date | datetime) -> date:
+    if isinstance(value, datetime):
+        return value.date()
+
+    return value
 
 
 def _risk_level(
@@ -153,10 +170,13 @@ async def generate_usage_prediction_for_subscription(
     usage_stmt = select(
         func.coalesce(func.sum(total_expr), 0).label("total_mb"),
         func.count(UsageRecord.id).label("record_count"),
+        func.min(UsageRecord.record_start).label("first_usage_at"),
+        func.max(UsageRecord.record_end).label("latest_usage_at"),
     ).where(
         UsageRecord.user_subscription_id == subscription.id,
         UsageRecord.record_start >= period_start,
         UsageRecord.record_end <= effective_today + timedelta(days=1),
+        _countable_usage_filter(),
     )
 
     usage_result = await db.execute(usage_stmt)
@@ -165,8 +185,22 @@ async def generate_usage_prediction_for_subscription(
     observed_usage_mb = _decimal_or_zero(usage_row.total_mb)
     observed_usage_gb = observed_usage_mb / MB_PER_GB
 
-    days_elapsed = _safe_days_between(period_start, effective_today)
+    calendar_days_elapsed = _safe_days_between(period_start, effective_today)
     total_cycle_days = _safe_days_between(period_start, period_end)
+
+    first_usage_at = usage_row.first_usage_at
+    latest_usage_at = usage_row.latest_usage_at
+
+    if first_usage_at is not None and latest_usage_at is not None:
+        active_usage_days = _safe_days_between(
+            _as_date(first_usage_at),
+            _as_date(latest_usage_at),
+        )
+        days_elapsed = min(calendar_days_elapsed, active_usage_days)
+    else:
+        days_elapsed = calendar_days_elapsed
+
+    days_elapsed = max(days_elapsed, 1)
 
     average_daily_usage_gb = observed_usage_gb / Decimal(str(days_elapsed))
     predicted_usage_gb = average_daily_usage_gb * Decimal(str(total_cycle_days))
